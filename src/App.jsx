@@ -63,7 +63,6 @@ What type of entities are eligible to apply for a water permit?,Philippine citiz
 
 function parseCSV(csv) {
   return csv.trim().split("\n").map((line) => {
-    // Handle quoted fields with commas inside
     const match = line.match(/^"(.+)",(.+)$/) || line.match(/^([^,]+),(.+)$/);
     if (match) return { q: match[1].trim(), a: match[2].trim() };
     const idx = line.indexOf(",");
@@ -92,7 +91,7 @@ export default function FlashcardApp() {
 
   const card = deck[index];
   const total = deck.length;
-  const progress = ((index) / total) * 100;
+  const progress = (index / total) * 100;
 
   const goNext = useCallback((mark) => {
     setFlipped(false);
@@ -118,259 +117,301 @@ export default function FlashcardApp() {
   };
 
   return (
-    <div style={{
-      minHeight: "100vh",
-      background: "linear-gradient(135deg, #0a1628 0%, #0d2340 50%, #0a1628 100%)",
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
-      fontFamily: "'Georgia', 'Times New Roman', serif",
-      padding: "24px",
-      position: "relative",
-      overflow: "hidden",
-    }}>
-      {/* Background ripple circles */}
-      <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none" }}>
-        {[0,1,2].map(i => (
-          <div key={i} style={{
-            position: "absolute",
-            borderRadius: "50%",
-            border: "1px solid rgba(56,189,248,0.07)",
-            top: "50%", left: "50%",
-            transform: "translate(-50%,-50%)",
-            width: `${400 + i*220}px`,
-            height: `${400 + i*220}px`,
-          }} />
-        ))}
-      </div>
-
-      {/* Header */}
-      <div style={{ textAlign: "center", marginBottom: "32px", zIndex: 1 }}>
-        <div style={{ fontSize: "11px", letterSpacing: "4px", color: "#38bdf8", textTransform: "uppercase", marginBottom: "8px", opacity: 0.8 }}>
-          Water Resources Management
-        </div>
-        <h1 style={{ margin: 0, fontSize: "clamp(22px, 4vw, 32px)", color: "#e0f2fe", fontWeight: "normal", letterSpacing: "1px" }}>
-          Study Flashcards
-        </h1>
-      </div>
-
-      {done ? (
-        <DoneScreen known={known} unknown={unknown} total={CARDS.length} restart={restart} />
-      ) : (
-        <>
-          {/* Progress */}
-          <div style={{ width: "100%", maxWidth: "600px", marginBottom: "20px", zIndex: 1 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", color: "#7dd3fc", marginBottom: "8px", letterSpacing: "1px" }}>
-              <span>Card {index + 1} of {total}</span>
-              <span style={{ color: "#34d399" }}>✓ {known.size} known</span>
-            </div>
-            <div style={{ height: "3px", background: "rgba(255,255,255,0.08)", borderRadius: "2px", overflow: "hidden" }}>
-              <div style={{
-                height: "100%",
-                width: `${progress}%`,
-                background: "linear-gradient(90deg, #0ea5e9, #38bdf8)",
-                borderRadius: "2px",
-                transition: "width 0.4s ease",
-              }} />
-            </div>
-          </div>
-
-          {/* Card */}
-          <div
-            onClick={() => setFlipped((f) => !f)}
-            style={{
-              width: "100%",
-              maxWidth: "600px",
-              minHeight: "260px",
-              cursor: "pointer",
-              perspective: "1000px",
-              zIndex: 1,
-              marginBottom: "28px",
-            }}
-          >
-            <div style={{
-              position: "relative",
-              width: "100%",
-              minHeight: "260px",
-              transformStyle: "preserve-3d",
-              transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
-              transition: "transform 0.45s cubic-bezier(0.4,0,0.2,1)",
-            }}>
-              {/* Front */}
-              <CardFace side="front" flipped={flipped}>
-                <div style={{ fontSize: "10px", letterSpacing: "3px", color: "#7dd3fc", textTransform: "uppercase", marginBottom: "20px", opacity: 0.7 }}>Question</div>
-                <p style={{ margin: 0, fontSize: "clamp(15px, 2.5vw, 18px)", color: "#e0f2fe", lineHeight: "1.7", textAlign: "center" }}>
-                  {card.q}
-                </p>
-                <div style={{ marginTop: "24px", fontSize: "11px", color: "#38bdf8", opacity: 0.5 }}>tap to reveal answer</div>
-              </CardFace>
-
-              {/* Back */}
-              <CardFace side="back" flipped={flipped}>
-                <div style={{ fontSize: "10px", letterSpacing: "3px", color: "#34d399", textTransform: "uppercase", marginBottom: "20px", opacity: 0.8 }}>Answer</div>
-                <p style={{ margin: 0, fontSize: "clamp(16px, 2.5vw, 20px)", color: "#f0fdf4", lineHeight: "1.7", textAlign: "center", fontWeight: "500" }}>
-                  {card.a}
-                </p>
-              </CardFace>
-            </div>
-          </div>
-
-          {/* Action buttons */}
-          {flipped && (
-            <div style={{ display: "flex", gap: "16px", zIndex: 1, animation: "fadeUp 0.25s ease" }}>
-              <ActionBtn
-                onClick={() => goNext("review")}
-                color="#f87171"
-                bg="rgba(239,68,68,0.12)"
-                border="rgba(239,68,68,0.3)"
-              >
-                ✗ Still Learning
-              </ActionBtn>
-              <ActionBtn
-                onClick={() => goNext("know")}
-                color="#34d399"
-                bg="rgba(52,211,153,0.12)"
-                border="rgba(52,211,153,0.3)"
-              >
-                ✓ Got It
-              </ActionBtn>
-            </div>
-          )}
-
-          {!flipped && (
-            <button
-              onClick={() => setFlipped(true)}
-              style={{
-                zIndex: 1,
-                background: "rgba(56,189,248,0.1)",
-                border: "1px solid rgba(56,189,248,0.3)",
-                color: "#7dd3fc",
-                padding: "12px 32px",
-                borderRadius: "8px",
-                cursor: "pointer",
-                fontSize: "14px",
-                letterSpacing: "1px",
-              }}
-            >
-              Flip Card
-            </button>
-          )}
-        </>
-      )}
-
+    <>
       <style>{`
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+          background: linear-gradient(135deg, #0a1628 0%, #0d2340 50%, #0a1628 100%);
+          min-height: 100vh;
+        }
+        .app {
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 20px 16px;
+          position: relative;
+          overflow: hidden;
+        }
+        .ripple {
+          position: absolute;
+          border-radius: 50%;
+          border: 1px solid rgba(56,189,248,0.07);
+          top: 50%; left: 50%;
+          transform: translate(-50%, -50%);
+          pointer-events: none;
+        }
+        .header {
+          text-align: center;
+          margin-bottom: 24px;
+          z-index: 1;
+          width: 100%;
+        }
+        .header-sub {
+          font-size: 10px;
+          letter-spacing: 3px;
+          color: #38bdf8;
+          text-transform: uppercase;
+          margin-bottom: 6px;
+          opacity: 0.8;
+        }
+        .header h1 {
+          font-size: clamp(18px, 5vw, 28px);
+          color: #e0f2fe;
+          font-weight: 600;
+          letter-spacing: 0.5px;
+        }
+        .progress-wrap {
+          width: 100%;
+          max-width: 560px;
+          margin-bottom: 16px;
+          z-index: 1;
+        }
+        .progress-labels {
+          display: flex;
+          justify-content: space-between;
+          font-size: 12px;
+          color: #7dd3fc;
+          margin-bottom: 6px;
+        }
+        .progress-bar-bg {
+          height: 3px;
+          background: rgba(255,255,255,0.08);
+          border-radius: 2px;
+          overflow: hidden;
+        }
+        .progress-bar-fill {
+          height: 100%;
+          background: linear-gradient(90deg, #0ea5e9, #38bdf8);
+          border-radius: 2px;
+          transition: width 0.4s ease;
+        }
+        .card-container {
+          width: 100%;
+          max-width: 560px;
+          perspective: 1000px;
+          z-index: 1;
+          margin-bottom: 20px;
+          cursor: pointer;
+          -webkit-tap-highlight-color: transparent;
+        }
+        .card-inner {
+          position: relative;
+          width: 100%;
+          min-height: 240px;
+          transform-style: preserve-3d;
+          transition: transform 0.45s cubic-bezier(0.4,0,0.2,1);
+        }
+        .card-inner.flipped {
+          transform: rotateY(180deg);
+        }
+        .card-face {
+          position: absolute;
+          width: 100%;
+          min-height: 240px;
+          backface-visibility: hidden;
+          -webkit-backface-visibility: hidden;
+          border-radius: 16px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 32px 24px;
+          box-shadow: 0 16px 48px rgba(0,0,0,0.4);
+          backdrop-filter: blur(10px);
+          text-align: center;
+        }
+        .card-face.front {
+          background: linear-gradient(145deg, rgba(12,74,110,0.55), rgba(7,89,133,0.45));
+          border: 1px solid rgba(56,189,248,0.2);
+        }
+        .card-face.back {
+          background: linear-gradient(145deg, rgba(6,78,59,0.45), rgba(4,47,46,0.65));
+          border: 1px solid rgba(52,211,153,0.2);
+          transform: rotateY(180deg);
+        }
+        .card-label {
+          font-size: 9px;
+          letter-spacing: 3px;
+          text-transform: uppercase;
+          margin-bottom: 16px;
+          opacity: 0.75;
+        }
+        .card-label.q { color: #7dd3fc; }
+        .card-label.a { color: #34d399; }
+        .card-text {
+          font-size: clamp(14px, 3.5vw, 17px);
+          line-height: 1.65;
+          color: #e0f2fe;
+        }
+        .card-text.answer {
+          color: #f0fdf4;
+          font-weight: 500;
+        }
+        .card-hint {
+          margin-top: 20px;
+          font-size: 11px;
+          color: #38bdf8;
+          opacity: 0.45;
+        }
+        .btn-row {
+          display: flex;
+          gap: 12px;
+          z-index: 1;
+          width: 100%;
+          max-width: 560px;
+          animation: fadeUp 0.25s ease;
+        }
+        .btn {
+          flex: 1;
+          padding: 14px 12px;
+          border-radius: 10px;
+          cursor: pointer;
+          font-size: 14px;
+          font-family: inherit;
+          font-weight: 500;
+          letter-spacing: 0.3px;
+          transition: opacity 0.2s;
+          border: 1px solid;
+          -webkit-tap-highlight-color: transparent;
+        }
+        .btn:active { opacity: 0.7; }
+        .btn-flip {
+          z-index: 1;
+          background: rgba(56,189,248,0.1);
+          border: 1px solid rgba(56,189,248,0.3);
+          color: #7dd3fc;
+          padding: 14px 32px;
+          border-radius: 10px;
+          cursor: pointer;
+          font-size: 14px;
+          font-family: inherit;
+          letter-spacing: 0.5px;
+          -webkit-tap-highlight-color: transparent;
+        }
+        .done-card {
+          z-index: 1;
+          text-align: center;
+          background: linear-gradient(145deg, rgba(12,74,110,0.5), rgba(7,89,133,0.3));
+          border: 1px solid rgba(56,189,248,0.2);
+          border-radius: 20px;
+          padding: 40px 28px;
+          max-width: 480px;
+          width: 100%;
+          box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        }
+        .done-emoji { font-size: 44px; margin-bottom: 8px; }
+        .done-title { color: #e0f2fe; font-weight: 600; font-size: 24px; margin-bottom: 6px; }
+        .done-sub { color: #7dd3fc; font-size: 13px; margin-bottom: 28px; }
+        .stats-row {
+          display: flex;
+          justify-content: center;
+          gap: 28px;
+          margin-bottom: 28px;
+          flex-wrap: wrap;
+        }
+        .stat-value { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+        .stat-label { font-size: 10px; color: #7dd3fc; letter-spacing: 1px; text-transform: uppercase; margin-top: 2px; }
+        .done-btns { display: flex; flex-direction: column; gap: 10px; }
         @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(10px); }
+          from { opacity: 0; transform: translateY(8px); }
           to { opacity: 1; transform: translateY(0); }
         }
       `}</style>
-    </div>
-  );
-}
 
-function CardFace({ side, children }) {
-  const isBack = side === "back";
-  return (
-    <div style={{
-      position: "absolute",
-      width: "100%",
-      minHeight: "260px",
-      backfaceVisibility: "hidden",
-      WebkitBackfaceVisibility: "hidden",
-      transform: isBack ? "rotateY(180deg)" : "rotateY(0deg)",
-      background: isBack
-        ? "linear-gradient(145deg, rgba(6,78,59,0.4), rgba(4,47,46,0.6))"
-        : "linear-gradient(145deg, rgba(12,74,110,0.5), rgba(7,89,133,0.4))",
-      border: `1px solid ${isBack ? "rgba(52,211,153,0.2)" : "rgba(56,189,248,0.2)"}`,
-      borderRadius: "16px",
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
-      padding: "40px 36px",
-      boxShadow: "0 20px 60px rgba(0,0,0,0.4)",
-      backdropFilter: "blur(10px)",
-    }}>
-      {children}
-    </div>
-  );
-}
+      <div className="app">
+        <div className="ripple" style={{ width: 400, height: 400 }} />
+        <div className="ripple" style={{ width: 620, height: 620 }} />
+        <div className="ripple" style={{ width: 840, height: 840 }} />
 
-function ActionBtn({ onClick, color, bg, border, children }) {
-  return (
-    <button
-      onClick={onClick}
-      style={{
-        background: bg,
-        border: `1px solid ${border}`,
-        color,
-        padding: "13px 28px",
-        borderRadius: "10px",
-        cursor: "pointer",
-        fontSize: "14px",
-        fontFamily: "inherit",
-        letterSpacing: "0.5px",
-        transition: "all 0.2s",
-        fontWeight: "500",
-      }}
-      onMouseEnter={e => e.currentTarget.style.opacity = "0.8"}
-      onMouseLeave={e => e.currentTarget.style.opacity = "1"}
-    >
-      {children}
-    </button>
+        <div className="header">
+          <div className="header-sub">Water Resources Management</div>
+          <h1>Study Flashcards</h1>
+        </div>
+
+        {done ? (
+          <DoneScreen known={known} unknown={unknown} total={CARDS.length} restart={restart} />
+        ) : (
+          <>
+            <div className="progress-wrap">
+              <div className="progress-labels">
+                <span>Card {index + 1} of {total}</span>
+                <span style={{ color: "#34d399" }}>✓ {known.size} known</span>
+              </div>
+              <div className="progress-bar-bg">
+                <div className="progress-bar-fill" style={{ width: `${progress}%` }} />
+              </div>
+            </div>
+
+            <div className="card-container" onClick={() => setFlipped(f => !f)}>
+              <div className={`card-inner ${flipped ? "flipped" : ""}`}>
+                <div className="card-face front">
+                  <div className="card-label q">Question</div>
+                  <p className="card-text">{card.q}</p>
+                  <div className="card-hint">tap to reveal answer</div>
+                </div>
+                <div className="card-face back">
+                  <div className="card-label a">Answer</div>
+                  <p className="card-text answer">{card.a}</p>
+                </div>
+              </div>
+            </div>
+
+            {flipped ? (
+              <div className="btn-row">
+                <button
+                  className="btn"
+                  onClick={() => goNext("review")}
+                  style={{ color: "#f87171", background: "rgba(239,68,68,0.12)", borderColor: "rgba(239,68,68,0.3)" }}
+                >
+                  ✗ Still Learning
+                </button>
+                <button
+                  className="btn"
+                  onClick={() => goNext("know")}
+                  style={{ color: "#34d399", background: "rgba(52,211,153,0.12)", borderColor: "rgba(52,211,153,0.3)" }}
+                >
+                  ✓ Got It
+                </button>
+              </div>
+            ) : (
+              <button className="btn-flip" onClick={() => setFlipped(true)}>
+                Flip Card
+              </button>
+            )}
+          </>
+        )}
+      </div>
+    </>
   );
 }
 
 function DoneScreen({ known, unknown, total, restart }) {
   const pct = Math.round((known.size / total) * 100);
   return (
-    <div style={{
-      zIndex: 1,
-      textAlign: "center",
-      background: "linear-gradient(145deg, rgba(12,74,110,0.5), rgba(7,89,133,0.3))",
-      border: "1px solid rgba(56,189,248,0.2)",
-      borderRadius: "20px",
-      padding: "48px 40px",
-      maxWidth: "480px",
-      width: "100%",
-      boxShadow: "0 20px 60px rgba(0,0,0,0.4)",
-    }}>
-      <div style={{ fontSize: "48px", marginBottom: "8px" }}>
-        {pct >= 80 ? "🌊" : pct >= 50 ? "💧" : "📚"}
+    <div className="done-card">
+      <div className="done-emoji">{pct >= 80 ? "🌊" : pct >= 50 ? "💧" : "📚"}</div>
+      <div className="done-title">Round Complete!</div>
+      <div className="done-sub">{total} cards reviewed</div>
+      <div className="stats-row">
+        <div><div className="stat-value" style={{ color: "#34d399" }}>{known.size}</div><div className="stat-label">Got It</div></div>
+        <div><div className="stat-value" style={{ color: "#f87171" }}>{unknown.size}</div><div className="stat-label">Still Learning</div></div>
+        <div><div className="stat-value" style={{ color: "#38bdf8" }}>{pct}%</div><div className="stat-label">Score</div></div>
       </div>
-      <h2 style={{ color: "#e0f2fe", fontWeight: "normal", fontSize: "26px", margin: "0 0 8px" }}>
-        Round Complete!
-      </h2>
-      <p style={{ color: "#7dd3fc", fontSize: "13px", letterSpacing: "1px", margin: "0 0 32px" }}>
-        {total} cards reviewed
-      </p>
-
-      <div style={{ display: "flex", justifyContent: "center", gap: "32px", marginBottom: "36px" }}>
-        <Stat label="Got It" value={known.size} color="#34d399" />
-        <Stat label="Still Learning" value={unknown.size} color="#f87171" />
-        <Stat label="Score" value={`${pct}%`} color="#38bdf8" />
-      </div>
-
-      <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+      <div className="done-btns">
         {unknown.size > 0 && (
-          <ActionBtn onClick={() => restart(true)} color="#fbbf24" bg="rgba(251,191,36,0.1)" border="rgba(251,191,36,0.3)">
+          <button className="btn" onClick={() => restart(true)}
+            style={{ color: "#fbbf24", background: "rgba(251,191,36,0.1)", borderColor: "rgba(251,191,36,0.3)" }}>
             ↺ Review Missed Cards ({unknown.size})
-          </ActionBtn>
+          </button>
         )}
-        <ActionBtn onClick={() => restart(false)} color="#7dd3fc" bg="rgba(56,189,248,0.1)" border="rgba(56,189,248,0.25)">
+        <button className="btn" onClick={() => restart(false)}
+          style={{ color: "#7dd3fc", background: "rgba(56,189,248,0.1)", borderColor: "rgba(56,189,248,0.25)" }}>
           ↺ Restart All Cards
-        </ActionBtn>
+        </button>
       </div>
-    </div>
-  );
-}
-
-function Stat({ label, value, color }) {
-  return (
-    <div>
-      <div style={{ fontSize: "28px", fontWeight: "600", color, fontFamily: "monospace" }}>{value}</div>
-      <div style={{ fontSize: "11px", color: "#7dd3fc", letterSpacing: "1px", textTransform: "uppercase", marginTop: "4px" }}>{label}</div>
     </div>
   );
 }
