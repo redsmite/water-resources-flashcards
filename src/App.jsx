@@ -654,7 +654,12 @@ function LeaderboardView({ onBack }) {
     try {
       const q = query(collection(db, "test_score"), orderBy("score", "desc"));
       const snap = await getDocs(q);
-      const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      const data = snap.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => {
+          if (b.score !== a.score) return b.score - a.score;
+          return (a.time_elapsed ?? 99999) - (b.time_elapsed ?? 99999);
+        });
       setResults(data);
     } catch (e) {
       setError("Could not load results. Check your connection.");
