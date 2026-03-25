@@ -471,7 +471,7 @@ function FinalQuizView({ prog, update, onBack }) {
             {/* Name input */}
             <div style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 14, padding: "20px 18px", marginBottom: 16, textAlign: "left" }}>
               <div style={{ fontSize: 12, color: "#94a3b8", marginBottom: 10, fontWeight: 600 }}>
-                📝 Enter your full name to save your result
+                📝 Enter your Alias to save your result
               </div>
               {!nameLocked ? (
                 <>
