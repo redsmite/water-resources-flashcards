@@ -117,7 +117,7 @@ const FINAL_QUIZ = [
   { type: "fitb", q: "Humans can survive only _____ days without water.", answer: "3" },
   // Select 3 / Multi-select (4)
   { type: "multi", q: "Which of the following are among the 5 P's of the 2030 Agenda? (Select 3)", options: ["People", "Power", "Planet", "Prosperity", "Progress"], answer: [0, 2, 3] },
-  { type: "multi", q: "Which of the following are SDG 6 targets? (Select 3)", options: ["Safe drinking water (6.1)", "Zero hunger (2.1)", "End open defecation (6.2)", "Renewable energy (7.2)", "Protect water ecosystems (6.6)"], answer: [0, 2, 4] },
+  { type: "multi", q: "Which of the following are SDG 6 targets? (Select 3)", options: ["Safe drinking water", "Zero hunger (2.1)", "End open defecation", "Renewable energy (7.2)", "Protect water ecosystems"], answer: [0, 2, 4] },
   { type: "multi", q: "Which of the following are permitted water uses under the Water Code? (Select 3)", options: ["Irrigation", "Mining exports", "Power Generation", "Livestock Raising", "Space research"], answer: [0, 2, 3] },
   { type: "multi", q: "Which of the following are core functional areas of the NWRB? (Select 3)", options: ["Policy Formulation", "Military Coordination", "Resource Regulation", "Economic Regulation", "Land Surveying"], answer: [0, 2, 3] },
   { type: "mc", q: "What does CPC stand for in the context of NWRB economic regulation?", options: ["Central Planning Coordination", "Certificate of Public Convenience", "Community Protection Charter", "Comprehensive Permit Clearance"], answer: 1 },
