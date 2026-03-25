@@ -362,8 +362,7 @@ function ModuleView({ mod, prog, update, onBack }) {
 
   const next = () => {
     if (qi + 1 >= mod.quiz.length) {
-      const final = score + (sel === q.answer ? 1 : 0);
-      update({ ...prog, completed: { ...prog.completed, [mod.id]: true }, scores: { ...prog.scores, [mod.id]: final } });
+      update({ ...prog, completed: { ...prog.completed, [mod.id]: true }, scores: { ...prog.scores, [mod.id]: score } });
       setDone(true);
     } else { setQi(i => i + 1); setSel(null); setConfirmed(false); }
   };
