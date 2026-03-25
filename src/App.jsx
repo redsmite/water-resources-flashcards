@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, addDoc, getDocs, orderBy, query } from "firebase/firestore";
 
@@ -119,7 +119,7 @@ const FINAL_QUIZ = [
   { type: "fitb", q: "Humans can survive only _____ days without water.", answer: "3" },
   // Select 3 / Multi-select (4)
   { type: "multi", q: "Which of the following are among the 5 P's of the 2030 Agenda? (Select 3)", options: ["People", "Power", "Planet", "Prosperity", "Progress"], answer: [0, 2, 3] },
-  { type: "multi", q: "Which of the following are SDG 6 targets? (Select 3)", options: ["Safe drinking water", "Zero hunger (2.1)", "End open defecation", "Renewable energy (7.2)", "Protect water ecosystems"], answer: [0, 2, 4] },
+  { type: "multi", q: "Which of the following are SDG 6 targets? (Select 3)", options: ["Safe drinking water (6.1)", "Zero hunger (2.1)", "End open defecation (6.2)", "Renewable energy (7.2)", "Protect water ecosystems (6.6)"], answer: [0, 2, 4] },
   { type: "multi", q: "Which of the following are permitted water uses under the Water Code? (Select 3)", options: ["Irrigation", "Mining exports", "Power Generation", "Livestock Raising", "Space research"], answer: [0, 2, 3] },
   { type: "multi", q: "Which of the following are core functional areas of the NWRB? (Select 3)", options: ["Policy Formulation", "Military Coordination", "Resource Regulation", "Economic Regulation", "Land Surveying"], answer: [0, 2, 3] },
   { type: "mc", q: "What does CPC stand for in the context of NWRB economic regulation?", options: ["Central Planning Coordination", "Certificate of Public Convenience", "Community Protection Charter", "Comprehensive Permit Clearance"], answer: 1 },
@@ -187,6 +187,10 @@ function shuffle(arr) {
 
 // ── APP ───────────────────────────────────────────────────────────────────────
 export default function App() {
+  // Support ?assessor=1 URL param for direct assessor access
+  const isAssessorDirect = typeof window !== "undefined" && new URLSearchParams(window.location.search).get("assessor") === "1";
+  if (isAssessorDirect) return <AssessorPage />;
+
   const [prog, setProg] = useState(loadP);
   const [view, setView] = useState("home");
   const [modIdx, setModIdx] = useState(null);
@@ -200,6 +204,7 @@ export default function App() {
   if (view === "flashcards") return <FlashcardsView onBack={() => setView("home")} />;
   if (view === "leaderboard") return <LeaderboardView onBack={() => setView("home")} />;
   if (view === "assessor") return <AssessorView onBack={() => setView("home")} />;
+  if (view === "resources") return <ResourcesView onBack={() => setView("home")} />;
 
   return (
     <div className="page">
@@ -211,8 +216,8 @@ export default function App() {
             <img src={DENR_LOGO} alt="DENR Logo" className="denr-logo" />
           </div>
           <div className="denr-agency">Department of Environment and Natural Resources</div>
-          <div className="denr-office">National Capital Region — Water Resources and Utilization Section</div>
-          <h1 className="home-title">ENRA 2026 Basic Course <br /> Water Resources<br />Management</h1>
+          <div className="denr-office">National Capital Region — Water Resources Unit</div>
+          <h1 className="home-title">Water Resources<br />Management</h1>
           <p className="home-sub">A comprehensive learning platform on SDG 6, NWRB, and Philippine water governance.</p>
           <div className="home-stats">
             <span style={{ color: "#4ade80", fontWeight: 700 }}>{completedCount}/{MODULES.length}</span>
@@ -222,6 +227,19 @@ export default function App() {
             <span className="stat-label"> Quizzes Passed</span>
           </div>
         </header>
+
+        {/* Resources tab */}
+        <div className="section-label">📖 References</div>
+        <button className="flashcard-banner" style={{ marginBottom: 20, borderColor: "rgba(251,191,36,0.2)", background: "rgba(251,191,36,0.05)" }} onClick={() => setView("resources")}>
+          <div className="fc-left">
+            <div className="fc-icon" style={{ background: "rgba(251,191,36,0.12)", color: "#fbbf24" }}>📖</div>
+            <div>
+              <div className="fc-title" style={{ color: "#fbbf24" }}>Legal References</div>
+              <div className="fc-sub">PD 424, PD 1067, PD 1206, EO 124-A, EO 123, EO 860, EO 22</div>
+            </div>
+          </div>
+          <div className="fc-arrow" style={{ color: "#fbbf24" }}>→</div>
+        </button>
 
         <div className="section-label">📚 Learning Modules</div>
         <div className="module-grid">
@@ -270,20 +288,6 @@ export default function App() {
           {prog.finalDone && <span style={{ color: "#34d399", fontSize: 13, fontWeight: 600 }}>Your score: {prog.finalScore}/{TOTAL_ITEMS}</span>}
         </button>
 
-        {/* Assessor page */}
-        <div className="section-label" style={{ marginTop: 28 }}>🔎 Assessor</div>
-        <button className="leaderboard-card" style={{ opacity: 1, cursor: "pointer", borderColor: "rgba(129,140,248,0.2)", background: "rgba(129,140,248,0.04)" }}
-          onClick={() => setView("assessor")}>
-          <div className="fc-left">
-            <div className="fc-icon" style={{ background: "rgba(129,140,248,0.15)", color: "#818cf8" }}>🔎</div>
-            <div>
-              <div className="fc-title" style={{ color: "#818cf8" }}>Assessor Dashboard</div>
-              <div className="fc-sub">View and manage all student results</div>
-            </div>
-          </div>
-          <div className="fc-arrow" style={{ color: "#818cf8" }}>→</div>
-        </button>
-
         {/* Leaderboard — unlocked after final assessment */}
         <div className="section-label" style={{ marginTop: 28 }}>📊 Student Results</div>
         <button className="leaderboard-card" style={{ opacity: prog.finalDone ? 1 : 0.35, cursor: prog.finalDone ? "pointer" : "not-allowed" }}
@@ -324,6 +328,10 @@ function FinalQuizView({ prog, update, onBack }) {
   const [done, setDone] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
   const [fitbVal, setFitbVal] = useState("");
+  // Timer
+  const [startTime, setStartTime] = useState(null);
+  const [elapsed, setElapsed] = useState(0);
+  const timerRef = useRef(null);
   // Name submission
   const [name, setName] = useState("");
   const [nameLocked, setNameLocked] = useState(false);
@@ -374,7 +382,10 @@ function FinalQuizView({ prog, update, onBack }) {
     if (qi + 1 >= FINAL_QUIZ.length) {
       const total = quiz.reduce((acc, q, i) => acc + (isCorrect(q, answers[i]) ? 1 : 0), 0);
       setFinalScore(total);
-      update({ ...prog, finalDone: true, finalScore: total });
+      clearInterval(timerRef.current);
+      const finalElapsed = Math.floor((Date.now() - startTime) / 1000);
+      setElapsed(finalElapsed);
+      update({ ...prog, finalDone: true, finalScore: total, finalElapsed: finalElapsed });
       setDone(true);
     } else {
       setQi(i => i + 1);
@@ -392,6 +403,7 @@ function FinalQuizView({ prog, update, onBack }) {
         name: name.trim(),
         score: finalScore,
         total: TOTAL_ITEMS,
+        time_elapsed: elapsed,
         year: new Date().getFullYear(),
         timestamp: new Date().toISOString(),
       });
@@ -425,7 +437,12 @@ function FinalQuizView({ prog, update, onBack }) {
             <div style={{ background: "rgba(248,113,113,0.08)", border: "1px solid rgba(248,113,113,0.25)", borderRadius: 10, padding: "12px 16px", marginBottom: 24, fontSize: 13, color: "#f87171", lineHeight: 1.5 }}>
               ⚠️ By clicking Start, you confirm that your answers are your own and you understand this exam cannot be retaken.
             </div>
-            <button className="btn primary" style={{ background: "#f87171", color: "#fff", width: "100%", padding: "14px", fontSize: 16 }} onClick={() => setStarted(true)}>
+            <button className="btn primary" style={{ background: "#f87171", color: "#fff", width: "100%", padding: "14px", fontSize: 16 }} onClick={() => {
+              setStarted(true);
+              const t = Date.now();
+              setStartTime(t);
+              timerRef.current = setInterval(() => setElapsed(Math.floor((Date.now() - t) / 1000)), 1000);
+            }}>
               Begin Exam →
             </button>
             <button className="back-btn" style={{ marginTop: 14, padding: 0 }} onClick={onBack}>← Back to Home</button>
@@ -446,7 +463,10 @@ function FinalQuizView({ prog, update, onBack }) {
             <div className="done-score" style={{ color: pct >= 80 ? "#34d399" : pct >= 60 ? "#fbbf24" : "#f87171" }}>
               {finalScore}<span style={{ fontSize: 24, color: "#475569" }}>/{TOTAL_ITEMS}</span>
             </div>
-            <div className="done-sub" style={{ marginBottom: 28 }}>{pct}% — {pct >= 80 ? "Excellent!" : pct >= 60 ? "Good Job!" : "Keep Studying!"}</div>
+            <div className="done-sub" style={{ marginBottom: 8 }}>{pct}% — {pct >= 80 ? "Excellent!" : pct >= 60 ? "Good Job!" : "Keep Studying!"}</div>
+            <div style={{ fontSize: 13, color: "#4a7c59", marginBottom: 24 }}>
+              ⏱ Time: {String(Math.floor(elapsed/60)).padStart(2,"0")}:{String(elapsed%60).padStart(2,"0")}
+            </div>
 
             {/* Name input */}
             <div style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 14, padding: "20px 18px", marginBottom: 16, textAlign: "left" }}>
@@ -497,10 +517,16 @@ function FinalQuizView({ prog, update, onBack }) {
         <button className="back-btn" onClick={onBack}>← Back to Home</button>
         <div className="mod-header" style={{ borderColor: "#fbbf2433" }}>
           <div className="mod-icon lg" style={{ background: "#fbbf2422", color: "#fbbf24" }}>🏆</div>
-          <div>
+          <div style={{ flex: 1 }}>
             <div className="mod-label" style={{ color: "#fbbf24" }}>Final Assessment</div>
             <div className="mod-header-title">Comprehensive Quiz</div>
             <div className="mod-header-sub">Question {qi + 1} of {TOTAL_ITEMS}</div>
+          </div>
+          <div style={{ textAlign: "right", flexShrink: 0 }}>
+            <div style={{ fontSize: 18, fontWeight: 800, color: "#fbbf24", fontVariantNumeric: "tabular-nums" }}>
+              {String(Math.floor(elapsed/60)).padStart(2,"0")}:{String(elapsed%60).padStart(2,"0")}
+            </div>
+            <div style={{ fontSize: 10, color: "#475569", letterSpacing: 1 }}>ELAPSED</div>
           </div>
         </div>
         <div style={{ height: 3, background: "rgba(255,255,255,0.06)", borderRadius: 2, marginBottom: 20 }}>
@@ -685,6 +711,11 @@ function LeaderboardView({ onBack }) {
                       {r.score}<span style={{ fontSize: 12, color: "#475569" }}>/{r.total || TOTAL_ITEMS}</span>
                     </div>
                     <div style={{ fontSize: 11, color: "#475569" }}>{pct}%</div>
+                    {r.time_elapsed != null && (
+                      <div style={{ fontSize: 10, color: "#475569" }}>
+                        ⏱ {String(Math.floor(r.time_elapsed/60)).padStart(2,"0")}:{String(r.time_elapsed%60).padStart(2,"0")}
+                      </div>
+                    )}
                   </div>
                 </div>
               );
@@ -901,6 +932,25 @@ function ModuleView({ mod, prog, update, onBack }) {
 }
 
 
+// ── STANDALONE ASSESSOR PAGE (accessed via ?assessor=1) ──────────────────────
+function AssessorPage() {
+  return (
+    <div className="page"><GlobalStyles />
+      <div style={{ maxWidth: 760, margin: "0 auto", padding: "24px 16px 72px" }}>
+        <div className="denr-stripe" />
+        <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 24 }}>
+          <img src={DENR_LOGO} alt="DENR" style={{ width: 48, height: 48, borderRadius: "50%" }} />
+          <div>
+            <div style={{ fontSize: 10, letterSpacing: 2, color: "#4ade80", textTransform: "uppercase" }}>DENR-NCR Water Resources Unit</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: "#f0fdf4" }}>Assessor Dashboard</div>
+          </div>
+        </div>
+        <AssessorView onBack={() => window.location.href = window.location.pathname} />
+      </div>
+    </div>
+  );
+}
+
 // ── ASSESSOR VIEW ─────────────────────────────────────────────────────────────
 function AssessorView({ onBack }) {
   const [results, setResults] = useState([]);
@@ -927,7 +977,10 @@ function AssessorView({ onBack }) {
   const filtered = results
     .filter(r => r.name?.toLowerCase().includes(search.toLowerCase()))
     .sort((a, b) => {
-      if (sortBy === "score") return (b.score || 0) - (a.score || 0);
+      if (sortBy === "score") {
+        if (b.score !== a.score) return (b.score || 0) - (a.score || 0);
+        return (a.time_elapsed ?? 99999) - (b.time_elapsed ?? 99999);
+      }
       if (sortBy === "name") return (a.name || "").localeCompare(b.name || "");
       if (sortBy === "date") return new Date(b.timestamp || 0) - new Date(a.timestamp || 0);
       return 0;
@@ -937,10 +990,11 @@ function AssessorView({ onBack }) {
   const passing = results.filter(r => (r.score / (r.total || TOTAL_ITEMS)) >= 0.75).length;
 
   const exportCSV = () => {
-    const header = "Name,Score,Total,Percentage,Year,Timestamp";
+    const header = "Name,Score,Total,Percentage,Time Elapsed,Year,Timestamp";
     const rows = results.map(r => {
       const pct = Math.round((r.score / (r.total || TOTAL_ITEMS)) * 100);
-      return `"${r.name}",${r.score},${r.total || TOTAL_ITEMS},${pct}%,${r.year || ""},${r.timestamp || ""}`;
+      const t = r.time_elapsed != null ? `${String(Math.floor(r.time_elapsed/60)).padStart(2,"0")}:${String(r.time_elapsed%60).padStart(2,"0")}` : "";
+      return `"${r.name}",${r.score},${r.total || TOTAL_ITEMS},${pct}%,${t},${r.year || ""},${r.timestamp || ""}`;
     });
     const blob = new Blob([[header, ...rows].join("\n")], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
@@ -1001,8 +1055,8 @@ function AssessorView({ onBack }) {
         {!loading && filtered.length > 0 && (
           <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
             {/* Table header */}
-            <div style={{ display: "grid", gridTemplateColumns: "32px 1fr 80px 60px 90px", gap: 8, padding: "8px 14px", fontSize: 10, color: "#475569", letterSpacing: 1, textTransform: "uppercase" }}>
-              <span>#</span><span>Name</span><span>Score</span><span>%</span><span>Date</span>
+            <div style={{ display: "grid", gridTemplateColumns: "32px 1fr 80px 50px 70px 80px", gap: 8, padding: "8px 14px", fontSize: 10, color: "#475569", letterSpacing: 1, textTransform: "uppercase" }}>
+              <span>#</span><span>Name</span><span>Score</span><span>%</span><span>Time</span><span>Date</span>
             </div>
             {filtered.map((r, i) => {
               const pct = Math.round((r.score / (r.total || TOTAL_ITEMS)) * 100);
@@ -1010,7 +1064,7 @@ function AssessorView({ onBack }) {
               const date = r.timestamp ? new Date(r.timestamp).toLocaleDateString("en-PH", { month: "short", day: "numeric", year: "2-digit" }) : r.year || "—";
               return (
                 <div key={r.id} style={{
-                  display: "grid", gridTemplateColumns: "32px 1fr 80px 60px 90px", gap: 8, alignItems: "center",
+                  display: "grid", gridTemplateColumns: "32px 1fr 80px 50px 70px 80px", gap: 8, alignItems: "center",
                   background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)",
                   borderRadius: 10, padding: "12px 14px",
                 }}>
@@ -1018,12 +1072,111 @@ function AssessorView({ onBack }) {
                   <span style={{ fontSize: 14, fontWeight: 600, color: "#e2e8f0", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.name}</span>
                   <span style={{ fontSize: 15, fontWeight: 800, color: pct >= 80 ? "#34d399" : pct >= 60 ? "#fbbf24" : "#f87171" }}>{r.score}/{r.total || TOTAL_ITEMS}</span>
                   <span style={{ fontSize: 13, fontWeight: 700, color: pass ? "#34d399" : "#f87171" }}>{pct}%</span>
+                  <span style={{ fontSize: 11, color: "#4a7c59", fontVariantNumeric: "tabular-nums" }}>
+                    {r.time_elapsed != null ? `${String(Math.floor(r.time_elapsed/60)).padStart(2,"0")}:${String(r.time_elapsed%60).padStart(2,"0")}` : "—"}
+                  </span>
                   <span style={{ fontSize: 11, color: "#475569" }}>{date}</span>
                 </div>
               );
             })}
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+
+// ── RESOURCES VIEW ────────────────────────────────────────────────────────────
+const LEGAL_REFS = [
+  {
+    code: "PD 424", year: "1974",
+    title: "Creating the National Water Resources Council",
+    desc: "Established the National Water Resources Council (NWRC), the precursor to the NWRB, to coordinate and regulate water-related activities.",
+    url: "https://elibrary.judiciary.gov.ph/thebookshelf/showdocs/26/25290",
+    color: "#0ea5e9",
+  },
+  {
+    code: "PD 1067", year: "1976",
+    title: "Water Code of the Philippines",
+    desc: "The principal law governing the ownership, appropriation, utilization, exploitation, development, conservation, and protection of water resources.",
+    url: "https://lawphil.net/statutes/presdecs/pd1976/pd_1067_1976.html",
+    color: "#34d399",
+  },
+  {
+    code: "PD 1206", year: "1977",
+    title: "Assigning Residual Functions to NWRB",
+    desc: "Transferred residual functions and powers of the Board of Waterworks and Sewerage to the National Water Resources Board.",
+    url: "https://lawphil.net/statutes/presdecs/pd1977/pd_1206_1977.html",
+    color: "#818cf8",
+  },
+  {
+    code: "EO 124-A", year: "1987",
+    title: "Renaming NWRC to NWRB",
+    desc: "Officially renamed the National Water Resources Council (NWRC) to the National Water Resources Board (NWRB).",
+    url: "https://elibrary.judiciary.gov.ph/thebookshelf/showdocs/5/7753",
+    color: "#a78bfa",
+  },
+  {
+    code: "EO 123", year: "2002",
+    title: "Reconstituting the NWRB Board",
+    desc: "Reconstituted the NWRB Board and transferred the agency to the Department of Environment and Natural Resources (DENR).",
+    url: "https://elibrary.judiciary.gov.ph/thebookshelf/showdocs/10/50199",
+    color: "#fbbf24",
+  },
+  {
+    code: "EO 860", year: "2010",
+    title: "Redefining NWRB Powers",
+    desc: "Redefined the composition, powers, and functions of the National Water Resources Board.",
+    url: "http://www.b.lawphil.net/executive/execord/eo2010/eo_860_2010.html",
+    color: "#fb7185",
+  },
+  {
+    code: "EO 22", year: "2023",
+    title: "Establishing the WRMO",
+    desc: "Created the Water Resources Management Office (WRMO) under DENR, tasked to draft the Integrated Water Management Plan (IWMP).",
+    url: "https://lawphil.net/executive/execord/eo2023/eo_22_2023.html",
+    color: "#4ade80",
+  },
+];
+
+function ResourcesView({ onBack }) {
+  return (
+    <div className="page"><GlobalStyles />
+      <div className="inner-wrap">
+        <button className="back-btn" onClick={onBack}>← Back to Home</button>
+        <div className="mod-header" style={{ borderColor: "#fbbf2433" }}>
+          <div className="mod-icon lg" style={{ background: "#fbbf2422", color: "#fbbf24" }}>📖</div>
+          <div>
+            <div className="mod-label" style={{ color: "#fbbf24" }}>Legal References</div>
+            <div className="mod-header-title">Philippine Water Law</div>
+            <div className="mod-header-sub">7 key issuances — tap to open full text</div>
+          </div>
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {LEGAL_REFS.map(ref => (
+            <a key={ref.code} href={ref.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
+              <div className="ref-card" style={{ "--rc": ref.color }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                  <div className="ref-badge" style={{ background: ref.color + "22", color: ref.color, borderColor: ref.color + "44" }}>
+                    <div style={{ fontSize: 13, fontWeight: 800 }}>{ref.code}</div>
+                    <div style={{ fontSize: 10, opacity: 0.7 }}>{ref.year}</div>
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: "#f0fdf4", marginBottom: 3 }}>{ref.title}</div>
+                    <div style={{ fontSize: 12, color: "#4a7c59", lineHeight: 1.5 }}>{ref.desc}</div>
+                  </div>
+                  <div style={{ fontSize: 16, color: ref.color, opacity: 0.6, flexShrink: 0 }}>↗</div>
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+
+        <div style={{ marginTop: 20, padding: "14px 16px", background: "rgba(26,107,47,0.06)", border: "1px solid rgba(74,222,128,0.1)", borderRadius: 12, fontSize: 12, color: "#2d6a40", lineHeight: 1.6 }}>
+          ℹ️ Links open the official text from the Philippine e-Library or LawPhil. An internet connection is required.
+        </div>
       </div>
     </div>
   );
@@ -1156,6 +1309,11 @@ function GlobalStyles() {
       .exam-rules { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; text-align: left; }
       .exam-rule { display: flex; gap: 10px; font-size: 13px; line-height: 1.5; background: rgba(26,107,47,0.08); border-radius: 8px; padding: 10px 12px; align-items: flex-start; }
       .exam-rule span { color: #4a7c59; }
+
+      /* ── RESOURCE CARDS ── */
+      .ref-card { background: rgba(26,107,47,0.06); border: 1px solid rgba(74,222,128,0.1); border-radius: 14px; padding: 16px 18px; transition: all 0.2s; }
+      .ref-card:hover { background: rgba(26,107,47,0.14); border-color: var(--rc, #4ade80); transform: translateY(-1px); }
+      .ref-badge { min-width: 58px; border: 1px solid; border-radius: 10px; padding: 8px 10px; text-align: center; flex-shrink: 0; }
 
       /* ── DENR FOOTER STRIPE ── */
       .denr-stripe { height: 4px; background: linear-gradient(90deg, #1a6b2f, #1a4f8a, #1a6b2f); border-radius: 2px; margin-bottom: 24px; }
