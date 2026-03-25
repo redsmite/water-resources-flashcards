@@ -1,7 +1,20 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
+import { initializeApp } from "firebase/app";
+import { getFirestore, collection, addDoc, getDocs, orderBy, query } from "firebase/firestore";
+
+// ── FIREBASE ──────────────────────────────────────────────────────────────────
+const firebaseConfig = {
+  apiKey: "AIzaSyAgV8tXzZWZyNPEbK6O305hwJcRqkxqBxU",
+  authDomain: "wrus-asset-tracking-system.firebaseapp.com",
+  projectId: "wrus-asset-tracking-system",
+  storageBucket: "wrus-asset-tracking-system.appspot.com",
+  messagingSenderId: "946198823737",
+  appId: "1:946198823737:web:8966ed475b86e188489ee8"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 // ── DATA ─────────────────────────────────────────────────────────────────────
-
 const MODULES = [
   {
     id: 1, title: "The 2030 Agenda", subtitle: "Sustainable Development Goals", icon: "🌍", color: "#0ea5e9",
@@ -78,18 +91,40 @@ const MODULES = [
   },
 ];
 
+// ── FINAL QUIZ — 20 items: mc, tf, fitb, multi ────────────────────────────────
+// type: "mc" | "tf" | "fitb" | "multi"
+// multi: answer is array of correct indices (select-3)
+// fitb: answer is string (case-insensitive trim check)
 const FINAL_QUIZ = [
+  // Multiple Choice (6)
   { type: "mc", q: "What is the target year for achieving the 2030 Agenda for Sustainable Development?", options: ["2025", "2030", "2035", "2040"], answer: 1 },
-  { type: "tf", q: "The NWRB's mission is to manage water resources within the framework of IWRM.", answer: true },
   { type: "mc", q: "Presidential Decree 1067 enacted in 1976 is known as:", options: ["Clean Water Act", "Water Resources Code", "Water Code of the Philippines", "Environmental Management Act"], answer: 2 },
-  { type: "tf", q: "Under the Water Code, family domestic use requires a water permit.", answer: false },
   { type: "mc", q: "Which executive order created the WRMO under DENR in 2023?", options: ["EO 123", "EO 860", "EO 22", "EO 124-A"], answer: 2 },
-  { type: "tf", q: "97.2% of global water is fresh water.", answer: false },
   { type: "mc", q: "SDG 6.2 specifically targets:", options: ["Water-use efficiency", "IWRM implementation", "End open defecation and sanitation access", "Protection of water ecosystems"], answer: 2 },
-  { type: "tf", q: "The NWRB Board is chaired by the Secretary of the DENR.", answer: true },
   { type: "mc", q: "A water right is best described as:", options: ["An inherited property right", "A privilege granted by the government to appropriate water", "A constitutional guarantee for all citizens", "A treaty obligation under international law"], answer: 1 },
+  { type: "mc", q: "What percentage of global water is fresh water?", options: ["10.5%", "2.8%", "15.2%", "5.0%"], answer: 1 },
+  // True or False (5)
+  { type: "tf", q: "The NWRB's mission is to manage water resources within the framework of IWRM.", answer: true },
+  { type: "tf", q: "Under the Water Code, family domestic use requires a water permit.", answer: false },
+  { type: "tf", q: "97.2% of global water is fresh water.", answer: false },
+  { type: "tf", q: "The NWRB Board is chaired by the Secretary of the DENR.", answer: true },
   { type: "tf", q: "Water is the only substance found naturally in three physical forms.", answer: true },
+  // Fill in the Blank (5) — simplified
+  { type: "fitb", q: "The official vision of the NWRB is: 'Sustainable _____ for a Healthy Nation.'", answer: "water" },
+  { type: "fitb", q: "According to the Water Code, all waters belong to the _____.", answer: "state" },
+  { type: "fitb", q: "SDG stands for Sustainable Development _____.", answer: "goals" },
+  { type: "fitb", q: "The Water Code of the Philippines is Presidential Decree _____.", answer: "1067" },
+  { type: "fitb", q: "Humans can survive only _____ days without water.", answer: "3" },
+  // Select 3 / Multi-select (4)
+  { type: "multi", q: "Which of the following are among the 5 P's of the 2030 Agenda? (Select 3)", options: ["People", "Power", "Planet", "Prosperity", "Progress"], answer: [0, 2, 3] },
+  { type: "multi", q: "Which of the following are SDG 6 targets? (Select 3)", options: ["Safe drinking water", "Zero hunger", "End open defecation", "Renewable energy", "Protect water ecosystems"], answer: [0, 2, 4] },
+  { type: "multi", q: "Which of the following are permitted water uses under the Water Code? (Select 3)", options: ["Irrigation", "Mining exports", "Power Generation", "Livestock Raising", "Space research"], answer: [0, 2, 3] },
+  { type: "multi", q: "Which of the following are core functional areas of the NWRB? (Select 3)", options: ["Policy Formulation", "Military Coordination", "Resource Regulation", "Economic Regulation", "Land Surveying"], answer: [0, 2, 3] },
+  { type: "mc", q: "What does CPC stand for in the context of NWRB economic regulation?", options: ["Central Planning Coordination", "Certificate of Public Convenience", "Community Protection Charter", "Comprehensive Permit Clearance"], answer: 1 },
+  { type: "tf", q: "The NWRB grants a Certificate of Public Convenience (CPC) to private water service providers.", answer: true },
 ];
+
+const TOTAL_ITEMS = FINAL_QUIZ.length;
 
 const FLASHCARDS = [
   { q: "Which Sustainable Development Goal specifically targets clean water and sanitation for all?", a: "SDG Goal 6" },
@@ -106,8 +141,8 @@ const FLASHCARDS = [
   { q: "Presidential Decree 1067, enacted in 1976, is also known as the _____.", a: "Water Code of the Philippines" },
   { q: "Which executive order reconstituted the NWRB Board and transferred it to the DENR in 2002?", a: "Executive Order 123" },
   { q: "Which 2023 executive order created the Water Resources Management Office (WRMO) under the DENR?", a: "Executive Order 22" },
-  { q: "Who serves as the Chairperson of the NWRB Board?", a: "The Secretary of the Department of Environment and Natural Resources (DENR)." },
-  { q: "Who serves as the Vice-Chairperson of the NWRB Board?", a: "The Director-General of the National Economic and Development Authority (NEDA)." },
+  { q: "Who serves as the Chairperson of the NWRB Board?", a: "The Secretary of the DENR." },
+  { q: "Who serves as the Vice-Chairperson of the NWRB Board?", a: "The Director-General of NEDA." },
   { q: "What are the three core functional areas of the NWRB?", a: "Policy Formulation and Coordination, Resource Regulation, and Economic Regulation." },
   { q: "The NWRB performs 'Economic Regulation' by setting water _____ for private water providers.", a: "Tariffs" },
   { q: "What is the primary objective of the National Water Security Roadmap (NWSSR)?", a: "To ensure water is available for the present and future generation of Filipinos." },
@@ -135,8 +170,7 @@ const FLASHCARDS = [
 ];
 
 // ── STORAGE ───────────────────────────────────────────────────────────────────
-
-const KEY = "wrm_v2";
+const KEY = "wrm_v3";
 function loadP() {
   try { const r = localStorage.getItem(KEY); return r ? JSON.parse(r) : { completed: {}, scores: {}, finalDone: false, finalScore: null }; }
   catch { return { completed: {}, scores: {}, finalDone: false, finalScore: null }; }
@@ -150,7 +184,6 @@ function shuffle(arr) {
 }
 
 // ── APP ───────────────────────────────────────────────────────────────────────
-
 export default function App() {
   const [prog, setProg] = useState(loadP);
   const [view, setView] = useState("home");
@@ -163,6 +196,7 @@ export default function App() {
   if (view === "module") return <ModuleView mod={MODULES[modIdx]} prog={prog} update={update} onBack={() => setView("home")} />;
   if (view === "final") return <FinalQuizView prog={prog} update={update} onBack={() => setView("home")} />;
   if (view === "flashcards") return <FlashcardsView onBack={() => setView("home")} />;
+  if (view === "leaderboard") return <LeaderboardView onBack={() => setView("home")} />;
 
   return (
     <div className="page">
@@ -181,7 +215,6 @@ export default function App() {
           </div>
         </header>
 
-        {/* Modules */}
         <div className="section-label">📚 Learning Modules</div>
         <div className="module-grid">
           {MODULES.map((mod, i) => {
@@ -204,7 +237,6 @@ export default function App() {
           })}
         </div>
 
-        {/* Flashcards section */}
         <div className="section-label" style={{ marginTop: 28 }}>🃏 Flashcard Review</div>
         <button className="flashcard-banner" onClick={() => setView("flashcards")}>
           <div className="fc-left">
@@ -217,22 +249,395 @@ export default function App() {
           <div className="fc-arrow">→</div>
         </button>
 
-        {/* Final quiz */}
         <div className="section-label" style={{ marginTop: 28 }}>🏆 Assessment</div>
-        <button className="final-card" style={{ opacity: allDone ? 1 : 0.4, cursor: allDone ? "pointer" : "not-allowed" }}
-          onClick={() => allDone && setView("final")}>
+        <button className="final-card" style={{ opacity: (allDone && !prog.finalDone) ? 1 : 0.4, cursor: (allDone && !prog.finalDone) ? "pointer" : "not-allowed" }}
+          onClick={() => (allDone && !prog.finalDone) && setView("final")}>
           <span style={{ fontSize: 28 }}>🏆</span>
           <span className="final-title">Final Assessment</span>
-          <span className="final-sub">{allDone ? "10-item comprehensive quiz — Mixed format" : "Complete all 6 modules to unlock"}</span>
-          {prog.finalDone && <span style={{ color: "#34d399", fontSize: 13, fontWeight: 600 }}>Last score: {prog.finalScore}/10</span>}
+          <span className="final-sub">
+            {!allDone ? "Complete all 6 modules to unlock"
+              : prog.finalDone ? "Assessment already submitted — cannot retake"
+              : `${TOTAL_ITEMS}-item quiz — MC, True/False, Fill in the Blank, Multi-select`}
+          </span>
+          {prog.finalDone && <span style={{ color: "#34d399", fontSize: 13, fontWeight: 600 }}>Your score: {prog.finalScore}/{TOTAL_ITEMS}</span>}
+        </button>
+
+        {/* Leaderboard — unlocked after final assessment */}
+        <div className="section-label" style={{ marginTop: 28 }}>📊 Student Results</div>
+        <button className="leaderboard-card" style={{ opacity: prog.finalDone ? 1 : 0.35, cursor: prog.finalDone ? "pointer" : "not-allowed" }}
+          onClick={() => prog.finalDone && setView("leaderboard")}>
+          <div className="fc-left">
+            <div className="fc-icon" style={{ background: "rgba(251,191,36,0.15)", color: "#fbbf24" }}>📊</div>
+            <div>
+              <div className="fc-title" style={{ color: "#fbbf24" }}>View All Results</div>
+              <div className="fc-sub">{prog.finalDone ? "See how all students scored" : "Complete the Final Assessment to unlock"}</div>
+            </div>
+          </div>
+          <div className="fc-arrow" style={{ color: "#fbbf24" }}>→</div>
         </button>
       </div>
     </div>
   );
 }
 
-// ── FLASHCARDS VIEW ───────────────────────────────────────────────────────────
+// ── FINAL QUIZ ────────────────────────────────────────────────────────────────
 
+// Shuffle MC options and remap answer index
+function shuffleQuestion(q) {
+  if (q.type !== "mc") return q;
+  const indexed = q.options.map((opt, i) => ({ opt, i }));
+  const shuffled = shuffle(indexed);
+  const newOptions = shuffled.map(x => x.opt);
+  const newAnswer = shuffled.findIndex(x => x.i === q.answer);
+  return { ...q, options: newOptions, answer: newAnswer };
+}
+
+function FinalQuizView({ prog, update, onBack }) {
+  // Shuffle all questions (and MC options) once on mount
+  const [quiz] = useState(() => shuffle(FINAL_QUIZ.map(shuffleQuestion)));
+  const [qi, setQi] = useState(0);
+  const [answers, setAnswers] = useState({});
+  const [confirmed, setConfirmed] = useState(false);
+  const [done, setDone] = useState(false);
+  const [finalScore, setFinalScore] = useState(0);
+  const [fitbVal, setFitbVal] = useState("");
+  // Name submission
+  const [name, setName] = useState("");
+  const [nameLocked, setNameLocked] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState("");
+
+  const q = quiz[qi];
+  const sel = answers[qi];
+
+  const isCorrect = (q, a) => {
+    if (q.type === "mc") return a === q.answer;
+    if (q.type === "tf") return a === (q.answer ? 0 : 1);
+    if (q.type === "fitb") return typeof a === "string" && a.trim().toLowerCase() === q.answer.toLowerCase();
+    if (q.type === "multi") {
+      if (!Array.isArray(a)) return false;
+      const sorted = [...a].sort().join(",");
+      const correctSorted = [...q.answer].sort().join(",");
+      return sorted === correctSorted;
+    }
+    return false;
+  };
+
+  const toggleMulti = (i) => {
+    if (confirmed) return;
+    const cur = answers[qi] || [];
+    const exists = cur.includes(i);
+    const updated = exists ? cur.filter(x => x !== i) : cur.length < 3 ? [...cur, i] : cur;
+    setAnswers(a => ({ ...a, [qi]: updated }));
+  };
+
+  const canConfirm = () => {
+    if (q.type === "fitb") return fitbVal.trim().length > 0;
+    if (q.type === "multi") return (answers[qi] || []).length === 3;
+    return sel !== undefined;
+  };
+
+  const confirm = () => {
+    if (!canConfirm()) return;
+    let ans = sel;
+    if (q.type === "fitb") ans = fitbVal;
+    if (q.type === "multi") ans = answers[qi];
+    setAnswers(a => ({ ...a, [qi]: ans }));
+    setConfirmed(true);
+  };
+
+  const next = () => {
+    if (qi + 1 >= FINAL_QUIZ.length) {
+      const total = quiz.reduce((acc, q, i) => acc + (isCorrect(q, answers[i]) ? 1 : 0), 0);
+      setFinalScore(total);
+      update({ ...prog, finalDone: true, finalScore: total });
+      setDone(true);
+    } else {
+      setQi(i => i + 1);
+      setConfirmed(false);
+      setFitbVal("");
+    }
+  };
+
+  const handleSaveName = async () => {
+    if (!name.trim()) return;
+    setSaving(true);
+    setSaveError("");
+    try {
+      await addDoc(collection(db, "test_score"), {
+        name: name.trim(),
+        score: finalScore,
+        total: TOTAL_ITEMS,
+        year: new Date().getFullYear(),
+        timestamp: new Date().toISOString(),
+      });
+      setNameLocked(true);
+      setSaved(true);
+    } catch (e) {
+      setSaveError("Failed to save. Please try again.");
+    }
+    setSaving(false);
+  };
+
+  if (done) {
+    const pct = Math.round((finalScore / TOTAL_ITEMS) * 100);
+    return (
+      <div className="page"><GlobalStyles />
+        <div className="inner-wrap">
+          <div className="done-box" style={{ marginTop: 32 }}>
+            <div style={{ fontSize: 52, marginBottom: 12 }}>{pct >= 80 ? "🏆" : pct >= 60 ? "🌊" : "📚"}</div>
+            <div className="done-title">Assessment Complete!</div>
+            <div className="done-score" style={{ color: pct >= 80 ? "#34d399" : pct >= 60 ? "#fbbf24" : "#f87171" }}>
+              {finalScore}<span style={{ fontSize: 24, color: "#475569" }}>/{TOTAL_ITEMS}</span>
+            </div>
+            <div className="done-sub" style={{ marginBottom: 28 }}>{pct}% — {pct >= 80 ? "Excellent!" : pct >= 60 ? "Good Job!" : "Keep Studying!"}</div>
+
+            {/* Name input */}
+            <div style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 14, padding: "20px 18px", marginBottom: 16, textAlign: "left" }}>
+              <div style={{ fontSize: 12, color: "#94a3b8", marginBottom: 10, fontWeight: 600 }}>
+                📝 Enter your full name to save your result
+              </div>
+              {!nameLocked ? (
+                <>
+                  <div style={{ fontSize: 11, color: "#f87171", marginBottom: 10, lineHeight: 1.5 }}>
+                    ⚠️ Warning: Once submitted, your name cannot be changed.
+                  </div>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <input
+                      className="name-input"
+                      type="text"
+                      placeholder="Enter your full name..."
+                      value={name}
+                      onChange={e => setName(e.target.value)}
+                      onKeyDown={e => e.key === "Enter" && handleSaveName()}
+                    />
+                    <button className="btn primary" style={{ background: name.trim() ? "#34d399" : "rgba(255,255,255,0.05)", color: name.trim() ? "#0f172a" : "#475569", whiteSpace: "nowrap", padding: "11px 16px" }}
+                      onClick={handleSaveName} disabled={saving || !name.trim()}>
+                      {saving ? "Saving..." : "Submit"}
+                    </button>
+                  </div>
+                  {saveError && <div style={{ fontSize: 12, color: "#f87171", marginTop: 8 }}>{saveError}</div>}
+                </>
+              ) : (
+                <div style={{ color: "#34d399", fontSize: 14, fontWeight: 600 }}>
+                  ✓ Score saved for <strong>{name}</strong>!
+                </div>
+              )}
+            </div>
+
+            <button className="btn primary" style={{ background: "#fbbf24", color: "#0f172a", width: "100%" }} onClick={onBack}>← Back to Home</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const typeLabel = { mc: "Multiple Choice", tf: "True or False", fitb: "Fill in the Blank", multi: "Select 3 Correct Answers" };
+
+  return (
+    <div className="page"><GlobalStyles />
+      <div className="inner-wrap">
+        <button className="back-btn" onClick={onBack}>← Back to Home</button>
+        <div className="mod-header" style={{ borderColor: "#fbbf2433" }}>
+          <div className="mod-icon lg" style={{ background: "#fbbf2422", color: "#fbbf24" }}>🏆</div>
+          <div>
+            <div className="mod-label" style={{ color: "#fbbf24" }}>Final Assessment</div>
+            <div className="mod-header-title">Comprehensive Quiz</div>
+            <div className="mod-header-sub">Question {qi + 1} of {TOTAL_ITEMS}</div>
+          </div>
+        </div>
+        <div style={{ height: 3, background: "rgba(255,255,255,0.06)", borderRadius: 2, marginBottom: 20 }}>
+          <div style={{ height: "100%", width: `${(qi / TOTAL_ITEMS) * 100}%`, background: "linear-gradient(90deg,#fbbf24,#fb923c)", borderRadius: 2, transition: "width .4s" }} />
+        </div>
+
+        <div className="quiz-box">
+          <div className="quiz-label" style={{ color: "#fbbf24" }}>{typeLabel[q.type]}</div>
+          <div className="quiz-q">{q.q}</div>
+
+          {/* Multiple Choice */}
+          {q.type === "mc" && (
+            <div className="options">
+              {q.options.map((opt, i) => {
+                let cls = "opt";
+                if (confirmed) { if (i === q.answer) cls += " correct"; else if (i === sel) cls += " wrong"; }
+                else if (sel === i) cls += " selected";
+                return (
+                  <button key={i} className={cls} style={{ "--c": "#fbbf24" }} onClick={() => !confirmed && setAnswers(a => ({ ...a, [qi]: i }))}>
+                    <span className="opt-letter">{["A","B","C","D"][i]}</span>{opt}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {/* True or False */}
+          {q.type === "tf" && (
+            <div className="options tf-row">
+              {["True","False"].map((label, i) => {
+                const correct = q.answer === (i === 0);
+                let cls = "opt tf";
+                if (confirmed) { if (correct) cls += " correct"; else if (i === sel) cls += " wrong"; }
+                else if (sel === i) cls += " selected";
+                return (
+                  <button key={i} className={cls} style={{ "--c": "#fbbf24" }} onClick={() => !confirmed && setAnswers(a => ({ ...a, [qi]: i }))}>
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Fill in the Blank */}
+          {q.type === "fitb" && (
+            <div style={{ marginBottom: 18 }}>
+              <input
+                className="name-input"
+                type="text"
+                placeholder="Type your answer here..."
+                value={fitbVal}
+                onChange={e => !confirmed && setFitbVal(e.target.value)}
+                onKeyDown={e => e.key === "Enter" && !confirmed && confirm()}
+                style={{ opacity: confirmed ? 0.7 : 1 }}
+              />
+              {confirmed && (
+                <div style={{ marginTop: 8, fontSize: 13, color: isCorrect(q, fitbVal) ? "#34d399" : "#94a3b8" }}>
+                  {isCorrect(q, fitbVal) ? "" : `Correct answer: "${q.answer}"`}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Multi-select (Select 3) */}
+          {q.type === "multi" && (
+            <div className="options">
+              {q.options.map((opt, i) => {
+                const curSel = answers[qi] || [];
+                const isSelected = curSel.includes(i);
+                const isCorrectOpt = q.answer.includes(i);
+                let cls = "opt";
+                if (confirmed) {
+                  if (isCorrectOpt) cls += " correct";
+                  else if (isSelected) cls += " wrong";
+                } else if (isSelected) cls += " selected";
+                return (
+                  <button key={i} className={cls} style={{ "--c": "#fbbf24" }} onClick={() => toggleMulti(i)}>
+                    <span className="opt-letter" style={{ background: isSelected && !confirmed ? "#fbbf2433" : undefined }}>
+                      {isSelected ? "✓" : ["A","B","C","D","E"][i]}
+                    </span>
+                    {opt}
+                  </button>
+                );
+              })}
+              <div style={{ fontSize: 11, color: "#475569", marginTop: 4 }}>
+                {(answers[qi] || []).length}/3 selected
+              </div>
+            </div>
+          )}
+
+          {/* Feedback */}
+          {confirmed && (
+            <div className={`feedback ${isCorrect(q, q.type === "fitb" ? fitbVal : answers[qi]) ? "correct" : "wrong"}`}>
+              {isCorrect(q, q.type === "fitb" ? fitbVal : answers[qi])
+                ? "✓ Correct!"
+                : q.type === "mc" ? `✗ Correct answer: ${q.options[q.answer]}`
+                : q.type === "tf" ? `✗ Correct answer: ${q.answer ? "True" : "False"}`
+                : q.type === "multi" ? `✗ Correct answers: ${q.answer.map(i => q.options[i]).join(", ")}`
+                : ""}
+            </div>
+          )}
+
+          {!confirmed
+            ? <button className="btn primary" style={{ background: canConfirm() ? "#fbbf24" : "rgba(255,255,255,0.05)", color: canConfirm() ? "#0f172a" : "#475569", width: "100%" }} onClick={confirm}>
+                Check Answer
+              </button>
+            : <button className="btn primary" style={{ background: "#fbbf24", color: "#0f172a", width: "100%" }} onClick={next}>
+                {qi + 1 < TOTAL_ITEMS ? "Next Question →" : "See Results →"}
+              </button>
+          }
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── LEADERBOARD ───────────────────────────────────────────────────────────────
+function LeaderboardView({ onBack }) {
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetch = async () => {
+      try {
+        const q = query(collection(db, "test_score"), orderBy("score", "desc"));
+        const snap = await getDocs(q);
+        const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        setResults(data);
+      } catch (e) {
+        setError("Could not load results. Check your connection.");
+      }
+      setLoading(false);
+    };
+    fetch();
+  }, []);
+
+  const medals = ["🥇", "🥈", "🥉"];
+
+  return (
+    <div className="page"><GlobalStyles />
+      <div className="inner-wrap">
+        <button className="back-btn" onClick={onBack}>← Back to Home</button>
+        <div className="mod-header" style={{ borderColor: "#fbbf2433" }}>
+          <div className="mod-icon lg" style={{ background: "#fbbf2422", color: "#fbbf24" }}>📊</div>
+          <div>
+            <div className="mod-label" style={{ color: "#fbbf24" }}>Student Results</div>
+            <div className="mod-header-title">Leaderboard</div>
+            <div className="mod-header-sub">{loading ? "Loading..." : `${results.length} submissions`}</div>
+          </div>
+        </div>
+
+        {loading && <div style={{ textAlign: "center", color: "#475569", padding: 40 }}>Loading results...</div>}
+        {error && <div style={{ textAlign: "center", color: "#f87171", padding: 20, fontSize: 14 }}>{error}</div>}
+        {!loading && !error && results.length === 0 && (
+          <div style={{ textAlign: "center", color: "#475569", padding: 40, fontSize: 14 }}>No results yet.</div>
+        )}
+
+        {!loading && results.length > 0 && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {results.map((r, i) => {
+              const pct = Math.round((r.score / (r.total || TOTAL_ITEMS)) * 100);
+              return (
+                <div key={r.id} style={{
+                  display: "flex", alignItems: "center", gap: 14,
+                  background: i < 3 ? "rgba(251,191,36,0.06)" : "rgba(255,255,255,0.03)",
+                  border: `1px solid ${i < 3 ? "rgba(251,191,36,0.2)" : "rgba(255,255,255,0.07)"}`,
+                  borderRadius: 12, padding: "14px 16px",
+                }}>
+                  <div style={{ fontSize: i < 3 ? 22 : 14, width: 28, textAlign: "center", color: "#475569", fontWeight: 700 }}>
+                    {i < 3 ? medals[i] : `${i + 1}`}
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 15, fontWeight: 700, color: "#e2e8f0" }}>{r.name}</div>
+                    <div style={{ fontSize: 11, color: "#475569" }}>{r.year || new Date(r.timestamp).getFullYear()}</div>
+                  </div>
+                  <div style={{ textAlign: "right" }}>
+                    <div style={{ fontSize: 18, fontWeight: 800, color: pct >= 80 ? "#34d399" : pct >= 60 ? "#fbbf24" : "#f87171" }}>
+                      {r.score}<span style={{ fontSize: 12, color: "#475569" }}>/{r.total || TOTAL_ITEMS}</span>
+                    </div>
+                    <div style={{ fontSize: 11, color: "#475569" }}>{pct}%</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── FLASHCARDS VIEW ───────────────────────────────────────────────────────────
 function FlashcardsView({ onBack }) {
   const [deck, setDeck] = useState(() => shuffle(FLASHCARDS));
   const [index, setIndex] = useState(0);
@@ -264,7 +669,6 @@ function FlashcardsView({ onBack }) {
       <GlobalStyles />
       <div className="inner-wrap">
         <button className="back-btn" onClick={onBack}>← Back to Home</button>
-
         <div className="mod-header" style={{ borderColor: "#a78bfa33" }}>
           <div className="mod-icon lg" style={{ background: "#a78bfa22", color: "#a78bfa" }}>🃏</div>
           <div>
@@ -276,7 +680,6 @@ function FlashcardsView({ onBack }) {
 
         {!done ? (
           <>
-            {/* Progress */}
             <div style={{ marginBottom: 14 }}>
               <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#64748b", marginBottom: 6 }}>
                 <span style={{ color: "#94a3b8" }}>Card {index + 1} of {total}</span>
@@ -286,8 +689,6 @@ function FlashcardsView({ onBack }) {
                 <div style={{ height: "100%", width: `${progress}%`, background: "linear-gradient(90deg,#818cf8,#a78bfa)", borderRadius: 2, transition: "width 0.4s ease" }} />
               </div>
             </div>
-
-            {/* Card */}
             <div className="fc-card-wrap" onClick={() => setFlipped(f => !f)}>
               <div className={`fc-inner ${flipped ? "flipped" : ""}`}>
                 <div className="fc-face fc-front">
@@ -301,19 +702,14 @@ function FlashcardsView({ onBack }) {
                 </div>
               </div>
             </div>
-
-            {/* Buttons */}
             <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
               {flipped ? (
                 <>
-                  <button className="btn ghost fc-action" style={{ flex: 1, color: "#f87171", borderColor: "rgba(248,113,113,0.3)", background: "rgba(248,113,113,0.08)" }}
-                    onClick={() => goNext("review")}>✗ Still Learning</button>
-                  <button className="btn ghost fc-action" style={{ flex: 1, color: "#34d399", borderColor: "rgba(52,211,153,0.3)", background: "rgba(52,211,153,0.08)" }}
-                    onClick={() => goNext("know")}>✓ Got It</button>
+                  <button className="btn ghost fc-action" style={{ flex: 1, color: "#f87171", borderColor: "rgba(248,113,113,0.3)", background: "rgba(248,113,113,0.08)" }} onClick={() => goNext("review")}>✗ Still Learning</button>
+                  <button className="btn ghost fc-action" style={{ flex: 1, color: "#34d399", borderColor: "rgba(52,211,153,0.3)", background: "rgba(52,211,153,0.08)" }} onClick={() => goNext("know")}>✓ Got It</button>
                 </>
               ) : (
-                <button className="btn ghost fc-action" style={{ flex: 1, color: "#818cf8", borderColor: "rgba(129,140,248,0.3)" }}
-                  onClick={() => setFlipped(true)}>Flip Card</button>
+                <button className="btn ghost fc-action" style={{ flex: 1, color: "#818cf8", borderColor: "rgba(129,140,248,0.3)" }} onClick={() => setFlipped(true)}>Flip Card</button>
               )}
             </div>
           </>
@@ -327,12 +723,8 @@ function FlashcardsView({ onBack }) {
               <div style={{ textAlign: "center" }}><div style={{ fontSize: 28, fontWeight: 800, color: "#a78bfa" }}>{Math.round((known.size / total) * 100)}%</div><div style={{ fontSize: 11, color: "#64748b", letterSpacing: 1, textTransform: "uppercase" }}>Score</div></div>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {unknown.size > 0 && (
-                <button className="btn ghost fc-action" style={{ color: "#fbbf24", borderColor: "rgba(251,191,36,0.3)", background: "rgba(251,191,36,0.08)" }}
-                  onClick={() => restart(true)}>↺ Review Missed ({unknown.size})</button>
-              )}
-              <button className="btn ghost fc-action" style={{ color: "#a78bfa", borderColor: "rgba(167,139,250,0.3)" }}
-                onClick={() => restart(false)}>↺ Restart All Cards</button>
+              {unknown.size > 0 && <button className="btn ghost fc-action" style={{ color: "#fbbf24", borderColor: "rgba(251,191,36,0.3)", background: "rgba(251,191,36,0.08)" }} onClick={() => restart(true)}>↺ Review Missed ({unknown.size})</button>}
+              <button className="btn ghost fc-action" style={{ color: "#a78bfa", borderColor: "rgba(167,139,250,0.3)" }} onClick={() => restart(false)}>↺ Restart All Cards</button>
             </div>
           </div>
         )}
@@ -342,7 +734,6 @@ function FlashcardsView({ onBack }) {
 }
 
 // ── MODULE VIEW ───────────────────────────────────────────────────────────────
-
 function ModuleView({ mod, prog, update, onBack }) {
   const [ch, setCh] = useState(0);
   const [phase, setPhase] = useState("learn");
@@ -424,6 +815,11 @@ function ModuleView({ mod, prog, update, onBack }) {
                 );
               })}
             </div>
+            {confirmed && (
+              <div className={`feedback ${sel === q.answer ? "correct" : "wrong"}`}>
+                {sel === q.answer ? "✓ Correct!" : `✗ Correct answer: ${q.options[q.answer]}`}
+              </div>
+            )}
             {!confirmed
               ? <button className="btn primary" style={{ background: sel !== null ? mod.color : "rgba(255,255,255,0.05)", color: sel !== null ? "#0f172a" : "#475569" }} onClick={confirm}>Check Answer</button>
               : <button className="btn primary" style={{ background: mod.color, color: "#0f172a" }} onClick={next}>{qi + 1 < mod.quiz.length ? "Next Question →" : "Finish →"}</button>
@@ -445,110 +841,7 @@ function ModuleView({ mod, prog, update, onBack }) {
   );
 }
 
-// ── FINAL QUIZ ────────────────────────────────────────────────────────────────
-
-function FinalQuizView({ prog, update, onBack }) {
-  const [qi, setQi] = useState(0);
-  const [answers, setAnswers] = useState({});
-  const [confirmed, setConfirmed] = useState(false);
-  const [done, setDone] = useState(false);
-  const [finalScore, setFinalScore] = useState(0);
-
-  const q = FINAL_QUIZ[qi];
-  const sel = answers[qi];
-  const isCorrect = (q, a) => q.type === "mc" ? a === q.answer : a === (q.answer ? 0 : 1);
-
-  const confirm = () => { if (sel === undefined) return; setConfirmed(true); };
-
-  const next = () => {
-    if (qi + 1 >= FINAL_QUIZ.length) {
-      const total = FINAL_QUIZ.reduce((a, q, i) => a + (isCorrect(q, answers[i]) ? 1 : 0), 0);
-      setFinalScore(total);
-      update({ ...prog, finalDone: true, finalScore: total });
-      setDone(true);
-    } else { setQi(i => i + 1); setConfirmed(false); }
-  };
-
-  if (done) {
-    const pct = Math.round((finalScore / 10) * 100);
-    return (
-      <div className="page"><GlobalStyles />
-        <div className="inner-wrap">
-          <div className="done-box" style={{ marginTop: 48 }}>
-            <div style={{ fontSize: 52, marginBottom: 12 }}>{pct >= 80 ? "🏆" : pct >= 60 ? "🌊" : "📚"}</div>
-            <div className="done-title">Assessment Complete!</div>
-            <div className="done-score" style={{ color: pct >= 80 ? "#34d399" : pct >= 60 ? "#fbbf24" : "#f87171", fontSize: 56 }}>{finalScore}<span style={{ fontSize: 24, color: "#475569" }}>/10</span></div>
-            <div className="done-sub">{pct}% — {pct >= 80 ? "Excellent!" : pct >= 60 ? "Good Job!" : "Keep Studying!"}</div>
-            <button className="btn primary" style={{ background: "#fbbf24", color: "#0f172a", marginTop: 24 }} onClick={onBack}>← Back to Home</button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="page"><GlobalStyles />
-      <div className="inner-wrap">
-        <button className="back-btn" onClick={onBack}>← Back to Home</button>
-        <div className="mod-header" style={{ borderColor: "#fbbf2433" }}>
-          <div className="mod-icon lg" style={{ background: "#fbbf2422", color: "#fbbf24" }}>🏆</div>
-          <div>
-            <div className="mod-label" style={{ color: "#fbbf24" }}>Final Assessment</div>
-            <div className="mod-header-title">Comprehensive Quiz</div>
-            <div className="mod-header-sub">Question {qi + 1} of {FINAL_QUIZ.length}</div>
-          </div>
-        </div>
-        <div style={{ height: 3, background: "rgba(255,255,255,0.06)", borderRadius: 2, marginBottom: 20 }}>
-          <div style={{ height: "100%", width: `${(qi / FINAL_QUIZ.length) * 100}%`, background: "linear-gradient(90deg,#fbbf24,#fb923c)", borderRadius: 2, transition: "width .4s" }} />
-        </div>
-        <div className="quiz-box">
-          <div className="quiz-label" style={{ color: "#fbbf24" }}>{q.type === "tf" ? "True or False" : "Multiple Choice"}</div>
-          <div className="quiz-q">{q.q}</div>
-          {q.type === "mc" ? (
-            <div className="options">
-              {q.options.map((opt, i) => {
-                let cls = "opt";
-                if (confirmed) { if (i === q.answer) cls += " correct"; else if (i === sel) cls += " wrong"; }
-                else if (sel === i) cls += " selected";
-                return (
-                  <button key={i} className={cls} style={{ "--c": "#fbbf24" }} onClick={() => !confirmed && setAnswers(a => ({ ...a, [qi]: i }))}>
-                    <span className="opt-letter">{["A","B","C","D"][i]}</span>{opt}
-                  </button>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="options tf-row">
-              {["True","False"].map((label, i) => {
-                const correct = q.answer === (i === 0);
-                let cls = "opt tf";
-                if (confirmed) { if (correct) cls += " correct"; else if (i === sel) cls += " wrong"; }
-                else if (sel === i) cls += " selected";
-                return (
-                  <button key={i} className={cls} style={{ "--c": "#fbbf24" }} onClick={() => !confirmed && setAnswers(a => ({ ...a, [qi]: i }))}>
-                    {label}
-                  </button>
-                );
-              })}
-            </div>
-          )}
-          {confirmed && (
-            <div className={`feedback ${isCorrect(q, sel) ? "correct" : "wrong"}`}>
-              {isCorrect(q, sel) ? "✓ Correct!" : `✗ The correct answer is: ${q.type === "mc" ? q.options[q.answer] : (q.answer ? "True" : "False")}`}
-            </div>
-          )}
-          {!confirmed
-            ? <button className="btn primary" style={{ background: sel !== undefined ? "#fbbf24" : "rgba(255,255,255,0.05)", color: sel !== undefined ? "#0f172a" : "#475569" }} onClick={confirm}>Check Answer</button>
-            : <button className="btn primary" style={{ background: "#fbbf24", color: "#0f172a" }} onClick={next}>{qi + 1 < FINAL_QUIZ.length ? "Next Question →" : "See Results →"}</button>
-          }
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // ── GLOBAL STYLES ─────────────────────────────────────────────────────────────
-
 function GlobalStyles() {
   return (
     <style>{`
@@ -580,22 +873,21 @@ function GlobalStyles() {
       .mod-score { font-size: 11px; margin-top: 8px; font-weight: 600; }
       .mod-arrow { position: absolute; bottom: 16px; right: 16px; font-size: 15px; opacity: 0.4; }
 
-      /* Flashcard banner */
-      .flashcard-banner { width: 100%; background: rgba(167,139,250,0.06); border: 1px solid rgba(167,139,250,0.2); border-radius: 14px; padding: 18px 20px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.2s; }
+      .flashcard-banner, .leaderboard-card { width: 100%; background: rgba(167,139,250,0.06); border: 1px solid rgba(167,139,250,0.2); border-radius: 14px; padding: 18px 20px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.2s; }
+      .leaderboard-card { background: rgba(251,191,36,0.04); border-color: rgba(251,191,36,0.18); }
       .flashcard-banner:hover { background: rgba(167,139,250,0.1); transform: translateY(-1px); }
+      .leaderboard-card:hover { background: rgba(251,191,36,0.08); transform: translateY(-1px); }
       .fc-left { display: flex; align-items: center; gap: 14px; }
       .fc-icon { width: 44px; height: 44px; border-radius: 12px; background: rgba(167,139,250,0.15); color: #a78bfa; font-size: 22px; display: flex; align-items: center; justify-content: center; }
       .fc-title { font-size: 15px; font-weight: 700; color: #e2e8f0; margin-bottom: 2px; }
       .fc-sub { font-size: 12px; color: #64748b; }
       .fc-arrow { font-size: 18px; color: #a78bfa; opacity: 0.6; }
 
-      /* Final card */
       .final-card { width: 100%; background: rgba(251,191,36,0.04); border: 1px solid rgba(251,191,36,0.18); border-radius: 14px; padding: 22px 20px; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: all 0.2s; }
       .final-card:hover { background: rgba(251,191,36,0.08); }
       .final-title { font-size: 16px; font-weight: 700; color: #fbbf24; }
-      .final-sub { font-size: 12px; color: #94a3b8; }
+      .final-sub { font-size: 12px; color: #94a3b8; text-align: center; }
 
-      /* Inner nav */
       .back-btn { background: none; border: none; color: #475569; font-size: 13px; cursor: pointer; padding: 0 0 20px; font-family: inherit; }
       .back-btn:hover { color: #94a3b8; }
       .mod-header { display: flex; align-items: center; gap: 16px; padding: 18px; background: rgba(255,255,255,0.03); border: 1px solid; border-radius: 14px; margin-bottom: 20px; }
@@ -619,7 +911,6 @@ function GlobalStyles() {
       .btn.primary:hover { opacity: 0.88; }
       .fc-action { padding: 13px 16px !important; font-size: 14px !important; }
 
-      /* Flashcard flip */
       .fc-card-wrap { width: 100%; perspective: 1000px; cursor: pointer; margin-bottom: 4px; -webkit-tap-highlight-color: transparent; }
       .fc-inner { position: relative; width: 100%; min-height: 220px; transform-style: preserve-3d; transition: transform 0.42s cubic-bezier(0.4,0,0.2,1); }
       .fc-inner.flipped { transform: rotateY(180deg); }
@@ -638,10 +929,14 @@ function GlobalStyles() {
       .opt.selected { background: color-mix(in srgb, var(--c) 15%, transparent); border-color: var(--c); color: var(--c); }
       .opt.correct { background: rgba(52,211,153,0.14) !important; border-color: #34d399 !important; color: #34d399 !important; }
       .opt.wrong { background: rgba(248,113,113,0.14) !important; border-color: #f87171 !important; color: #f87171 !important; }
-      .opt-letter { width: 22px; height: 22px; border-radius: 5px; background: rgba(255,255,255,0.07); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; }
-      .feedback { padding: 11px 14px; border-radius: 9px; font-size: 13px; margin-bottom: 14px; }
+      .opt-letter { min-width: 22px; height: 22px; border-radius: 5px; background: rgba(255,255,255,0.07); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; }
+      .feedback { padding: 11px 14px; border-radius: 9px; font-size: 13px; margin-bottom: 14px; line-height: 1.5; }
       .feedback.correct { background: rgba(52,211,153,0.1); border: 1px solid #34d39933; color: #34d399; }
       .feedback.wrong { background: rgba(248,113,113,0.1); border: 1px solid #f8717133; color: #f87171; }
+
+      .name-input { width: 100%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; padding: 12px 14px; font-size: 14px; color: #e2e8f0; font-family: inherit; outline: none; transition: border-color 0.2s; }
+      .name-input:focus { border-color: #34d399; }
+      .name-input::placeholder { color: #475569; }
 
       .done-box { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 20px; padding: 44px 28px; text-align: center; }
       .done-title { font-size: 22px; font-weight: 700; color: #e2e8f0; margin-bottom: 8px; }
@@ -654,6 +949,7 @@ function GlobalStyles() {
         .tabs { gap: 4px; }
         .tab { font-size: 10px; padding: 5px 9px; }
         .fc-left { gap: 10px; }
+        .done-box { padding: 32px 18px; }
       }
     `}</style>
   );
