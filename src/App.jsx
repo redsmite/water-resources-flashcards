@@ -44,24 +44,24 @@ const MODULES = [
     id: 3, title: "Legal Mandates", subtitle: "Historical Legislation", icon: "📜", color: "#818cf8",
     chapters: [
       { title: "Key Legislation Timeline", content: "1974 (PD 424) — Creating the National Water Resources Council\n\n1976 (PD 1067) — Enacting the Water Code of the Philippines\n\n1977 (PD 1206) — Assigning residual functions of the Board of Waterworks to NWRB\n\n1987 (EO 124-A) — Renaming the Council to the National Water Resources Board\n\n2002 (EO 123) — Reconstituting the Board and transferring NWRB to the DENR\n\n2010 (EO 860) — Redefining composition and powers of the Board\n\n2023 (EO 22) — Establishing the WRMO under the DENR" },
-      { title: "The NWRB Board", content: "The Board is chaired by the Secretary of the DENR, with the Director-General of NEDA as Vice-Chair.\n\nMembers include the Secretaries of Justice and Science and Technology, and the Executive Director of the UP-National Hydraulics Research Center.\n\nMajor function: Coordinating and regulating all water-related activities in the country." },
+      { title: "The NWRB Board", content: "The Board is chaired by the Secretary of the DENR, with the Director-General of DEPDev (formerly NEDA) as Vice-Chair.\n\nMembers include the Secretaries of Justice and Science and Technology, and the Executive Director of the UP-National Hydraulics Research Center.\n\nMajor function: Coordinating and regulating all water-related activities in the country." },
     ],
     quiz: [
       { q: "Which executive order renamed the National Water Resources Council to the NWRB?", options: ["EO 123", "EO 860", "EO 124-A", "EO 22"], answer: 2 },
-      { q: "Who serves as Chairperson of the NWRB Board?", options: ["Secretary of Justice", "Director-General of NEDA", "Secretary of the DENR", "Executive Director of UP-NHRC"], answer: 2 },
+      { q: "Who serves as Chairperson of the NWRB Board?", options: ["Secretary of Justice", "Director-General of DEPDev (formerly NEDA)", "Secretary of the DENR", "Executive Director of UP-NHRC"], answer: 2 },
     ],
   },
   {
     id: 4, title: "WRMO & IWMP", subtitle: "Water Resources Management Office", icon: "🗂️", color: "#34d399",
     chapters: [
       { title: "Creation of WRMO (EO 22)", content: "Established in April 2023 to presage a full Department of Water Resources, draft the Integrated Water Management Plan (IWMP), and generate maintained water and sanitation data." },
-      { title: "Institutional Structure", content: "The sector involves a complex framework including:\n\n• Watershed Management — FMB, NIA, LGUs\n• Data Collection — PAGASA, MGB\n• Flood Management — DPWH, MMDA\n• Policy Making — NEDA, NWRB" },
+      { title: "Institutional Structure", content: "The sector involves a complex framework including:\n\n• Watershed Management — FMB, NIA, LGUs\n• Data Collection — PAGASA, MGB\n• Flood Management — DPWH, MMDA\n• Policy Making — DEPDev (formerly NEDA), NWRB" },
       { title: "IWMP Framework", content: "The IWMP was prepared by reviewing existing plans such as the National Water Security Roadmap and the Philippine Water Supply and Sanitation Master Plan (2019–2030).\n\nIt focuses on reforming governance and regulations, integrating water security planning, and establishing resource allocation plans.\n\nGood water governance requires empowered institutions and supporting regulatory instruments." },
       { title: "Climate Change Impacts", content: "Climate-Resilient Program: Aimed at incorporating long-term hydrological changes and using advanced technology for improved operations.\n\nKey impacts in Philippine ecosystems:\n• Extreme heat and drought\n• Extreme rainfall and flooding\n• Sea level rise\n• Crop damage, soil deterioration, and loss of biodiversity" },
     ],
     quiz: [
       { q: "What was the WRMO established to draft?", options: ["National Climate Adaptation Plan", "Integrated Water Management Plan (IWMP)", "Philippine Water Tariff Framework", "National Sanitation Roadmap"], answer: 1 },
-      { q: "Which agency is primarily responsible for flood management?", options: ["PAGASA and MGB", "FMB and NIA", "DPWH and MMDA", "NEDA and NWRB"], answer: 2 },
+      { q: "Which agency is primarily responsible for flood management?", options: ["PAGASA and MGB", "FMB and NIA", "DPWH and MMDA", "DEPDev (formerly NEDA) and NWRB"], answer: 2 },
     ],
   },
   {
@@ -142,7 +142,7 @@ const FLASHCARDS = [
   { q: "Which executive order reconstituted the NWRB Board and transferred it to the DENR in 2002?", a: "Executive Order 123" },
   { q: "Which 2023 executive order created the Water Resources Management Office (WRMO) under the DENR?", a: "Executive Order 22" },
   { q: "Who serves as the Chairperson of the NWRB Board?", a: "The Secretary of the DENR." },
-  { q: "Who serves as the Vice-Chairperson of the NWRB Board?", a: "The Director-General of NEDA." },
+  { q: "Who serves as the Vice-Chairperson of the NWRB Board?", a: "The Director-General of DEPDev (formerly NEDA)." },
   { q: "What are the three core functional areas of the NWRB?", a: "Policy Formulation and Coordination, Resource Regulation, and Economic Regulation." },
   { q: "The NWRB performs 'Economic Regulation' by setting water _____ for private water providers.", a: "Tariffs" },
   { q: "What is the primary objective of the National Water Security Roadmap (NWSSR)?", a: "To ensure water is available for the present and future generation of Filipinos." },
