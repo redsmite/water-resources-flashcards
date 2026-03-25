@@ -117,7 +117,7 @@ const FINAL_QUIZ = [
   { type: "fitb", q: "Humans can survive only _____ days without water.", answer: "3" },
   // Select 3 / Multi-select (4)
   { type: "multi", q: "Which of the following are among the 5 P's of the 2030 Agenda? (Select 3)", options: ["People", "Power", "Planet", "Prosperity", "Progress"], answer: [0, 2, 3] },
-  { type: "multi", q: "Which of the following are SDG 6 targets? (Select 3)", options: ["Safe drinking water", "Zero hunger", "End open defecation", "Renewable energy", "Protect water ecosystems"], answer: [0, 2, 4] },
+  { type: "multi", q: "Which of the following are SDG 6 targets? (Select 3)", options: ["Safe drinking water (6.1)", "Zero hunger (2.1)", "End open defecation (6.2)", "Renewable energy (7.2)", "Protect water ecosystems (6.6)"], answer: [0, 2, 4] },
   { type: "multi", q: "Which of the following are permitted water uses under the Water Code? (Select 3)", options: ["Irrigation", "Mining exports", "Power Generation", "Livestock Raising", "Space research"], answer: [0, 2, 3] },
   { type: "multi", q: "Which of the following are core functional areas of the NWRB? (Select 3)", options: ["Policy Formulation", "Military Coordination", "Resource Regulation", "Economic Regulation", "Land Surveying"], answer: [0, 2, 3] },
   { type: "mc", q: "What does CPC stand for in the context of NWRB economic regulation?", options: ["Central Planning Coordination", "Certificate of Public Convenience", "Community Protection Charter", "Comprehensive Permit Clearance"], answer: 1 },
@@ -197,6 +197,7 @@ export default function App() {
   if (view === "final") return <FinalQuizView prog={prog} update={update} onBack={() => setView("home")} />;
   if (view === "flashcards") return <FlashcardsView onBack={() => setView("home")} />;
   if (view === "leaderboard") return <LeaderboardView onBack={() => setView("home")} />;
+  if (view === "assessor") return <AssessorView onBack={() => setView("home")} />;
 
   return (
     <div className="page">
@@ -262,6 +263,20 @@ export default function App() {
           {prog.finalDone && <span style={{ color: "#34d399", fontSize: 13, fontWeight: 600 }}>Your score: {prog.finalScore}/{TOTAL_ITEMS}</span>}
         </button>
 
+        {/* Assessor page */}
+        <div className="section-label" style={{ marginTop: 28 }}>🔎 Assessor</div>
+        <button className="leaderboard-card" style={{ opacity: 1, cursor: "pointer", borderColor: "rgba(129,140,248,0.2)", background: "rgba(129,140,248,0.04)" }}
+          onClick={() => setView("assessor")}>
+          <div className="fc-left">
+            <div className="fc-icon" style={{ background: "rgba(129,140,248,0.15)", color: "#818cf8" }}>🔎</div>
+            <div>
+              <div className="fc-title" style={{ color: "#818cf8" }}>Assessor Dashboard</div>
+              <div className="fc-sub">View and manage all student results</div>
+            </div>
+          </div>
+          <div className="fc-arrow" style={{ color: "#818cf8" }}>→</div>
+        </button>
+
         {/* Leaderboard — unlocked after final assessment */}
         <div className="section-label" style={{ marginTop: 28 }}>📊 Student Results</div>
         <button className="leaderboard-card" style={{ opacity: prog.finalDone ? 1 : 0.35, cursor: prog.finalDone ? "pointer" : "not-allowed" }}
@@ -295,6 +310,7 @@ function shuffleQuestion(q) {
 function FinalQuizView({ prog, update, onBack }) {
   // Shuffle all questions (and MC options) once on mount
   const [quiz] = useState(() => shuffle(FINAL_QUIZ.map(shuffleQuestion)));
+  const [started, setStarted] = useState(false);
   const [qi, setQi] = useState(0);
   const [answers, setAnswers] = useState({});
   const [confirmed, setConfirmed] = useState(false);
@@ -379,6 +395,38 @@ function FinalQuizView({ prog, update, onBack }) {
     }
     setSaving(false);
   };
+
+  // Exam intro screen
+  if (!started) {
+    return (
+      <div className="exam-page"><GlobalStyles />
+        <div className="inner-wrap" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "100vh", paddingTop: 0 }}>
+          <div className="exam-intro-card">
+            <div style={{ fontSize: 52, marginBottom: 16 }}>📋</div>
+            <div style={{ fontSize: 11, letterSpacing: 3, color: "#f87171", textTransform: "uppercase", marginBottom: 8, fontWeight: 700 }}>Official Examination</div>
+            <h1 style={{ fontSize: "clamp(22px,5vw,32px)", fontWeight: 800, color: "#e2e8f0", marginBottom: 12, lineHeight: 1.2 }}>Final Assessment</h1>
+            <p style={{ fontSize: 14, color: "#94a3b8", lineHeight: 1.7, marginBottom: 24, maxWidth: 420 }}>
+              Water Resources Management — Comprehensive Exam
+            </p>
+            <div className="exam-rules">
+              <div className="exam-rule">📌 <span>This exam has <strong style={{color:"#e2e8f0"}}>{TOTAL_ITEMS} questions</strong> — Multiple Choice, True/False, Fill in the Blank, and Multi-select.</span></div>
+              <div className="exam-rule">⏱️ <span>Answer each question carefully before proceeding. You <strong style={{color:"#e2e8f0"}}>cannot go back</strong>.</span></div>
+              <div className="exam-rule">🔒 <span>You may only take this exam <strong style={{color:"#f87171"}}>once</strong>. Your score will be permanently recorded.</span></div>
+              <div className="exam-rule">🙈 <span>Questions are <strong style={{color:"#e2e8f0"}}>randomized</strong>. Do not share your screen with others.</span></div>
+              <div className="exam-rule">✍️ <span>Enter your <strong style={{color:"#e2e8f0"}}>full name</strong> at the end to save your result.</span></div>
+            </div>
+            <div style={{ background: "rgba(248,113,113,0.08)", border: "1px solid rgba(248,113,113,0.25)", borderRadius: 10, padding: "12px 16px", marginBottom: 24, fontSize: 13, color: "#f87171", lineHeight: 1.5 }}>
+              ⚠️ By clicking Start, you confirm that your answers are your own and you understand this exam cannot be retaken.
+            </div>
+            <button className="btn primary" style={{ background: "#f87171", color: "#fff", width: "100%", padding: "14px", fontSize: 16 }} onClick={() => setStarted(true)}>
+              Begin Exam →
+            </button>
+            <button className="back-btn" style={{ marginTop: 14, padding: 0 }} onClick={onBack}>← Back to Home</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (done) {
     const pct = Math.round((finalScore / TOTAL_ITEMS) * 100);
@@ -567,20 +615,20 @@ function LeaderboardView({ onBack }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    const fetch = async () => {
-      try {
-        const q = query(collection(db, "test_score"), orderBy("score", "desc"));
-        const snap = await getDocs(q);
-        const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        setResults(data);
-      } catch (e) {
-        setError("Could not load results. Check your connection.");
-      }
-      setLoading(false);
-    };
-    fetch();
-  }, []);
+  const fetchResults = async () => {
+    setLoading(true); setError("");
+    try {
+      const q = query(collection(db, "test_score"), orderBy("score", "desc"));
+      const snap = await getDocs(q);
+      const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      setResults(data);
+    } catch (e) {
+      setError("Could not load results. Check your connection.");
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => { fetchResults(); }, []);
 
   const medals = ["🥇", "🥈", "🥉"];
 
@@ -590,11 +638,14 @@ function LeaderboardView({ onBack }) {
         <button className="back-btn" onClick={onBack}>← Back to Home</button>
         <div className="mod-header" style={{ borderColor: "#fbbf2433" }}>
           <div className="mod-icon lg" style={{ background: "#fbbf2422", color: "#fbbf24" }}>📊</div>
-          <div>
+          <div style={{ flex: 1 }}>
             <div className="mod-label" style={{ color: "#fbbf24" }}>Student Results</div>
             <div className="mod-header-title">Leaderboard</div>
             <div className="mod-header-sub">{loading ? "Loading..." : `${results.length} submissions`}</div>
           </div>
+          <button className="btn ghost" style={{ padding: "8px 14px", fontSize: 13, flexShrink: 0 }} onClick={fetchResults} disabled={loading}>
+            {loading ? "⏳" : "↺ Refresh"}
+          </button>
         </div>
 
         {loading && <div style={{ textAlign: "center", color: "#475569", padding: 40 }}>Loading results...</div>}
@@ -841,6 +892,135 @@ function ModuleView({ mod, prog, update, onBack }) {
   );
 }
 
+
+// ── ASSESSOR VIEW ─────────────────────────────────────────────────────────────
+function AssessorView({ onBack }) {
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [search, setSearch] = useState("");
+  const [sortBy, setSortBy] = useState("score");
+
+  const fetchResults = async () => {
+    setLoading(true); setError("");
+    try {
+      const q = query(collection(db, "test_score"), orderBy("score", "desc"));
+      const snap = await getDocs(q);
+      const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      setResults(data);
+    } catch (e) {
+      setError("Could not load results.");
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => { fetchResults(); }, []);
+
+  const filtered = results
+    .filter(r => r.name?.toLowerCase().includes(search.toLowerCase()))
+    .sort((a, b) => {
+      if (sortBy === "score") return (b.score || 0) - (a.score || 0);
+      if (sortBy === "name") return (a.name || "").localeCompare(b.name || "");
+      if (sortBy === "date") return new Date(b.timestamp || 0) - new Date(a.timestamp || 0);
+      return 0;
+    });
+
+  const avg = results.length ? Math.round(results.reduce((a, r) => a + (r.score || 0), 0) / results.length * 10) / 10 : 0;
+  const passing = results.filter(r => (r.score / (r.total || TOTAL_ITEMS)) >= 0.75).length;
+
+  const exportCSV = () => {
+    const header = "Name,Score,Total,Percentage,Year,Timestamp";
+    const rows = results.map(r => {
+      const pct = Math.round((r.score / (r.total || TOTAL_ITEMS)) * 100);
+      return `"${r.name}",${r.score},${r.total || TOTAL_ITEMS},${pct}%,${r.year || ""},${r.timestamp || ""}`;
+    });
+    const blob = new Blob([[header, ...rows].join("\n")], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href = url; a.download = "assessment_results.csv"; a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  return (
+    <div className="page"><GlobalStyles />
+      <div className="inner-wrap" style={{ maxWidth: 760 }}>
+        <button className="back-btn" onClick={onBack}>← Back to Home</button>
+
+        {/* Header */}
+        <div className="mod-header" style={{ borderColor: "#818cf833" }}>
+          <div className="mod-icon lg" style={{ background: "#818cf822", color: "#818cf8" }}>🔎</div>
+          <div style={{ flex: 1 }}>
+            <div className="mod-label" style={{ color: "#818cf8" }}>Assessor Dashboard</div>
+            <div className="mod-header-title">All Student Results</div>
+            <div className="mod-header-sub">{loading ? "Loading..." : `${results.length} total submissions`}</div>
+          </div>
+          <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
+            <button className="btn ghost" style={{ padding: "8px 12px", fontSize: 12 }} onClick={fetchResults} disabled={loading}>{loading ? "⏳" : "↺ Refresh"}</button>
+            <button className="btn ghost" style={{ padding: "8px 12px", fontSize: 12, color: "#34d399", borderColor: "rgba(52,211,153,0.3)" }} onClick={exportCSV} disabled={!results.length}>⬇ CSV</button>
+          </div>
+        </div>
+
+        {/* Summary stats */}
+        {!loading && results.length > 0 && (
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 8, marginBottom: 16 }}>
+            {[
+              { label: "Total Students", value: results.length, color: "#38bdf8" },
+              { label: "Average Score", value: `${avg}/${TOTAL_ITEMS}`, color: "#fbbf24" },
+              { label: "Passing (≥75%)", value: `${passing} (${Math.round(passing/results.length*100)}%)`, color: "#34d399" },
+            ].map(s => (
+              <div key={s.label} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 12, padding: "14px 16px", textAlign: "center" }}>
+                <div style={{ fontSize: 20, fontWeight: 800, color: s.color, marginBottom: 2 }}>{s.value}</div>
+                <div style={{ fontSize: 11, color: "#475569", textTransform: "uppercase", letterSpacing: 1 }}>{s.label}</div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Search + sort */}
+        <div style={{ display: "flex", gap: 8, marginBottom: 14, flexWrap: "wrap" }}>
+          <input className="name-input" style={{ flex: 1, minWidth: 180 }} placeholder="🔍 Search by name..." value={search} onChange={e => setSearch(e.target.value)} />
+          <select style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 10, padding: "11px 14px", color: "#e2e8f0", fontSize: 13, fontFamily: "inherit", cursor: "pointer" }}
+            value={sortBy} onChange={e => setSortBy(e.target.value)}>
+            <option value="score">Sort: Score</option>
+            <option value="name">Sort: Name</option>
+            <option value="date">Sort: Date</option>
+          </select>
+        </div>
+
+        {loading && <div style={{ textAlign: "center", color: "#475569", padding: 40 }}>Loading results...</div>}
+        {error && <div style={{ textAlign: "center", color: "#f87171", padding: 20, fontSize: 14 }}>{error}</div>}
+        {!loading && filtered.length === 0 && <div style={{ textAlign: "center", color: "#475569", padding: 40, fontSize: 14 }}>No results found.</div>}
+
+        {!loading && filtered.length > 0 && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            {/* Table header */}
+            <div style={{ display: "grid", gridTemplateColumns: "32px 1fr 80px 60px 90px", gap: 8, padding: "8px 14px", fontSize: 10, color: "#475569", letterSpacing: 1, textTransform: "uppercase" }}>
+              <span>#</span><span>Name</span><span>Score</span><span>%</span><span>Date</span>
+            </div>
+            {filtered.map((r, i) => {
+              const pct = Math.round((r.score / (r.total || TOTAL_ITEMS)) * 100);
+              const pass = pct >= 75;
+              const date = r.timestamp ? new Date(r.timestamp).toLocaleDateString("en-PH", { month: "short", day: "numeric", year: "2-digit" }) : r.year || "—";
+              return (
+                <div key={r.id} style={{
+                  display: "grid", gridTemplateColumns: "32px 1fr 80px 60px 90px", gap: 8, alignItems: "center",
+                  background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)",
+                  borderRadius: 10, padding: "12px 14px",
+                }}>
+                  <span style={{ fontSize: 12, color: "#475569", fontWeight: 700 }}>{i + 1}</span>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: "#e2e8f0", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.name}</span>
+                  <span style={{ fontSize: 15, fontWeight: 800, color: pct >= 80 ? "#34d399" : pct >= 60 ? "#fbbf24" : "#f87171" }}>{r.score}/{r.total || TOTAL_ITEMS}</span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: pass ? "#34d399" : "#f87171" }}>{pct}%</span>
+                  <span style={{ fontSize: 11, color: "#475569" }}>{date}</span>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ── GLOBAL STYLES ─────────────────────────────────────────────────────────────
 function GlobalStyles() {
   return (
@@ -942,6 +1122,12 @@ function GlobalStyles() {
       .done-title { font-size: 22px; font-weight: 700; color: #e2e8f0; margin-bottom: 8px; }
       .done-score { font-size: 48px; font-weight: 900; margin-bottom: 4px; }
       .done-sub { font-size: 13px; color: #64748b; }
+
+      .exam-page { min-height: 100vh; background: linear-gradient(160deg,#0a0014 0%,#160a20 50%,#0a0014 100%); }
+      .exam-intro-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(248,113,113,0.25); border-radius: 20px; padding: 40px 28px; width: 100%; max-width: 520px; text-align: center; }
+      .exam-rules { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; text-align: left; }
+      .exam-rule { display: flex; gap: 10px; font-size: 13px; color: "#94a3b8"; line-height: 1.5; background: rgba(255,255,255,0.03); border-radius: 8px; padding: 10px 12px; align-items: flex-start; }
+      .exam-rule span { color: #94a3b8; }
 
       @media (max-width: 480px) {
         .module-grid { grid-template-columns: 1fr 1fr; }
