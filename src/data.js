@@ -171,7 +171,7 @@ Deputized agencies help extend NWRB's reach at the regional and field level:
 
 Key mandates of the WRMO under EO 22:
 
-• Champion the passage of a law creating an apex body for water — such as a Department of Water.
+• Champion the passage of a law creating an apex body for water — such as a Department of Water Resources (DWR).
 • Formulate and implement the Integrated Water Management Plan (IWMP) as a comprehensive national policy for water resources.
 • Integrate plans from the Philippine Development Plan, the Philippine Water Supply and Sanitation Master Plan, and NWRB's Water Security Master Plan.
 • Generate and maintain credible, timely water and sanitation data for evidence-based policy.
