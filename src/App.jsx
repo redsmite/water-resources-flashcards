@@ -62,7 +62,7 @@ export default function App() {
             <img src={DENR_LOGO} alt="DENR Logo" className="denr-logo" />
           </div>
           <div className="denr-agency">Department of Environment and Natural Resources</div>
-          <div className="denr-office">National Capital Region — Water Resources Unit</div>
+          <div className="denr-office">National Capital Region — Water Resources and Utilization Section</div>
           <h1 className="home-title">Water Resources<br />Management</h1>
           <p className="home-sub">A comprehensive learning platform on SDG 6, NWRB, and Philippine water governance.</p>
           <div className="home-stats">
