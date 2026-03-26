@@ -7,9 +7,11 @@ const DENR_LOGO = "data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1B
 
 // ─────────────────────────────────────────────────────────────────────────────
 // MODULES — Course Content
-// Each module has: id, title, subtitle, icon, color, chapters[], quiz[]
-// chapters: title + content (use \n for line breaks, • for bullets)
-// quiz: q (question), options[], answer (0-based index of correct option)
+// Interactive hints use these prefixes in content:
+//   ❓ = did-you-know callout
+//   📌 = key fact to remember
+//   ⚖️  = legal provision
+//   💡 = practical insight
 // ─────────────────────────────────────────────────────────────────────────────
 const MODULES = [
   {
@@ -21,15 +23,45 @@ const MODULES = [
     chapters: [
       {
         title: "The 5 P's of the 2030 Agenda",
-        content: "The 2030 Agenda for Sustainable Development, adopted by all United Nations Member States in 2015, is structured around five critical dimensions known as the '5 P's':\n\n• People — End poverty and hunger in all forms and ensure dignity and equality.\n• Planet — Protect natural resources and combat climate change for future generations.\n• Prosperity — Ensure fulfilling and productive lives in harmony with nature.\n• Peace — Foster peaceful, just, and inclusive societies free from violence.\n• Partnership — Implement the agenda through global solidarity, mobilizing all resources and means.",
+        content: `The 2030 Agenda for Sustainable Development was adopted by all 193 UN Member States in September 2015. It represents a universal call to action to end poverty, protect the planet, and ensure prosperity for all by the year 2030.
+
+At its core, the agenda is structured around five dimensions known as the '5 P's':
+
+• People — End all forms of poverty and hunger, and ensure that all human beings can fulfill their potential in dignity, equality, and a healthy environment.
+• Planet — Protect the planet from degradation, manage natural resources sustainably, and take urgent action on climate change so it can support the needs of present and future generations.
+• Prosperity — Ensure that all human beings can enjoy prosperous and fulfilling lives, and that economic, social, and technological progress occurs in harmony with nature.
+• Peace — Foster peaceful, just, and inclusive societies which are free from fear and violence. There can be no sustainable development without peace, and no peace without sustainable development.
+• Partnership — Mobilize the means required to implement the Agenda through a revitalized Global Partnership for Sustainable Development, involving governments, the private sector, civil society, and the United Nations.
+
+📌 The Philippines is among the countries that officially committed to achieving all 17 SDGs by 2030 under this agenda.`,
       },
       {
         title: "The 17 Sustainable Development Goals",
-        content: "The 2030 Agenda contains 17 Sustainable Development Goals (SDGs) and 169 associated targets. Together, they provide a universal blueprint for peace and prosperity for people and the planet, to be achieved by the year 2030.\n\nThe SDGs build on the Millennium Development Goals (MDGs) and go further by addressing the root causes of poverty and the universal need for development that works for all people.",
+        content: `The 2030 Agenda contains 17 Sustainable Development Goals (SDGs) and 169 associated targets. Together, they build on the earlier Millennium Development Goals (MDGs) and go further by addressing root causes of poverty and the universal need for sustainable development.
+
+The 17 SDGs cover a wide range of interconnected issues:
+SDG 1: No Poverty | SDG 2: Zero Hunger | SDG 3: Good Health and Well-being | SDG 4: Quality Education | SDG 5: Gender Equality | SDG 6: Clean Water and Sanitation | SDG 7: Affordable and Clean Energy | SDG 8: Decent Work | SDG 9: Industry and Innovation | SDG 10: Reduced Inequalities | SDG 11: Sustainable Cities | SDG 12: Responsible Consumption | SDG 13: Climate Action | SDG 14: Life Below Water | SDG 15: Life on Land | SDG 16: Peace and Justice | SDG 17: Partnerships for the Goals.
+
+❓ Did you know? The SDGs are indivisible — progress on one goal can accelerate progress on others. For example, achieving SDG 6 (Clean Water) directly supports SDG 2 (Zero Hunger), SDG 3 (Health), and SDG 13 (Climate Action).
+
+💡 The Philippines reports on its SDG progress through the Philippine Development Plan and the Philippine Statistics Authority's annual SDG Watch reports.`,
       },
       {
         title: "SDG 6 — Clean Water and Sanitation",
-        content: "SDG 6 aims to ensure the availability and sustainable management of water and sanitation for all by 2030. It has six main targets:\n\n• 6.1 — Achieve universal and equitable access to safe and affordable drinking water for all.\n• 6.2 — End open defecation; achieve access to adequate sanitation and hygiene for all.\n• 6.3 — Improve water quality by reducing pollution, eliminating dumping, and increasing safe water reuse.\n• 6.4 — Substantially increase water-use efficiency to address water scarcity.\n• 6.5 — Implement Integrated Water Resources Management (IWRM) at all levels.\n• 6.6 — Protect and restore water-related ecosystems, including mountains, forests, wetlands, and lakes.",
+        content: `SDG 6 aims to ensure the availability and sustainable management of water and sanitation for all by 2030. It is one of the most cross-cutting goals, as water underpins virtually every aspect of human development.
+
+SDG 6 has six main targets:
+
+• 6.1 — Safe Drinking Water: Achieve universal and equitable access to safe and affordable drinking water for all.
+• 6.2 — Sanitation and Hygiene: End open defecation, achieve access to adequate sanitation and hygiene for all, paying special attention to women, girls, and vulnerable groups.
+• 6.3 — Water Quality: Improve water quality by reducing pollution, eliminating dumping of hazardous chemicals, and increasing safe water reuse.
+• 6.4 — Water-Use Efficiency: Substantially increase water-use efficiency across all sectors to address the growing threat of water scarcity.
+• 6.5 — Integrated Water Resources Management (IWRM): Implement IWRM at all levels, including through transboundary cooperation as appropriate.
+• 6.6 — Water-Related Ecosystems: Protect and restore water-related ecosystems, including mountains, forests, wetlands, rivers, aquifers, and lakes.
+
+📌 In the Philippines, the NWRB is the lead agency for implementing SDG 6 alongside the WRMO under EO 22 (2023).
+
+❓ Did you know? As of 2023, around 87.7% of Filipinos report access to safe water, but fewer than half have piped water connections at home. Over 332 municipalities remain classified as 'water-less.'`,
       },
     ],
     quiz: [
@@ -37,6 +69,7 @@ const MODULES = [
       { q: "What does SDG Target 6.5 specifically call for?", options: ["Universal access to safe drinking water", "End open defecation and provide sanitation", "Implementation of IWRM at all levels", "Protection and restoration of water ecosystems"], answer: 2 },
     ],
   },
+
   {
     id: 2,
     title: "NWRB Overview",
@@ -46,15 +79,57 @@ const MODULES = [
     chapters: [
       {
         title: "What is the NWRB?",
-        content: "The National Water Resources Board (NWRB) is the primary government agency responsible for the regulation, conservation, and management of all water resources in the Philippines. It coordinates activities that affect the physical environment and the national economy related to water.\n\nInitially created as the National Water Resources Council (NWRC) under Presidential Decree 424 in 1974 and attached to the Department of Public Works, Transportation and Communications (DPWTC), it was renamed the NWRB through Executive Order 124-A in 1987 and later transferred to the DENR under EO 123 in 2002.",
+        content: `The National Water Resources Board (NWRB) is the primary government agency responsible for the regulation, conservation, and management of all water resources in the Philippines. It coordinates activities that affect the physical environment and the national economy related to water use.
+
+Its history spans five decades of legal evolution:
+
+• 1974 — Created as the National Water Resources Council (NWRC) under PD 424, initially attached to the Department of Public Works, Transportation and Communications (DPWTC).
+• 1976 — The Water Code of the Philippines (PD 1067) gave the NWRC broad authority to regulate all water appropriation and use in the country.
+• 1987 — Executive Order 124-A renamed the NWRC to the National Water Resources Board (NWRB).
+• 2002 — EO 123 reconstituted the Board and transferred the NWRB to the Department of Environment and Natural Resources (DENR).
+• 2023 — EO 22 established the WRMO within DENR, with NWRB now 'attached' to DENR as a regulated body.
+
+📌 The NWRB's jurisdiction covers all water resources across the Philippine archipelago — from groundwater to rivers, lakes, and even atmospheric water.
+
+💡 Practical note: If you want to drill a deep well, construct an irrigation canal, or operate a water utility, you need the NWRB's authorization through a Water Permit or a Certificate of Public Convenience (CPC).`,
       },
       {
         title: "Vision, Mission, and Functions",
-        content: "Vision: Sustainable Water for a Healthy Nation.\n\nMission: To allocate sufficient water for optimal beneficial use, ensure access to safe water and adequate sanitation, and preserve flow regimes for ecological integrity.\n\nThe NWRB carries out three core functional areas:\n\n• Policy Formulation and Coordination — Drafting national plans such as the Philippine IWRM Plan Framework and Groundwater Management Plans.\n• Resource Regulation — Issuing water permits, resolving conflicts between water users, and monitoring compliance.\n• Economic Regulation — Granting Certificates of Public Convenience (CPC) to private water service providers, setting water tariffs, and protecting consumers while ensuring utility viability.",
+        content: `Vision: Sustainable Water for a Healthy Nation.
+
+Mission: To allocate sufficient water for optimal beneficial use, ensure access to safe water and adequate sanitation, and preserve flow regimes for ecological integrity.
+
+The NWRB carries out three core functional areas:
+
+• Policy Formulation and Coordination
+Drafts national plans including the Philippine IWRM Plan Framework and specific Groundwater Management Plans. Coordinates with government agencies, LGUs, and the private sector on water policy. Serves through deputized agencies such as NIA and DPWH for field-level coordination.
+
+• Resource Regulation
+Issues and monitors Water Permits for all water uses except family domestic use. Resolves conflicts between competing water users. Inspects facilities and enforces compliance. Manages the suspension or revocation of permits for violations such as waste, non-use, or unauthorized sale of water.
+
+• Economic Regulation
+Grants Certificates of Public Convenience (CPC) to private water service providers (WSPs). Sets water tariffs to protect consumers while ensuring the financial viability of utilities. Oversees the CPC Registration Program requiring unregistered WSPs to register within 180 days.
+
+❓ Did you know? As of 2024, the NWRB requires WSPs with discharge ≥10 liters per second (LPS) to install telemetered water meters to improve real-time monitoring of water extraction.`,
       },
       {
         title: "The NWRB Board and Composition",
-        content: "The NWRB is governed by a Board with the following composition:\n\n• Chairperson: Secretary of the Department of Environment and Natural Resources (DENR)\n• Vice-Chairperson: Secretary of DEPDev (formerly NEDA)\n• Members: Secretary of Justice, Secretary of Science and Technology, and the Executive Director of the UP-National Hydraulics Research Center\n\nDeputized agencies such as the National Irrigation Administration (NIA) and the Department of Public Works and Highways (DPWH) assist the NWRB in coordinating and regulating water-related activities across the country.",
+        content: `The NWRB is governed by a multi-agency Board ensuring coordinated oversight of the water sector:
+
+• Chairperson: Secretary of the Department of Environment and Natural Resources (DENR)
+• Vice-Chairperson: Secretary of DEPDev (formerly NEDA — the National Economic and Development Authority)
+• Members:
+  - Secretary of Justice
+  - Secretary of Science and Technology
+  - Executive Director of the UP-National Hydraulics Research Center
+
+Deputized agencies help extend NWRB's reach at the regional and field level:
+• National Irrigation Administration (NIA) — manages irrigation water permits
+• Department of Public Works and Highways (DPWH) — coordinates on water infrastructure
+
+⚖️ Legal basis: The current Board composition was set by EO 860 (2010), which redefined the composition and powers of the Board. EO 123 (2002) first transferred the agency to DENR.
+
+📌 The NWRB Board meets regularly to approve water permits, resolve disputes, and set tariffs. It is supported by three divisions: Resource Regulation, Economic Regulation, and Policy and Planning.`,
       },
     ],
     quiz: [
@@ -62,6 +137,7 @@ const MODULES = [
       { q: "Which NWRB function involves resolving conflicts between water users?", options: ["Economic Regulation", "Policy Formulation and Coordination", "Resource Regulation", "Environmental Monitoring"], answer: 2 },
     ],
   },
+
   {
     id: 3,
     title: "Legal Mandates",
@@ -70,12 +146,42 @@ const MODULES = [
     color: "#818cf8",
     chapters: [
       {
-        title: "Historical Legislation Timeline",
-        content: "Philippine water law has evolved through a series of presidential decrees and executive orders:\n\n• 1974 (PD 424) — Created the National Water Resources Council (NWRC), initially attached to the DPWTC.\n• 1976 (PD 1067) — Enacted the Water Code of the Philippines, the principal law governing water ownership and use.\n• 1977 (PD 1206) — Transferred residual functions of the Board of Waterworks to the NWRB.\n• 1987 (EO 124-A) — Renamed the NWRC to the National Water Resources Board (NWRB).\n• 2002 (EO 123) — Reconstituted the Board and transferred the NWRB to the DENR.\n• 2010 (EO 860) — Redefined the composition, powers, and functions of the NWRB Board.\n• 2023 (EO 22) — Established the Water Resources Management Office (WRMO) under DENR.",
+        title: "The Legislative Timeline",
+        content: `Philippine water law has developed through a series of presidential decrees and executive orders, each building on the last to strengthen water governance:
+
+• 1974 — PD 424: Created the National Water Resources Council (NWRC), initially under the DPWTC, to coordinate water-related activities across the government.
+
+• 1976 — PD 1067 (Water Code of the Philippines): The foundational law consolidating all water ownership, appropriation, and use regulations. It established the Regalian Doctrine for water and created the framework for water permits.
+
+• 1977 — PD 1206: Transferred the residual functions of the old Board of Waterworks and Sewerage to the NWRB, expanding its regulatory scope.
+
+• 1987 — EO 124-A: Officially renamed the National Water Resources Council (NWRC) to the National Water Resources Board (NWRB), reflecting its expanded mandate.
+
+• 2002 — EO 123: Reconstituted the NWRB Board and transferred the agency to the DENR, aligning water resource management with environmental governance.
+
+• 2010 — EO 860: Redefined the composition, powers, and functions of the NWRB Board to reflect current institutional needs and government priorities.
+
+• 2023 — EO 22: Established the Water Resources Management Office (WRMO) within DENR, marking a major step toward the eventual creation of a Department of Water Resources.
+
+📌 A proposed bill to create a standalone Department of Water Resources (DWR) has been pending in Congress for several years, and the WRMO is designed to pave the way for it.`,
       },
       {
         title: "Executive Order 22 and the WRMO",
-        content: "Executive Order 22, signed in April 2023, established the Water Resources Management Office (WRMO) under the DENR. Its key mandates include:\n\n• Draft the Integrated Water Management Plan (IWMP) by coordinating with DENR-WRMO and NEDA.\n• Generate and maintain water and sanitation data for evidence-based planning.\n• Submit quarterly status reports on implementation directly to the President.\n• Collaborate with the private sector in pursuing its mandate.\n• Chair the Sub-Committee on Water Resources (SCWR) under the NEDA Infrastructure Committee.\n\nThe WRMO presages the eventual creation of a full Department of Water Resources.",
+        content: `Executive Order No. 22, signed by President Ferdinand R. Marcos Jr. on April 27, 2023, established the Water Resources Management Office (WRMO) within the DENR. It was issued in response to identified challenges in the water sector: fragmentation among agencies, growing demand due to population growth, climate change impacts, and inadequate infrastructure.
+
+Key mandates of the WRMO under EO 22:
+
+• Champion the passage of a law creating an apex body for water — such as a Department of Water.
+• Formulate and implement the Integrated Water Management Plan (IWMP) as a comprehensive national policy for water resources.
+• Integrate plans from the Philippine Development Plan, the Philippine Water Supply and Sanitation Master Plan, and NWRB's Water Security Master Plan.
+• Generate and maintain credible, timely water and sanitation data for evidence-based policy.
+• Collaborate with all relevant agencies, LGUs, civil society, and the private sector.
+• Submit quarterly status reports on implementation directly to the President.
+• Chair the Sub-Committee on Water Resources (SCWR) under the NEDA Infrastructure Committee.
+
+⚖️ Under Section 3 of EO 22, the following agencies are 'attached' to DENR: NWRB, MWSS (Metropolitan Waterworks and Sewerage System), LWUA (Local Water Utilities Administration), and LLDA (Laguna Lake Development Authority).
+
+❓ Did you know? The WRMO is headed by an Undersecretary appointed by the President upon the recommendation of the DENR Secretary — it is one of the highest-level water governance bodies ever created in the Philippines.`,
       },
     ],
     quiz: [
@@ -83,24 +189,85 @@ const MODULES = [
       { q: "Who serves as Chairperson of the NWRB Board?", options: ["Secretary of Justice", "Secretary of DEPDev (formerly NEDA)", "Secretary of the DENR", "Executive Director of UP-NHRC"], answer: 2 },
     ],
   },
+
   {
     id: 4,
     title: "WRMO & IWMP",
-    subtitle: "Water Resources Management Office",
+    subtitle: "Integrated Water Management",
     icon: "🗂️",
     color: "#34d399",
     chapters: [
       {
-        title: "Institutional Structure of the Water Sector",
-        content: "The Philippine water sector involves a complex institutional framework. Key agencies and their roles include:\n\n• Watershed Management — FMB, NIA, LGUs\n• Data Collection — PAGASA, MGB\n• Flood Management — DPWH, MMDA\n• Policy Making — DEPDev (formerly NEDA), NWRB\n\nUnder EO 22, the following agencies are 'attached' to the DENR: NWRB, MWSS (Metropolitan Waterworks and Sewerage System), LWUA (Local Water Utilities Administration), and LLDA (Laguna Lake Development Authority).\n\nWater quality testing for potability is prescribed by the Department of Health (DOH).",
+        title: "The Philippine Water Sector Structure",
+        content: `The Philippine water sector is governed by a complex but interconnected set of agencies, each with a specific mandate:
+
+Watershed Management:
+• Forest Management Bureau (FMB) — oversees watershed protection
+• National Irrigation Administration (NIA) — manages irrigation water use
+• Local Government Units (LGUs) — administer local water services
+
+Data Collection and Monitoring:
+• PAGASA — weather and climate monitoring affecting water supply
+• Mines and Geosciences Bureau (MGB) — groundwater data and geology
+• Department of Health (DOH) — prescribes parameters for water potability testing
+
+Flood Management:
+• Department of Public Works and Highways (DPWH) — flood control infrastructure
+• MMDA — Metro Manila flood operations
+
+Policy and Planning:
+• DEPDev (formerly NEDA) — national development planning
+• NWRB — water permits, tariffs, and water rights
+
+Under EO 22, four agencies are now 'attached' to DENR for policy coordination:
+NWRB · MWSS · LWUA · LLDA
+
+💡 The WRMO acts as the central coordinator — not a replacement for these agencies — ensuring that all their plans are harmonized under one national framework.
+
+❓ Did you know? The Philippines has 532 water districts, but a PIDS study (2025) found that annual demand consistently exceeds supply by about 3.6 million cubic meters — highlighting the urgency of the IWMP.`,
       },
       {
         title: "The Integrated Water Management Plan (IWMP)",
-        content: "The IWMP is the flagship output of the WRMO. It was prepared by reviewing existing plans including the National Water Security Roadmap and the Philippine Water Supply and Sanitation Master Plan (2019–2030).\n\nThe IWMP focuses on:\n• Reforming water governance and regulatory instruments.\n• Integrating water security planning across all sectors.\n• Establishing resource allocation plans for equitable water distribution.\n\nGood water governance requires empowered institutions and strong regulatory frameworks. The IWMP is led jointly by DENR-WRMO and DEPDev.",
+        content: `The IWMP is the flagship output of the WRMO and serves as the Philippines' comprehensive national policy for water resources management.
+
+It was prepared by reviewing and integrating existing plans:
+• National Water Security Roadmap (NWSSR)
+• Philippine Water Supply and Sanitation Master Plan (PWSSMP) 2019–2030
+• Philippine Development Plan
+• NWRB's Water Security Master Plan
+
+The IWMP focuses on four strategic objectives (per EO 22, Section 4):
+
+1. Harness water supply to maximize benefit to society and the environment.
+2. Harmonize plans and policies of all government agencies with water-related functions.
+3. Ensure all programs — including water infrastructure — are resilient to extreme events and forecast changes in water availability.
+4. Engage LGUs, the private sector, and civil society in crafting better water policies.
+
+📌 The IWMP is co-led by DENR-WRMO and DEPDev. It is intended to be a living document, updated as conditions change.
+
+⚖️ The WRMO is required under EO 22, Section 9 to submit a quarterly status report on implementation to the President through the Office of the Executive Secretary.
+
+💡 A key component is the Decision Support System (DSS) — a central data repository and modeling platform to support evidence-based water management decisions.`,
       },
       {
-        title: "Climate Change Impacts on Water",
-        content: "Climate change poses significant threats to water resources in the Philippines. The Climate-Resilient Water Resources Management Program aims to incorporate long-term hydrological changes using advanced technology for improved operations (e.g., new reservoir operation rules for Angat Dam every five years).\n\nKey climate impacts on Philippine ecosystems include:\n• Extreme heat and prolonged drought\n• Extreme rainfall events and flooding\n• Sea level rise affecting coastal freshwater\n• Crop damage, soil deterioration, and loss of biodiversity\n\nThese changes are expected to significantly decrease the supply of both surface water and groundwater.",
+        title: "Climate Change and Water Resources",
+        content: `Climate change is the most significant long-term threat to Philippine water resources. The country is ranked among the most climate-vulnerable nations in the world due to its geography and weather patterns.
+
+Key climate impacts on Philippine water systems:
+
+• Extreme heat and prolonged drought — reduces river flows and groundwater recharge, threatens rainfed agriculture
+• Intense rainfall and flooding — increases runoff and erosion, overwhelms drainage systems, and contaminates water supplies
+• Sea level rise — causes saltwater intrusion into coastal aquifers, affecting freshwater availability in island communities
+• Reduced wet season predictability — affects reservoir operations like Angat Dam, which supplies much of Metro Manila
+
+❓ Did you know? Manila Bay's coastal aquifers have experienced saltwater intrusion since the late 1960s due to over-pumping of groundwater. This has worsened as population and water demand grew.
+
+The Climate-Resilient Water Resources Management Program was designed to address these threats by:
+• Incorporating long-term hydrological changes into operations
+• Developing new reservoir operation rules (e.g., Angat Dam rules reviewed every 5 years)
+• Using advanced technology for improved forecasting and water allocation
+
+📌 Climate change is expected to significantly decrease the supply of both surface water and groundwater in most Philippine river basins, while also increasing the frequency and intensity of flood events.`,
       },
     ],
     quiz: [
@@ -108,6 +275,7 @@ const MODULES = [
       { q: "Which agency is primarily responsible for flood management in the Philippines?", options: ["PAGASA and MGB", "FMB and NIA", "DPWH and MMDA", "DEPDev and NWRB"], answer: 2 },
     ],
   },
+
   {
     id: 5,
     title: "Water Code",
@@ -117,15 +285,73 @@ const MODULES = [
     chapters: [
       {
         title: "The Regalian Doctrine and Water Ownership",
-        content: "Presidential Decree 1067, the Water Code of the Philippines (1976), consolidates all laws governing the ownership, appropriation, utilization, and protection of water resources.\n\nUnder the Regalian Doctrine, all waters belong to the State and cannot be acquired through acquisitive prescription — meaning no private person can claim ownership of water through long use.\n\n'Waters' under the Code refers to:\n• Water under the ground (groundwater)\n• Water above the ground (surface water)\n• Water in the atmosphere\n• The waters of the sea within Philippine territorial jurisdiction\n\nThe State allows use of water through administrative concessions in the form of Water Permits.",
+        content: `Presidential Decree No. 1067, known as the Water Code of the Philippines, was signed on December 31, 1976. It consolidates all prior laws governing the ownership, appropriation, utilization, exploitation, development, conservation, and protection of water resources in the country.
+
+The Code is built on five foundational principles (Article 3):
+
+⚖️ a. All waters belong to the State.
+⚖️ b. Waters belonging to the State cannot be the subject of acquisitive prescription — meaning no private person can claim ownership over water simply through long use or occupation.
+⚖️ c. The State may allow the use or development of waters through administrative concessions (i.e., Water Permits).
+⚖️ d. All utilization, exploitation, development, conservation, and protection of water resources shall be subject to government control through the NWRB (formerly NWRC).
+⚖️ e. Preference in the use and development of waters shall consider current usages and respond to the changing needs of the country.
+
+📌 'Waters' under the Code (Article 4) refers to:
+• Water under the ground (groundwater)
+• Water above the ground (surface water — rivers, lakes, streams)
+• Water in the atmosphere
+• The waters of the sea within Philippine territorial jurisdiction
+
+❓ Did you know? Under Article 6, even water found on private land — such as springs, lakes, rainwater, and groundwater — belongs to the State. The landowner may only use it for domestic purposes without a permit, provided such use is registered when required.`,
       },
       {
         title: "Water Rights, Uses, and Priorities",
-        content: "A Water Right is the privilege granted by the government to a qualified person to appropriate and use water from a specific source. The legal evidence of a water right is called a Water Permit.\n\nPermitted purposes for water use include:\n• Domestic (household needs)\n• Municipal (community water supply)\n• Irrigation\n• Power Generation\n• Fisheries\n• Livestock Raising\n• Industrial\n• Recreational\n\nIn times of emergency or water scarcity, Domestic and Municipal uses are given priority over all other uses.\n\nEligible applicants for water permits include: Philippine citizens and government entities or instrumentalities.",
+        content: `Water Right (Article 13) is the privilege granted by the government to a qualified person or entity to appropriate and use water from a specific source. The legal evidence of a water right is called a Water Permit.
+
+⚖️ Eligible applicants (Article 15): Only Filipino citizens of legal age, as well as duly qualified juridical persons (corporations, cooperatives, government instrumentalities), may apply for water permits.
+
+Permitted Purposes for Water Use (Article 10):
+• Domestic — drinking, washing, cooking, home gardens, domestic animals
+• Municipal — community water supply systems
+• Irrigation — agricultural crop production
+• Power Generation — electrical or mechanical power production
+• Fisheries — commercial propagation and culture of fish
+• Livestock Raising — large herds raised as a commercial enterprise
+• Industrial — use in factories, plants, mines, or as a product ingredient
+• Recreational — swimming pools, golf courses, boating, water ski facilities
+
+⚖️ Priority Rule (Article 22): Between two or more appropriators from the same source, the one with the earlier permit has the better right (prior appropriation doctrine). However, in times of emergency, Domestic and Municipal uses take priority over all other uses.
+
+📌 Water rights may be leased or transferred to another person with prior NWRB approval (Article 19).
+
+❓ Did you know? Except for carrying water by hand or watering animals at a river, all other water uses require a Water Permit under the Code.`,
       },
       {
-        title: "Water Permits and the CPC",
-        content: "Appropriation of water — except for family domestic use — requires a Water Permit from the NWRB Council. Within one year of approval, the permit grantee must submit plans and specifications for diversion works and distribution systems.\n\nIf the grantee intends to operate a water system for public use, they must also file for a Certificate of Public Convenience (CPC). The NWRB performs economic regulation by granting CPCs to private water service providers (WSPs) to ensure they remain economically viable while protecting consumers.\n\nUnder the CPC Registration Program, unregistered WSPs must register with the NWRB within 180 days from the effectivity of the program. A Certificate of Potability — issued within six months prior to application — is required, with Physical and Chemical impurity tests conducted at least once per year.\n\nPermit holders must install measuring devices to monitor water levels and extraction. Testing and sealing of meters is done by the NWRB's Monitoring and Enforcement Division.",
+        title: "Water Permits, the CPC, and Compliance",
+        content: `The Water Permit is the cornerstone of the regulatory system under PD 1067. Here is how it works from application to compliance:
+
+Application and Issuance (Articles 16–18):
+• Any person who desires to appropriate water must file an application with the NWRB.
+• The NWRB makes the application public and considers protests before approval.
+• Approved permits specify the maximum volume, rate of withdrawal, time period, point of diversion, place of use, and purpose.
+
+⚖️ Within one year of permit approval, the grantee must submit plans and specifications for diversion works and distribution systems.
+
+Certificate of Public Convenience (CPC):
+If the grantee intends to operate a water system for public use, they must separately apply for a CPC. The NWRB uses this to perform Economic Regulation — ensuring utilities remain viable while protecting consumers.
+
+CPC Registration Program Requirements:
+• Unregistered Water Service Providers (WSPs) must register within 180 days from the program's effectivity.
+• A Certificate of Potability — issued within 6 months prior to filing — is required.
+• Physical and Chemical impurity tests must be conducted at least once per year.
+
+Compliance and Monitoring:
+• Permit holders must install measuring devices (water meters, flow gauges) to monitor levels and extraction.
+• The NWRB's Monitoring and Enforcement Division tests and seals water meters.
+• As of 2024, WSPs with discharge ≥10 LPS must install telemetered meters for real-time monitoring.
+
+📌 Permits may be suspended or revoked for non-use, gross violations, unauthorized sale of water, or pollution of water bodies (Articles 28–29).
+
+💡 Fun fact: Water permits are transferable — if a water right is no longer needed, it can be leased or sold to another eligible party with NWRB approval.`,
       },
     ],
     quiz: [
@@ -133,6 +359,7 @@ const MODULES = [
       { q: "Which water use does NOT require a water permit under the Water Code?", options: ["Irrigation", "Industrial use", "Family domestic use", "Power generation"], answer: 2 },
     ],
   },
+
   {
     id: 6,
     title: "Water Facts",
@@ -141,16 +368,68 @@ const MODULES = [
     color: "#fb7185",
     chapters: [
       {
-        title: "Global Water Resources",
-        content: "Water is one of the Earth's most vital resources, yet it is surprisingly scarce in usable form:\n\n• 97.2% of all global water is salt water found in the oceans.\n• Only 2.8% is fresh water — and most of that is locked in glaciers and icecaps.\n• A very small fraction is accessible as surface water (rivers and lakes) or groundwater.\n\nThe Philippines has a total surface water potential of 125.8 billion m³ across 421 rivers and 79 lakes. Groundwater potential is estimated at 20.2 billion m³. Approximately 58% of water resources are currently allocated based on issued water permits.",
+        title: "Philippine Water Resources",
+        content: `Despite being an archipelago surrounded by water, the Philippines faces significant freshwater challenges. Here is a snapshot of the country's water resources:
+
+Surface Water:
+• 421 principal river basins with catchment areas over 40 km² — 18 are classified as major river basins (over 1,400 km²), occupying over a third of the country's total land area.
+• 79 natural lakes — used mainly for fisheries, irrigation, and water supply.
+• The longest river, Cagayan River in Northern Luzon, discharges approximately 53,943 million cubic meters annually.
+• Major water supply dams: Angat Dam, Ipo Dam, and La Mesa Dam supply Metro Manila.
+
+Groundwater:
+• Groundwater reserves are estimated at 47,895 million cubic meters, replenished by rainfall and river seepage.
+• The four major groundwater reservoirs are in Cagayan, Central Luzon, Agusan, and Cotabato.
+• About 49% of groundwater use is for domestic purposes, 32% for agriculture, and 15% for industry.
+
+Current Challenges:
+• Annual per-capita water availability fell from 1,907 m³ in 2000 to just 1,400 m³ by 2016, driven by population growth.
+• About 83–85% of Philippine water is used for agriculture, leaving a smaller share for households and industry.
+• Over-pumping of groundwater in coastal Metro Manila has caused saltwater intrusion along the coast from Las Piñas to Malabon.
+
+❓ Did you know? It is estimated that by 2025, water availability will be marginal in most major Philippine cities and in 8 of the 19 major river basins.`,
       },
       {
-        title: "Water and the Human Body",
-        content: "Water is essential to human survival. Key facts:\n\n• Humans can survive only 3 days without water, compared to about 21 days without food.\n• Water makes up 83% of human blood.\n• 75% of the brain and muscles are composed of water.\n• 22% of human bones are water.\n\nThese facts underscore why access to safe water is a fundamental human right and a development priority under SDG 6.",
+        title: "Global Water Facts",
+        content: `Water is one of the Earth's most vital — and surprisingly scarce — resources. While the planet is called the 'Blue Planet,' the vast majority of its water is not directly usable by humans.
+
+Global Distribution:
+• 97.2% of all water on Earth is saltwater in the oceans.
+• Only 2.8% is fresh water — and most of that is locked in glaciers, ice caps, and deep underground aquifers.
+• Less than 1% of all Earth's water is accessible surface fresh water (rivers and lakes).
+
+📌 The global water cycle replenishes fresh water through evaporation, condensation, and precipitation — but human activity, climate change, and population growth are disrupting this balance.
+
+💡 Water stress occurs when demand exceeds available supply. In 2018, the Philippines' water stress index reached 28.21% — indicating a significant and growing pressure on water resources.
+
+Water and the Human Body:
+• Humans can survive only about 3 days without water, compared to about 21 days without food.
+• Water makes up 83% of human blood, 75% of the brain and muscles, and 22% of bones.
+• The human body is roughly 60% water on average.
+
+❓ Did you know? A single faucet leaking at one drip per second can waste up to 3,000 gallons (about 11,356 liters) of water per year — enough to fill a small swimming pool.`,
       },
       {
-        title: "H₂O Facts and Shared Responsibility",
-        content: "Water has unique physical properties that support all life on Earth:\n\n• Water is the only naturally occurring substance that exists in all three physical states: solid (ice), liquid (water), and gas (water vapor).\n• A single faucet leaking at just one drip per second can waste up to 3,000 gallons of water per year.\n\nEfficient water management is a shared responsibility that requires collaboration across all sectors. 'Water smart' behaviors include:\n• Fixing leaks promptly\n• Taking shorter showers\n• Using low-flow fixtures\n• Reporting water waste in public spaces\n\nIn the Philippines, two water uses are given priority in emergencies: Domestic and Municipal use.",
+        title: "Water Conservation and Responsibility",
+        content: `Water is a shared resource, and efficient water management is everyone's responsibility — from government agencies to individual households.
+
+Water is Unique:
+• Water is the only naturally occurring substance that exists in all three physical states: solid (ice), liquid (water), and gas (water vapor) — at naturally occurring Earth temperatures.
+• Unlike most resources, water cannot be substituted for its essential purposes.
+
+'Water Smart' Behaviors:
+• Fix leaks promptly — even a small drip adds up to thousands of liters per year.
+• Take shorter showers — a 5-minute shower uses about 40–50 liters; a bath uses up to 150 liters.
+• Use low-flow fixtures — they reduce consumption by 30–50% without sacrificing comfort.
+• Report water waste in public spaces to your LGU or water district.
+• Avoid pouring chemicals down drains — protect groundwater quality.
+
+Priority in Emergencies:
+⚖️ Under Article 22 of the Water Code, Domestic and Municipal uses are given priority over all other uses in times of water emergency or shortage.
+
+📌 The Philippines' yearly rainfall averages 2,400 mm — about 146 billion m³ of freshwater annually — but uneven distribution, seasonal variability, and inadequate storage mean many communities still face shortages.
+
+❓ Did you know? The NWRB issued Memorandum Order 2023–1 on Water Management and Conservation Measures, reminding all water users of their duty to use water efficiently and report violations.`,
       },
     ],
     quiz: [
@@ -162,127 +441,44 @@ const MODULES = [
 
 // ─────────────────────────────────────────────────────────────────────────────
 // FINAL QUIZ
-// Types: "mc" (multiple choice), "tf" (true/false), "fitb" (fill in the blank),
-//        "multi" (select exactly 3 correct answers from 5 options)
-// Grouped by module coverage for balanced assessment.
 // ─────────────────────────────────────────────────────────────────────────────
 const FINAL_QUIZ = [
-
-  // ── MODULE 1: The 2030 Agenda ─────────────────────────────────────────────
-  { type: "mc",
-    q: "What is the target year for achieving the Sustainable Development Goals under the 2030 Agenda?",
-    options: ["2025", "2030", "2035", "2040"],
-    answer: 1 },
-
-  { type: "tf",
-    q: "SDG 6.2 specifically targets increasing water-use efficiency to address water scarcity.",
-    answer: false },
-
-  { type: "fitb",
-    q: "The 2030 Agenda is built around five dimensions called the '5 _____'.",
-    answer: "p's" },
-
-  { type: "multi",
-    q: "Which of the following are among the 5 P's of the 2030 Agenda? (Select 3)",
-    options: ["People", "Power", "Planet", "Prosperity", "Progress"],
-    answer: [0, 2, 3] },
-
-  // ── MODULE 2: NWRB Overview ───────────────────────────────────────────────
-  { type: "mc",
-    q: "What is the official vision of the National Water Resources Board?",
-    options: ["Clean Water for Every Filipino", "Sustainable Water for a Healthy Nation", "Water Security for Economic Growth", "Safe Water through Good Governance"],
-    answer: 1 },
-
-  { type: "tf",
-    q: "The NWRB Board is chaired by the Secretary of the DENR.",
-    answer: true },
-
-  { type: "fitb",
-    q: "The NWRB performs Economic Regulation by setting water _____ for private providers.",
-    answer: "tariffs" },
-
-  { type: "multi",
-    q: "Which of the following are core functional areas of the NWRB? (Select 3)",
-    options: ["Policy Formulation", "Military Coordination", "Resource Regulation", "Economic Regulation", "Land Surveying"],
-    answer: [0, 2, 3] },
-
-  // ── MODULE 3: Legal Mandates ──────────────────────────────────────────────
-  { type: "mc",
-    q: "Which executive order established the Water Resources Management Office (WRMO) under DENR?",
-    options: ["EO 123", "EO 860", "EO 22", "EO 124-A"],
-    answer: 2 },
-
-  { type: "tf",
-    q: "Presidential Decree 424, which created the NWRC, was enacted in 1974.",
-    answer: true },
-
-  { type: "fitb",
-    q: "EO 124-A renamed the National Water Resources Council to the National Water Resources _____.",
-    answer: "board" },
-
-  // ── MODULE 4: WRMO & IWMP ─────────────────────────────────────────────────
-  { type: "mc",
-    q: "Which agencies are responsible for leading reform in governance and regulations under the IWMP?",
-    options: ["PAGASA and MGB", "DPWH and MMDA", "DENR-WRMO and DEPDev", "NIA and LWUA"],
-    answer: 2 },
-
-  { type: "tf",
-    q: "The WRMO submits a quarterly status report on implementation to the President.",
-    answer: true },
-
-  { type: "multi",
-    q: "Which of the following agencies are officially 'attached' to the DENR under EO 22? (Select 3)",
-    options: ["NWRB", "PAGASA", "MWSS", "LLDA", "DPWH"],
-    answer: [0, 2, 3] },
-
-  // ── MODULE 5: Water Code ──────────────────────────────────────────────────
-  { type: "mc",
-    q: "Presidential Decree 1067 enacted in 1976 is officially known as:",
-    options: ["Clean Water Act", "Water Resources Code", "Water Code of the Philippines", "Environmental Management Act"],
-    answer: 2 },
-
-  { type: "tf",
-    q: "Under the Water Code, all waters belong to the State and cannot be acquired through acquisitive prescription.",
-    answer: true },
-
-  { type: "fitb",
-    q: "The legal document that serves as evidence of a water right is called a Water _____.",
-    answer: "permit" },
-
-  { type: "mc",
-    q: "What does CPC stand for in the context of NWRB economic regulation?",
-    options: ["Central Planning Coordination", "Certificate of Public Convenience", "Community Protection Charter", "Comprehensive Permit Clearance"],
-    answer: 1 },
-
-  // ── MODULE 6: Water Facts ─────────────────────────────────────────────────
-  { type: "mc",
-    q: "What percentage of global water is fresh water?",
-    options: ["10.5%", "2.8%", "15.2%", "5.0%"],
-    answer: 1 },
-
-  { type: "tf",
-    q: "Water is the only substance found naturally in three physical forms: solid, liquid, and gas.",
-    answer: true },
-
-  { type: "fitb",
-    q: "Humans can survive only _____ days without water.",
-    answer: "3" },
-
-  { type: "multi",
-    q: "Which of the following are SDG 6 targets? (Select 3)",
-    options: ["Safe drinking water", "Zero hunger", "End open defecation", "Renewable energy", "Protect water ecosystems"],
-    answer: [0, 2, 4] },
+  // Module 1
+  { type: "mc", q: "What is the target year for achieving the Sustainable Development Goals under the 2030 Agenda?", options: ["2025", "2030", "2035", "2040"], answer: 1 },
+  { type: "tf", q: "SDG 6.2 specifically targets increasing water-use efficiency to address water scarcity.", answer: false },
+  { type: "fitb", q: "The 2030 Agenda is built around five dimensions called the '5 _____'.", answer: "p's" },
+  { type: "multi", q: "Which of the following are among the 5 P's of the 2030 Agenda? (Select 3)", options: ["People", "Power", "Planet", "Prosperity", "Progress"], answer: [0, 2, 3] },
+  // Module 2
+  { type: "mc", q: "What is the official vision of the National Water Resources Board?", options: ["Clean Water for Every Filipino", "Sustainable Water for a Healthy Nation", "Water Security for Economic Growth", "Safe Water through Good Governance"], answer: 1 },
+  { type: "tf", q: "The NWRB Board is chaired by the Secretary of the DENR.", answer: true },
+  { type: "fitb", q: "The NWRB performs Economic Regulation by setting water _____ for private providers.", answer: "tariffs" },
+  { type: "multi", q: "Which of the following are core functional areas of the NWRB? (Select 3)", options: ["Policy Formulation", "Military Coordination", "Resource Regulation", "Economic Regulation", "Land Surveying"], answer: [0, 2, 3] },
+  // Module 3
+  { type: "mc", q: "Which executive order established the Water Resources Management Office (WRMO) under DENR?", options: ["EO 123", "EO 860", "EO 22", "EO 124-A"], answer: 2 },
+  { type: "tf", q: "Presidential Decree 424, which created the NWRC, was enacted in 1974.", answer: true },
+  { type: "fitb", q: "EO 124-A renamed the National Water Resources Council to the National Water Resources _____.", answer: "board" },
+  // Module 4
+  { type: "mc", q: "Which agencies are responsible for leading reform in governance and regulations under the IWMP?", options: ["PAGASA and MGB", "DPWH and MMDA", "DENR-WRMO and DEPDev", "NIA and LWUA"], answer: 2 },
+  { type: "tf", q: "The WRMO submits a quarterly status report on implementation to the President.", answer: true },
+  { type: "multi", q: "Which of the following agencies are officially 'attached' to the DENR under EO 22? (Select 3)", options: ["NWRB", "PAGASA", "MWSS", "LLDA", "DPWH"], answer: [0, 2, 3] },
+  // Module 5
+  { type: "mc", q: "Presidential Decree 1067 enacted in 1976 is officially known as:", options: ["Clean Water Act", "Water Resources Code", "Water Code of the Philippines", "Environmental Management Act"], answer: 2 },
+  { type: "tf", q: "Under the Water Code, all waters belong to the State and cannot be acquired through acquisitive prescription.", answer: true },
+  { type: "fitb", q: "The legal document that serves as evidence of a water right is called a Water _____.", answer: "permit" },
+  { type: "mc", q: "What does CPC stand for in the context of NWRB economic regulation?", options: ["Central Planning Coordination", "Certificate of Public Convenience", "Community Protection Charter", "Comprehensive Permit Clearance"], answer: 1 },
+  // Module 6
+  { type: "mc", q: "What percentage of global water is fresh water?", options: ["10.5%", "2.8%", "15.2%", "5.0%"], answer: 1 },
+  { type: "tf", q: "Water is the only substance found naturally in three physical forms: solid, liquid, and gas.", answer: true },
+  { type: "fitb", q: "Humans can survive only _____ days without water.", answer: "3" },
+  { type: "multi", q: "Which of the following are SDG 6 targets? (Select 3)", options: ["Safe drinking water", "Zero hunger", "End open defecation", "Renewable energy", "Protect water ecosystems"], answer: [0, 2, 4] },
 ];
 
 const TOTAL_ITEMS = FINAL_QUIZ.length;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // FLASHCARDS
-// Each card: { q: "question or fill-in-the-blank", a: "answer" }
-// Organized to match module content and final quiz topics.
 // ─────────────────────────────────────────────────────────────────────────────
 const FLASHCARDS = [
-
   // Module 1 — The 2030 Agenda
   { q: "What year is the target for achieving the Sustainable Development Goals?", a: "2030" },
   { q: "How many Sustainable Development Goals are in the 2030 Agenda?", a: "17 SDGs" },
@@ -343,11 +539,10 @@ const FLASHCARDS = [
   { q: "Water makes up what percentage of human blood?", a: "83%" },
   { q: "Water is the only substance naturally found in _____ physical forms.", a: "Three (solid, liquid, and gas)" },
   { q: "A faucet leaking at one drip per second can waste how many gallons per year?", a: "3,000 gallons" },
-  { q: "What is the estimated surface water potential of the Philippines?", a: "125.8 billion m³" },
-  { q: "What is the estimated groundwater potential of the Philippines?", a: "20.2 billion m³" },
-  { q: "Approximately what percentage of Philippine water resources are currently allocated?", a: "58% (based on issued water permits)" },
-  { q: "How many rivers are identified as part of the Philippines' water resources potential?", a: "421 rivers" },
-  { q: "How many lakes are identified in the Philippines' water resources potential?", a: "79 lakes" },
+  { q: "What is the longest river in the Philippines, and how much water does it discharge annually?", a: "Cagayan River — about 53,943 million cubic meters per year" },
+  { q: "Approximately what percentage of Philippine water resources is used for agriculture?", a: "83–85%" },
+  { q: "How many principal river basins does the Philippines have (over 40 km²)?", a: "421 river basins" },
+  { q: "How many natural lakes are identified in the Philippines?", a: "79 natural lakes" },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
