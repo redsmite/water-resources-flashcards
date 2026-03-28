@@ -62,7 +62,7 @@ export default function App() {
             <img src={DENR_LOGO} alt="DENR Logo" className="denr-logo" />
           </div>
           <div className="denr-agency">Department of Environment and Natural Resources</div>
-          <div className="denr-office">National Capital Region — Water Resources and Utilization Section</div>
+          <div className="denr-office">National Capital Region — Water Resources Unit</div>
           <h1 className="home-title">Water Resources<br />Management</h1>
           <p className="home-sub">A comprehensive learning platform on SDG 6, NWRB, and Philippine water governance.</p>
           <div className="home-stats">
@@ -121,7 +121,7 @@ export default function App() {
           {prog.finalDone && <span style={{ color: "#34d399", fontSize: 13, fontWeight: 600 }}>Your score: {prog.finalScore}/{TOTAL_ITEMS}</span>}
         </button>
 
-        {/* Leaderboard */}
+        {/* Leaderboard — unlocked after final assessment */}
         <div className="section-label" style={{ marginTop: 28 }}>📊 Student Results</div>
         <button className="leaderboard-card" style={{ opacity: 1, cursor: "pointer" }}
           onClick={() => setView("leaderboard")}>
@@ -135,8 +135,37 @@ export default function App() {
           <div className="fc-arrow" style={{ color: "#fbbf24" }}>→</div>
         </button>
 
+                {/* Resources tab */}
+        <div className="section-label" style={{ marginTop: 28 }}>🎬 Video References</div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 10, marginBottom: 28 }}>
+          {[
+            { id: "IDAj5T1ST7o", title: "Water Resources", sub: "explains how water is unequally distributed around the globe through the hydrologic cycles" },
+            { id: "WjYfr2YBio0", title: "PD 1067", sub: "Philippine Water Code of the Philippines" },
+            { id: "xkkUyvE1Tak", title: "NWRB Infographics", sub: "explains prcoess in the NWRB" },
+          ].map(v => (
+            <a key={v.id} href={`https://www.youtube.com/watch?v=${v.id}`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
+              <div style={{ background: "rgba(15,30,50,0.7)", border: "1px solid rgba(125,211,252,0.15)", borderRadius: 12, overflow: "hidden", cursor: "pointer" }}
+                onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.borderColor = "rgba(125,211,252,0.4)"; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = ""; e.currentTarget.style.borderColor = "rgba(125,211,252,0.15)"; }}>
+                <div style={{ position: "relative", paddingTop: "56.25%", background: "#0a0f1a" }}>
+                  <img src={`https://img.youtube.com/vi/${v.id}/mqdefault.jpg`} alt={v.title}
+                    style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.85 }} />
+                  <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <div style={{ width: 36, height: 36, borderRadius: "50%", background: "rgba(220,0,0,0.9)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <div style={{ width: 0, height: 0, borderTop: "7px solid transparent", borderBottom: "7px solid transparent", borderLeft: "12px solid white", marginLeft: 3 }} />
+                    </div>
+                  </div>
+                </div>
+                <div style={{ padding: "10px 12px" }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: "#e2e8f0", lineHeight: 1.35, marginBottom: 3 }}>{v.title}</div>
+                  <div style={{ fontSize: 11, color: "#475569", height: 100 }}>{v.sub}</div>
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+
         <div className="section-label">📖 References</div>
-        {/* Legal References - for further studies */}
         <button className="flashcard-banner" style={{ marginBottom: 20, borderColor: "rgba(251,191,36,0.2)", background: "rgba(251,191,36,0.05)" }} onClick={() => setView("resources")}>
           <div className="fc-left">
             <div className="fc-icon" style={{ background: "rgba(251,191,36,0.12)", color: "#fbbf24" }}>📖</div>
@@ -147,6 +176,7 @@ export default function App() {
           </div>
           <div className="fc-arrow" style={{ color: "#fbbf24" }}>→</div>
         </button>
+
       </div>
     </div>
   );
@@ -190,10 +220,27 @@ function FinalQuizView({ prog, update, onBack }) {
   const q = quiz[qi];
   const sel = answers[qi];
 
+  // Word-number map for fuzzy FITB matching
+  const NUM_WORDS = { "zero":0,"one":1,"two":2,"three":3,"four":4,"five":5,"six":6,"seven":7,"eight":8,"nine":9,"ten":10 };
+  const normalize = (s) => {
+    if (typeof s !== "string") return "";
+    let v = s.trim().toLowerCase().replace(/['']/g, "").replace(/[^a-z0-9\s]/g, "").replace(/\s+/g, " ").trim();
+    // normalize plural/singular: strip trailing s if >3 chars
+    if (v.length > 3 && v.endsWith("s")) v = v.slice(0, -1);
+    // normalize word numbers to digits and vice-versa
+    if (NUM_WORDS[v] !== undefined) v = String(NUM_WORDS[v]);
+    return v;
+  };
   const isCorrect = (q, a) => {
     if (q.type === "mc") return a === q.answer;
     if (q.type === "tf") return a === (q.answer ? 0 : 1);
-    if (q.type === "fitb") return typeof a === "string" && a.trim().toLowerCase() === q.answer.toLowerCase();
+    if (q.type === "fitb") {
+      if (typeof a !== "string") return false;
+      const na = normalize(a);
+      // accept any of the accepted answers (pipe-separated in q.answer, or array)
+      const accepted = Array.isArray(q.answer) ? q.answer : q.answer.split("|");
+      return accepted.some(ans => normalize(ans) === na);
+    }
     if (q.type === "multi") {
       if (!Array.isArray(a)) return false;
       const sorted = [...a].sort().join(",");
@@ -233,6 +280,10 @@ function FinalQuizView({ prog, update, onBack }) {
       clearInterval(timerRef.current);
       const finalElapsed = Math.floor((Date.now() - startTime) / 1000);
       setElapsed(finalElapsed);
+      // Save answers and questions to localStorage for review
+      try {
+        localStorage.setItem("wrm_final_review", JSON.stringify({ quiz, answers }));
+      } catch {}
       update({ ...prog, finalDone: true, finalScore: total, finalElapsed: finalElapsed });
       setDone(true);
     } else {
@@ -279,7 +330,7 @@ function FinalQuizView({ prog, update, onBack }) {
               <div className="exam-rule">📌 <span>This exam has <strong style={{color:"#e2e8f0"}}>{TOTAL_ITEMS} questions</strong> — Multiple Choice, True/False, Fill in the Blank, and Multi-select.</span></div>
               <div className="exam-rule">⏱️ <span>Answer each question carefully before proceeding. You <strong style={{color:"#e2e8f0"}}>cannot go back</strong>.</span></div>
               <div className="exam-rule">🔒 <span>You may only take this exam <strong style={{color:"#f87171"}}>once</strong>. Your score will be permanently recorded.</span></div>
-              <div className="exam-rule">🙈 <span>Questions are <strong style={{color:"#e2e8f0"}}>in randomized order</strong>. Do not share your screen with others.</span></div>
+              <div className="exam-rule">🙈 <span>Questions are <strong style={{color:"#e2e8f0"}}>randomized</strong>. Do not share your screen with others.</span></div>
               <div className="exam-rule">✍️ <span>Enter your <strong style={{color:"#e2e8f0"}}>full name</strong> at the end to save your result.</span></div>
             </div>
             <div style={{ background: "rgba(248,113,113,0.08)", border: "1px solid rgba(248,113,113,0.25)", borderRadius: 10, padding: "12px 16px", marginBottom: 24, fontSize: 13, color: "#f87171", lineHeight: 1.5 }}>
@@ -302,58 +353,13 @@ function FinalQuizView({ prog, update, onBack }) {
 
   if (done) {
     const pct = Math.round((finalScore / TOTAL_ITEMS) * 100);
-    return (
-      <div className="page"><GlobalStyles />
-        <div className="inner-wrap">
-          <div className="done-box" style={{ marginTop: 32 }}>
-            <div style={{ fontSize: 52, marginBottom: 12 }}>{pct >= 80 ? "🏆" : pct >= 60 ? "🌊" : "📚"}</div>
-            <div className="done-title">Assessment Complete!</div>
-            <div className="done-score" style={{ color: pct >= 80 ? "#34d399" : pct >= 60 ? "#fbbf24" : "#f87171" }}>
-              {finalScore}<span style={{ fontSize: 24, color: "#475569" }}>/{TOTAL_ITEMS}</span>
-            </div>
-            <div className="done-sub" style={{ marginBottom: 8 }}>{pct}% — {pct >= 80 ? "Excellent!" : pct >= 60 ? "Good Job!" : "Keep Studying!"}</div>
-            <div style={{ fontSize: 13, color: "#4a7c59", marginBottom: 24 }}>
-              ⏱ Time: {String(Math.floor(elapsed/60)).padStart(2,"0")}:{String(elapsed%60).padStart(2,"0")}
-            </div>
-
-            {/* Name input */}
-            <div style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 14, padding: "20px 18px", marginBottom: 16, textAlign: "left" }}>
-              <div style={{ fontSize: 12, color: "#94a3b8", marginBottom: 10, fontWeight: 600 }}>
-                📝 Enter your full name to save your result
-              </div>
-              {!nameLocked ? (
-                <>
-                  <div style={{ fontSize: 11, color: "#f87171", marginBottom: 10, lineHeight: 1.5 }}>
-                    ⚠️ Warning: Once submitted, your name cannot be changed.
-                  </div>
-                  <div style={{ display: "flex", gap: 8 }}>
-                    <input
-                      className="name-input"
-                      type="text"
-                      placeholder="Enter your full name..."
-                      value={name}
-                      onChange={e => setName(e.target.value)}
-                      onKeyDown={e => e.key === "Enter" && handleSaveName()}
-                    />
-                    <button className="btn primary" style={{ background: name.trim() ? "#34d399" : "rgba(255,255,255,0.05)", color: name.trim() ? "#0f172a" : "#475569", whiteSpace: "nowrap", padding: "11px 16px" }}
-                      onClick={handleSaveName} disabled={saving || !name.trim()}>
-                      {saving ? "Saving..." : "Submit"}
-                    </button>
-                  </div>
-                  {saveError && <div style={{ fontSize: 12, color: "#f87171", marginTop: 8 }}>{saveError}</div>}
-                </>
-              ) : (
-                <div style={{ color: "#34d399", fontSize: 14, fontWeight: 600 }}>
-                  ✓ Score saved for <strong>{name}</strong>!
-                </div>
-              )}
-            </div>
-
-            <button className="btn primary" style={{ background: "#fbbf24", color: "#0f172a", width: "100%" }} onClick={onBack}>← Back to Home</button>
-          </div>
-        </div>
-      </div>
-    );
+    let reviewData = null;
+    try { const r = localStorage.getItem("wrm_final_review"); reviewData = r ? JSON.parse(r) : null; } catch {}
+    return <FinalResultScreen
+      pct={pct} finalScore={finalScore} elapsed={elapsed} name={name} setName={setName}
+      nameLocked={nameLocked} saving={saving} saveError={saveError}
+      handleSaveName={handleSaveName} onBack={onBack} reviewData={reviewData} isCorrect={isCorrect}
+    />;
   }
 
   const typeLabel = { mc: "Multiple Choice", tf: "True or False", fitb: "Fill in the Blank", multi: "Select 3 Correct Answers" };
@@ -491,6 +497,115 @@ function FinalQuizView({ prog, update, onBack }) {
   );
 }
 
+// ── FINAL RESULT SCREEN ──────────────────────────────────────────────────────
+function FinalResultScreen({ pct, finalScore, elapsed, name, setName, nameLocked, saving, saveError, handleSaveName, onBack, reviewData, isCorrect }) {
+  const [showReview, setShowReview] = useState(false);
+
+  const typeLabel = { mc: "MC", tf: "T/F", fitb: "Fill in Blank", multi: "Multi-select" };
+
+  const getAnswerText = (q, a) => {
+    if (q.type === "mc") return a !== undefined ? q.options[a] : "—";
+    if (q.type === "tf") return a === 0 ? "True" : a === 1 ? "False" : "—";
+    if (q.type === "fitb") return typeof a === "string" ? a : "—";
+    if (q.type === "multi") return Array.isArray(a) ? a.map(i => q.options[i]).join(", ") : "—";
+    return "—";
+  };
+
+  const getCorrectText = (q) => {
+    if (q.type === "mc") return q.options[q.answer];
+    if (q.type === "tf") return q.answer ? "True" : "False";
+    if (q.type === "fitb") return Array.isArray(q.answer) ? q.answer[0] : q.answer;
+    if (q.type === "multi") return q.answer.map(i => q.options[i]).join(", ");
+    return "—";
+  };
+
+  return (
+    <div className="page"><GlobalStyles />
+      <div className="inner-wrap">
+        <div className="done-box" style={{ marginTop: 32 }}>
+          <div style={{ fontSize: 52, marginBottom: 12 }}>{pct >= 80 ? "🏆" : pct >= 60 ? "🌊" : "📚"}</div>
+          <div className="done-title">Assessment Complete!</div>
+          <div className="done-score" style={{ color: pct >= 80 ? "#34d399" : pct >= 60 ? "#fbbf24" : "#f87171" }}>
+            {finalScore}<span style={{ fontSize: 24, color: "#475569" }}>/{TOTAL_ITEMS}</span>
+          </div>
+          <div className="done-sub" style={{ marginBottom: 8 }}>{pct}% — {pct >= 80 ? "Excellent!" : pct >= 60 ? "Good Job!" : "Keep Studying!"}</div>
+          <div style={{ fontSize: 13, color: "#4a7c59", marginBottom: 24 }}>
+            ⏱ Time: {String(Math.floor(elapsed/60)).padStart(2,"0")}:{String(elapsed%60).padStart(2,"0")}
+          </div>
+
+          {/* Name input */}
+          <div style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 14, padding: "20px 18px", marginBottom: 16, textAlign: "left" }}>
+            <div style={{ fontSize: 12, color: "#94a3b8", marginBottom: 10, fontWeight: 600 }}>📝 Enter your full name to save your result</div>
+            {!nameLocked ? (
+              <>
+                <div style={{ fontSize: 11, color: "#f87171", marginBottom: 10, lineHeight: 1.5 }}>⚠️ Warning: Once submitted, your name cannot be changed.</div>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <input className="name-input" type="text" placeholder="Enter your full name..." value={name} onChange={e => setName(e.target.value)} onKeyDown={e => e.key === "Enter" && handleSaveName()} />
+                  <button className="btn primary" style={{ background: name.trim() ? "#34d399" : "rgba(255,255,255,0.05)", color: name.trim() ? "#0f172a" : "#475569", whiteSpace: "nowrap", padding: "11px 16px" }}
+                    onClick={handleSaveName} disabled={saving || !name.trim()}>{saving ? "Saving..." : "Submit"}</button>
+                </div>
+                {saveError && <div style={{ fontSize: 12, color: "#f87171", marginTop: 8 }}>{saveError}</div>}
+              </>
+            ) : (
+              <div style={{ color: "#34d399", fontSize: 14, fontWeight: 600 }}>✓ Score saved for <strong>{name}</strong>!</div>
+            )}
+          </div>
+
+          {/* Review toggle button */}
+          {reviewData && (
+            <button className="btn ghost" style={{ width: "100%", marginBottom: 10, color: "#818cf8", borderColor: "rgba(129,140,248,0.3)", background: "rgba(129,140,248,0.06)" }}
+              onClick={() => setShowReview(r => !r)}>
+              {showReview ? "▲ Hide Answer Review" : "▼ Review My Answers"}
+            </button>
+          )}
+
+          <button className="btn primary" style={{ background: "#fbbf24", color: "#0f172a", width: "100%" }} onClick={onBack}>← Back to Home</button>
+        </div>
+
+        {/* Answer Review Panel */}
+        {showReview && reviewData && (
+          <div style={{ marginTop: 20, display: "flex", flexDirection: "column", gap: 10 }}>
+            <div style={{ fontSize: 11, letterSpacing: 2, textTransform: "uppercase", color: "#475569", marginBottom: 4 }}>Answer Review</div>
+            {reviewData.quiz.map((q, i) => {
+              const a = reviewData.answers[i];
+              const correct = isCorrect(q, a);
+              return (
+                <div key={i} style={{
+                  background: correct ? "rgba(52,211,153,0.06)" : "rgba(248,113,113,0.06)",
+                  border: `1px solid ${correct ? "rgba(52,211,153,0.2)" : "rgba(248,113,113,0.2)"}`,
+                  borderRadius: 12, padding: "14px 16px",
+                }}>
+                  <div style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 8 }}>
+                    <span style={{ fontSize: 16, flexShrink: 0 }}>{correct ? "✅" : "❌"}</span>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 11, color: "#475569", marginBottom: 4 }}>
+                        Q{i + 1} · {typeLabel[q.type]}
+                      </div>
+                      <div style={{ fontSize: 14, color: "#e2e8f0", fontWeight: 600, lineHeight: 1.4 }}>{q.q}</div>
+                    </div>
+                  </div>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, paddingLeft: 26 }}>
+                    <div style={{ background: correct ? "rgba(52,211,153,0.1)" : "rgba(248,113,113,0.1)", borderRadius: 8, padding: "8px 10px" }}>
+                      <div style={{ fontSize: 10, color: correct ? "#34d399" : "#f87171", letterSpacing: 1, textTransform: "uppercase", marginBottom: 3 }}>Your Answer</div>
+                      <div style={{ fontSize: 13, color: correct ? "#34d399" : "#f87171", fontWeight: 600 }}>{getAnswerText(q, a)}</div>
+                    </div>
+                    {!correct && (
+                      <div style={{ background: "rgba(52,211,153,0.1)", borderRadius: 8, padding: "8px 10px" }}>
+                        <div style={{ fontSize: 10, color: "#34d399", letterSpacing: 1, textTransform: "uppercase", marginBottom: 3 }}>Correct Answer</div>
+                        <div style={{ fontSize: 13, color: "#34d399", fontWeight: 600 }}>{getCorrectText(q)}</div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ── LEADERBOARD ───────────────────────────────────────────────────────────────
 function LeaderboardView({ onBack }) {
   const [results, setResults] = useState([]);
@@ -540,6 +655,45 @@ function LeaderboardView({ onBack }) {
         {!loading && !error && results.length === 0 && (
           <div style={{ textAlign: "center", color: "#475569", padding: 40, fontSize: 14 }}>No results yet.</div>
         )}
+
+        {/* Score Distribution Bar Chart
+        {!loading && results.length > 0 && (() => {
+          const buckets = [
+            { label: "0–49%", min: 0, max: 49, color: "#f87171" },
+            { label: "50–64%", min: 50, max: 64, color: "#fb923c" },
+            { label: "65–74%", min: 65, max: 74, color: "#fbbf24" },
+            { label: "75–84%", min: 75, max: 84, color: "#86efac" },
+            { label: "85–100%", min: 85, max: 100, color: "#34d399" },
+          ];
+          const counts = buckets.map(b => ({
+            ...b,
+            count: results.filter(r => { const p = Math.round((r.score / (r.total || TOTAL_ITEMS)) * 100); return p >= b.min && p <= b.max; }).length
+          }));
+          const maxCount = Math.max(...counts.map(b => b.count), 1);
+          return (
+            <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: "18px 20px", marginBottom: 16 }}>
+              <div style={{ fontSize: 11, letterSpacing: 2, textTransform: "uppercase", color: "#475569", marginBottom: 16 }}>Score Distribution</div>
+              <div style={{ display: "flex", alignItems: "flex-end", gap: 8, height: 100 }}>
+                {counts.map((b, i) => (
+                  <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 4, height: "100%", justifyContent: "flex-end" }}>
+                    {b.count > 0 && <div style={{ fontSize: 11, color: b.color, fontWeight: 700 }}>{b.count}</div>}
+                    <div style={{
+                      width: "100%", borderRadius: "4px 4px 0 0",
+                      height: `${Math.max((b.count / maxCount) * 80, b.count > 0 ? 6 : 0)}px`,
+                      background: b.count > 0 ? b.color : "rgba(255,255,255,0.05)",
+                      transition: "height 0.4s ease", minHeight: 2,
+                    }} />
+                  </div>
+                ))}
+              </div>
+              <div style={{ display: "flex", gap: 8, marginTop: 6 }}>
+                {counts.map((b, i) => (
+                  <div key={i} style={{ flex: 1, textAlign: "center", fontSize: 9, color: "#475569" }}>{b.label}</div>
+                ))}
+              </div>
+            </div>
+          );
+        })()} */}
 
         {!loading && results.length > 0 && (
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -719,7 +873,7 @@ function ModuleView({ mod, prog, update, onBack }) {
           <>
             <div className="tabs">
               {mod.chapters.map((c, i) => (
-                <button key={i} className={`tab ${ch === i ? "active" : ""}`} style={{ "--c": mod.color }} onClick={() => setCh(i)}>
+                <button key={i} className={`tab ${ch === i ? "active" : ""}`} style={{ "--c": mod.color }} onClick={() => { setCh(i); window.scrollTo({ top: 0, behavior: "smooth" }); }}>
                   {i + 1}. {c.title}
                 </button>
               ))}
@@ -1072,6 +1226,8 @@ function GlobalStyles() {
       .fc-card-wrap { width: 100%; perspective: 1000px; cursor: pointer; margin-bottom: 4px; -webkit-tap-highlight-color: transparent; }
       .fc-inner { position: relative; width: 100%; min-height: 220px; transform-style: preserve-3d; transition: transform 0.42s cubic-bezier(0.4,0,0.2,1); }
       .fc-inner.flipped { transform: rotateY(180deg); }
+      .flipped .fc-front { opacity: 0; pointer-events: none;}
+      .fc-front { transition: opacity 0.42s; }
       .fc-face { position: absolute; width: 100%; min-height: 220px; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 28px 22px; }
       .fc-front { background: linear-gradient(145deg, rgba(26,79,138,0.5), rgba(15,56,100,0.6)); border: 1px solid rgba(125,211,252,0.2); }
       .fc-back { background: linear-gradient(145deg, rgba(26,107,47,0.5), rgba(15,70,30,0.6)); border: 1px solid rgba(74,222,128,0.2); transform: rotateY(180deg); }

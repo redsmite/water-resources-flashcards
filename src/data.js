@@ -446,13 +446,13 @@ const FINAL_QUIZ = [
   // Module 1
   { type: "mc", q: "What is the target year for achieving the Sustainable Development Goals under the 2030 Agenda?", options: ["2025", "2030", "2035", "2040"], answer: 1 },
   { type: "tf", q: "SDG 6.2 specifically targets increasing water-use efficiency to address water scarcity.", answer: false },
-  { type: "fitb", q: "The 2030 Agenda is built around five dimensions called the '5 _____'.", answer: "p's" },
+  { type: "fitb", q: "The 2030 Agenda is built around five dimensions called the '5 _____'.", answer: "p's|p|ps" },
   { type: "multi", q: "Which of the following are among the 5 P's of the 2030 Agenda? (Select 3)", options: ["People", "Power", "Planet", "Prosperity", "Progress"], answer: [0, 2, 3] },
   // Module 2
   { type: "mc", q: "What is the official vision of the National Water Resources Board?", options: ["Clean Water for Every Filipino", "Sustainable Water for a Healthy Nation", "Water Security for Economic Growth", "Safe Water through Good Governance"], answer: 1 },
   { type: "tf", q: "The NWRB Board is chaired by the Secretary of the DENR.", answer: true },
-  { type: "fitb", q: "The NWRB performs Economic Regulation by setting water _____ for private providers.", answer: "tariffs" },
-  { type: "multi", q: "Which of the following are core functional areas of the NWRB? (Select 3)", options: ["Policy Formulation", "Military Coordination", "Resource Regulation", "Economic Regulation", "Land Surveying"], answer: [0, 2, 3] },
+  { type: "fitb", q: "The NWRB performs Economic Regulation by setting water _____ for private providers.", answer: "tariffs|tariff" },
+  { type: "multi", q: "Which of the following are core functional areas of the NWRB? (Select 3)", options: ["Policy Formulation", "Flood Control & Infrastructure Management", "Resource Regulation", "Economic Regulation", "Environmental Impact Assessment & Compliance"], answer: [0, 2, 3] },
   // Module 3
   { type: "mc", q: "Which executive order established the Water Resources Management Office (WRMO) under DENR?", options: ["EO 123", "EO 860", "EO 22", "EO 124-A"], answer: 2 },
   { type: "tf", q: "Presidential Decree 424, which created the NWRC, was enacted in 1974.", answer: true },
@@ -464,12 +464,12 @@ const FINAL_QUIZ = [
   // Module 5
   { type: "mc", q: "Presidential Decree 1067 enacted in 1976 is officially known as:", options: ["Clean Water Act", "Water Resources Code", "Water Code of the Philippines", "Environmental Management Act"], answer: 2 },
   { type: "tf", q: "Under the Water Code, all waters belong to the State and cannot be acquired through acquisitive prescription.", answer: true },
-  { type: "fitb", q: "The legal document that serves as evidence of a water right is called a Water _____.", answer: "permit" },
+  { type: "multi", q: "'Waters' under the Code (Article 4) refers to:", options: ["groundwater", "bottled mineral water", "rivers", "recycled wastewater", "atmosphere"], answer: [0, 2, 4] },
+  { type: "fitb", q: "The legal document that serves as evidence of a water right is called a Water _____.", answer: "permit|permits" },
   { type: "mc", q: "What does CPC stand for in the context of NWRB economic regulation?", options: ["Central Planning Coordination", "Certificate of Public Convenience", "Community Protection Charter", "Comprehensive Permit Clearance"], answer: 1 },
   // Module 6
   { type: "mc", q: "What percentage of global water is fresh water?", options: ["10.5%", "2.8%", "15.2%", "5.0%"], answer: 1 },
-  { type: "tf", q: "Water is the only substance found naturally in three physical forms: solid, liquid, and gas.", answer: true },
-  { type: "fitb", q: "Humans can survive only _____ days without water.", answer: "3" },
+  { type: "fitb", q: "Humans can survive only _____ days without water.", answer: "3|three" },
   { type: "multi", q: "Which of the following are SDG 6 targets? (Select 3)", options: ["Safe drinking water", "Zero hunger", "End open defecation", "Renewable energy", "Protect water ecosystems"], answer: [0, 2, 4] },
 ];
 
