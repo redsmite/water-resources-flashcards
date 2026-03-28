@@ -62,7 +62,7 @@ export default function App() {
             <img src={DENR_LOGO} alt="DENR Logo" className="denr-logo" />
           </div>
           <div className="denr-agency">Department of Environment and Natural Resources</div>
-          <div className="denr-office">National Capital Region — Water Resources Unit</div>
+          <div className="denr-office">National Capital Region — Water Resources Utilization Section</div>
           <h1 className="home-title">Water Resources<br />Management</h1>
           <p className="home-sub">A comprehensive learning platform on SDG 6, NWRB, and Philippine water governance.</p>
           <div className="home-stats">
@@ -948,7 +948,7 @@ function AssessorPage() {
         <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 24 }}>
           <img src={DENR_LOGO} alt="DENR" style={{ width: 48, height: 48, borderRadius: "50%" }} />
           <div>
-            <div style={{ fontSize: 10, letterSpacing: 2, color: "#4ade80", textTransform: "uppercase" }}>DENR-NCR Water Resources Unit</div>
+            <div style={{ fontSize: 10, letterSpacing: 2, color: "#4ade80", textTransform: "uppercase" }}>DENR-NCR Water Resources Utilization Section</div>
             <div style={{ fontSize: 18, fontWeight: 700, color: "#f0fdf4" }}>Assessor Dashboard</div>
           </div>
         </div>
