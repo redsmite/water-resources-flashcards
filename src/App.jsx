@@ -6,10 +6,10 @@ import { getFirestore } from "firebase/firestore";
 
 import { DENR_LOGO, MODULES, FLASHCARDS, TOTAL_ITEMS } from "./data.js";
 
-import { ModuleView }      from "./chapter/chapter.jsx";
-import { FlashcardsView }  from "./flashcard/flashcard.jsx";
-import { FinalQuizView, LeaderboardView } from "./final_exam/final_exam.jsx";
-import { ResourcesView, VideoSection }    from "./resources/resources.jsx";
+import { ModuleView }      from "./chapter/Chapter.jsx";
+import { FlashcardsView }  from "./flashcard/Flashcard.jsx";
+import { FinalQuizView, LeaderboardView } from "./final_exam/Final_exam.jsx";
+import { ResourcesView, VideoSection }    from "./resources/Resources.jsx";
 
 // ── Firebase ──────────────────────────────────────────────────────────────────
 const firebaseConfig = {
