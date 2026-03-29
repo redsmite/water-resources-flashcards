@@ -351,8 +351,11 @@ Compliance and Monitoring:
 
 📌 Permits may be suspended or revoked for non-use, gross violations, unauthorized sale of water, or pollution of water bodies (Articles 28–29).
 
-💡 Fun fact: Water permits are transferable — if a water right is no longer needed, it can be leased or sold to another eligible party with NWRB approval.`,
-      },
+💡 Fun fact: Water permits are transferable — if a water right is no longer needed, it can be leased or sold to another eligible party with NWRB approval.
+
+❓ There is an active moratorium (NWRB Resolution No. 001‑0904) set by the NWRB that prohibits new deep well construction and groundwater extraction in Metro Manila to protect against aquifer depletion, contamination, and land subsidence.`, 
+
+},
     ],
     quiz: [
       { q: "Under the Regalian Doctrine, who do all waters in the Philippines belong to?", options: ["Local Government Units", "The State", "Private Landowners", "The NWRB"], answer: 1 },
@@ -464,12 +467,12 @@ const FINAL_QUIZ = [
   // Module 5
   { type: "mc", q: "Presidential Decree 1067 enacted in 1976 is officially known as:", options: ["Clean Water Act", "Water Resources Code", "Water Code of the Philippines", "Environmental Management Act"], answer: 2 },
   { type: "tf", q: "Under the Water Code, all waters belong to the State and cannot be acquired through acquisitive prescription.", answer: true },
-  { type: "multi", q: "'Waters' under the Code (Article 4) refers to: (Select 3)", options: ["groundwater", "bottled mineral water", "rivers", "recycled wastewater", "atmosphere"], answer: [0, 2, 4] },
+  { type: "multi", q: "Under Article 4 of the Water Code of the Philippines, which of the following are explicitly classified as 'Waters' within the jurisdiction of the State? (Select 3)", options: ["Groundwater", "Bottled Mineral Water", "Rivers", "Recycled Wastewater", "Atmosphere"], answer: [0, 2, 4] },
   { type: "fitb", q: "The legal document that serves as evidence of a water right is called a Water _____.", answer: "permit|permits" },
   { type: "mc", q: "What does CPC stand for in the context of NWRB economic regulation?", options: ["Central Planning Coordination", "Certificate of Public Convenience", "Community Protection Charter", "Comprehensive Permit Clearance"], answer: 1 },
+  { type: "mc", q: "What specific legal restriction imposed by the NWRB Resolution No. 001-0904 regarding groundwater extraction in Metro Manila?", options: ["Manifesto", "Mandate", "Moratorium", "Memorandum"], answer: 2 },
   // Module 6
   { type: "mc", q: "What percentage of global water is fresh water?", options: ["10.5%", "2.8%", "15.2%", "5.0%"], answer: 1 },
-  { type: "fitb", q: "Humans can survive only _____ days without water.", answer: "3|three" },
   { type: "multi", q: "Which of the following are SDG 6 targets? (Select 3)", options: ["Safe drinking water", "Zero hunger", "End open defecation", "Renewable energy", "Protect water ecosystems"], answer: [0, 2, 4] },
 ];
 
@@ -531,6 +534,7 @@ const FLASHCARDS = [
   { q: "A Certificate of Potability for a CPC application must be issued within _____ months prior to filing.", a: "Six (6) months" },
   { q: "Physical and Chemical impurity tests for a CPC application must be conducted at least _____ per year.", a: "Once (one year)" },
   { q: "What must a water permit grantee submit within one year of approval?", a: "Plans and specifications for diversion works and distribution systems" },
+  { q: "What specific legal restriction imposed by the NWRB Resolution No. 001-0904 regarding groundwater extraction in Metro Manila?", a: "Moratorium" },
 
   // Module 6 — Water Facts
   { q: "What percentage of global water is salt water?", a: "97.2%" },
@@ -540,7 +544,6 @@ const FLASHCARDS = [
   { q: "Water is the only substance naturally found in _____ physical forms.", a: "Three (solid, liquid, and gas)" },
   { q: "A faucet leaking at one drip per second can waste how many gallons per year?", a: "3,000 gallons" },
   { q: "What is the longest river in the Philippines, and how much water does it discharge annually?", a: "Cagayan River — about 53,943 million cubic meters per year" },
-  { q: "Approximately what percentage of Philippine water resources is used for agriculture?", a: "83–85%" },
   { q: "How many principal river basins does the Philippines have (over 40 km²)?", a: "421 river basins" },
   { q: "How many natural lakes are identified in the Philippines?", a: "79 natural lakes" },
 ];

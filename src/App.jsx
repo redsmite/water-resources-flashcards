@@ -35,15 +35,44 @@ function loadP() {
 }
 function saveP(p) { try { localStorage.setItem(KEY, JSON.stringify(p)); } catch {} }
 
+// ── Helpers to detect exam state from localStorage ────────────────────────────
+function examIsOngoing() {
+  try {
+    const raw = localStorage.getItem("wrm_exam_progress");
+    if (!raw) return false;
+    const s = JSON.parse(raw);
+    return !!s?.started;
+  } catch { return false; }
+}
+
+function hasPendingSave() {
+  try {
+    return !!localStorage.getItem("wrm_pending_save");
+  } catch { return false; }
+}
+
+function hasReviewData() {
+  try {
+    return !!localStorage.getItem("wrm_final_review");
+  } catch { return false; }
+}
+
 // ── App ───────────────────────────────────────────────────────────────────────
 export default function App() {
   const [prog, setProg]   = useState(loadP);
-  const [view, setView]   = useState("home");
+  const [view, setView]   = useState(() => {
+    // If there's a pending save (exam done but name not submitted), go straight to final
+    if (hasPendingSave()) return "final";
+    return "home";
+  });
   const [modIdx, setModIdx] = useState(null);
 
   const update = (p) => { setProg(p); saveP(p); };
   const completedCount = Object.keys(prog.completed).length;
   const allDone = completedCount >= MODULES.length;
+
+  // Detect if exam is currently in-progress (blocks other navigation)
+  const examOngoing = examIsOngoing();
 
   // ── Route to sub-pages ────────────────────────────────────────────────────
   if (view === "module")      return <ModuleView     mod={MODULES[modIdx]} prog={prog} update={update} onBack={() => setView("home")} />;
@@ -57,6 +86,28 @@ export default function App() {
     <div className="page">
       <div className="home-wrap">
         <div className="denr-stripe" />
+
+        {/* ── Exam lockout banner ── */}
+        {examOngoing && (
+          <div style={{
+            background:"rgba(248,113,113,0.1)", border:"1px solid rgba(248,113,113,0.35)",
+            borderRadius:12, padding:"14px 18px", marginBottom:20,
+            display:"flex", alignItems:"center", gap:14,
+          }}>
+            <span style={{ fontSize:22 }}>🔒</span>
+            <div style={{ flex:1 }}>
+              <div style={{ fontSize:13, color:"#f87171", fontWeight:700, marginBottom:3 }}>Exam In Progress</div>
+              <div style={{ fontSize:12, color:"#94a3b8", lineHeight:1.5 }}>
+                You have an unfinished exam. Modules, flashcards, and references are locked until you complete it.
+              </div>
+            </div>
+            <button className="btn primary"
+              style={{ background:"#f87171", color:"#fff", whiteSpace:"nowrap", padding:"10px 16px", fontSize:13, flexShrink:0 }}
+              onClick={() => setView("final")}>
+              Resume Exam →
+            </button>
+          </div>
+        )}
 
         {/* Header */}
         <header className="home-header">
@@ -78,7 +129,19 @@ export default function App() {
 
         {/* Learning Modules */}
         <div className="section-label">📚 Learning Modules</div>
-        <div className="module-grid">
+        <div className="module-grid" style={{ position:"relative" }}>
+          {/* Overlay to block modules during exam */}
+          {examOngoing && (
+            <div style={{
+              position:"absolute", inset:0, zIndex:10,
+              background:"rgba(15,23,42,0.7)", borderRadius:16,
+              display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:8,
+              backdropFilter:"blur(2px)",
+            }}>
+              <span style={{ fontSize:28 }}>🔒</span>
+              <span style={{ fontSize:13, color:"#f87171", fontWeight:700 }}>Locked during exam</span>
+            </div>
+          )}
           {MODULES.map((mod, i) => {
             const done  = !!prog.completed[mod.id];
             const score = prog.scores[mod.id];
@@ -87,7 +150,8 @@ export default function App() {
                 key={mod.id}
                 className="mod-card"
                 style={{ "--c": mod.color, borderColor: done ? mod.color + "44" : "rgba(255,255,255,0.07)" }}
-                onClick={() => { setModIdx(i); setView("module"); }}
+                onClick={() => !examOngoing && (setModIdx(i), setView("module"))}
+                disabled={examOngoing}
               >
                 <div className="card-top">
                   <div className="mod-icon" style={{ background: mod.color + "22", color: mod.color }}>{mod.icon}</div>
@@ -105,12 +169,17 @@ export default function App() {
 
         {/* Flashcards */}
         <div className="section-label" style={{ marginTop: 28 }}>🃏 Flashcard Review</div>
-        <button className="flashcard-banner" onClick={() => setView("flashcards")}>
+        <button
+          className="flashcard-banner"
+          onClick={() => !examOngoing && setView("flashcards")}
+          disabled={examOngoing}
+          style={{ opacity: examOngoing ? 0.4 : 1, cursor: examOngoing ? "not-allowed" : "pointer" }}
+        >
           <div className="fc-left">
-            <div className="fc-icon">🃏</div>
+            <div className="fc-icon">{examOngoing ? "🔒" : "🃏"}</div>
             <div>
               <div className="fc-title">Study Flashcards</div>
-              <div className="fc-sub">{FLASHCARDS.length} cards covering all 6 modules</div>
+              <div className="fc-sub">{examOngoing ? "Locked during exam" : `${FLASHCARDS.length} cards covering all 6 modules`}</div>
             </div>
           </div>
           <div className="fc-arrow">→</div>
@@ -139,6 +208,27 @@ export default function App() {
           )}
         </button>
 
+        {/* Answer Review — only visible after exam is done */}
+        {hasReviewData() && (
+          <>
+            <div className="section-label" style={{ marginTop: 28 }}>📝 Answer Review</div>
+            <button
+              className="flashcard-banner"
+              style={{ borderColor:"rgba(129,140,248,0.25)", background:"rgba(129,140,248,0.05)", marginBottom:0 }}
+              onClick={() => setView("final")}
+            >
+              <div className="fc-left">
+                <div className="fc-icon" style={{ background:"rgba(129,140,248,0.15)", color:"#818cf8" }}>📝</div>
+                <div>
+                  <div className="fc-title" style={{ color:"#818cf8" }}>Review Your Answers</div>
+                  <div className="fc-sub">See which questions you got right or wrong</div>
+                </div>
+              </div>
+              <div className="fc-arrow" style={{ color:"#818cf8" }}>→</div>
+            </button>
+          </>
+        )}
+
         {/* Leaderboard */}
         <div className="section-label" style={{ marginTop: 28 }}>📊 Student Results</div>
         <button className="leaderboard-card" style={{ opacity: 1, cursor: "pointer" }} onClick={() => setView("leaderboard")}>
@@ -160,17 +250,24 @@ export default function App() {
         <div className="section-label">📖 References</div>
         <button
           className="flashcard-banner"
-          style={{ marginBottom: 20, borderColor: "rgba(251,191,36,0.2)", background: "rgba(251,191,36,0.05)" }}
-          onClick={() => setView("resources")}
+          style={{
+            marginBottom: 20, borderColor: examOngoing ? "rgba(248,113,113,0.2)" : "rgba(251,191,36,0.2)",
+            background: examOngoing ? "rgba(248,113,113,0.04)" : "rgba(251,191,36,0.05)",
+            opacity: examOngoing ? 0.4 : 1, cursor: examOngoing ? "not-allowed" : "pointer",
+          }}
+          onClick={() => !examOngoing && setView("resources")}
+          disabled={examOngoing}
         >
           <div className="fc-left">
-            <div className="fc-icon" style={{ background: "rgba(251,191,36,0.12)", color: "#fbbf24" }}>📖</div>
+            <div className="fc-icon" style={{ background: examOngoing ? "rgba(248,113,113,0.12)" : "rgba(251,191,36,0.12)", color: examOngoing ? "#f87171" : "#fbbf24" }}>
+              {examOngoing ? "🔒" : "📖"}
+            </div>
             <div>
-              <div className="fc-title" style={{ color: "#fbbf24" }}>Legal References</div>
-              <div className="fc-sub">PD 424, PD 1067, PD 1206, EO 124-A, EO 123, EO 860, EO 22</div>
+              <div className="fc-title" style={{ color: examOngoing ? "#f87171" : "#fbbf24" }}>Legal References</div>
+              <div className="fc-sub">{examOngoing ? "Locked during exam" : "PD 424, PD 1067, PD 1206, EO 124-A, EO 123, EO 860, EO 22"}</div>
             </div>
           </div>
-          <div className="fc-arrow" style={{ color: "#fbbf24" }}>→</div>
+          <div className="fc-arrow" style={{ color: examOngoing ? "#f87171" : "#fbbf24" }}>→</div>
         </button>
       </div>
     </div>
