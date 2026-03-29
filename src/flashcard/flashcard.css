@@ -1,0 +1,75 @@
+/* ── flashcard/flashcard.css ─────────────────────────────────────────────── */
+
+.fc-card-wrap {
+  width: 100%;
+  perspective: 1000px;
+  cursor: pointer;
+  margin-bottom: 4px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.fc-inner {
+  position: relative;
+  width: 100%;
+  min-height: 220px;
+  transform-style: preserve-3d;
+  transition: transform 0.42s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fc-inner.flipped {
+  transform: rotateY(180deg);
+}
+
+.fc-inner.flipped .fc-front {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.fc-front {
+  transition: opacity 0.42s;
+}
+
+.fc-face {
+  position: absolute;
+  width: 100%;
+  min-height: 220px;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 28px 22px;
+}
+
+.fc-front {
+  background: linear-gradient(145deg, rgba(26,79,138,0.5), rgba(15,56,100,0.6));
+  border: 1px solid rgba(125, 211, 252, 0.2);
+}
+
+.fc-back {
+  background: linear-gradient(145deg, rgba(26,107,47,0.5), rgba(15,70,30,0.6));
+  border: 1px solid rgba(74, 222, 128, 0.2);
+  transform: rotateY(180deg);
+}
+
+/* done box (shared) */
+.done-box {
+  background: rgba(26, 107, 47, 0.08);
+  border: 1px solid rgba(74, 222, 128, 0.12);
+  border-radius: 20px;
+  padding: 44px 28px;
+  text-align: center;
+}
+
+.done-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #f0fdf4;
+  margin-bottom: 8px;
+}
+
+@media (max-width: 480px) {
+  .done-box { padding: 32px 18px; }
+}

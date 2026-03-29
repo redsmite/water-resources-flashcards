@@ -464,7 +464,7 @@ const FINAL_QUIZ = [
   // Module 5
   { type: "mc", q: "Presidential Decree 1067 enacted in 1976 is officially known as:", options: ["Clean Water Act", "Water Resources Code", "Water Code of the Philippines", "Environmental Management Act"], answer: 2 },
   { type: "tf", q: "Under the Water Code, all waters belong to the State and cannot be acquired through acquisitive prescription.", answer: true },
-  { type: "multi", q: "'Waters' under the Code (Article 4) refers to:", options: ["groundwater", "bottled mineral water", "rivers", "recycled wastewater", "atmosphere"], answer: [0, 2, 4] },
+  { type: "multi", q: "'Waters' under the Code (Article 4) refers to: (Select 3)", options: ["groundwater", "bottled mineral water", "rivers", "recycled wastewater", "atmosphere"], answer: [0, 2, 4] },
   { type: "fitb", q: "The legal document that serves as evidence of a water right is called a Water _____.", answer: "permit|permits" },
   { type: "mc", q: "What does CPC stand for in the context of NWRB economic regulation?", options: ["Central Planning Coordination", "Certificate of Public Convenience", "Community Protection Charter", "Comprehensive Permit Clearance"], answer: 1 },
   // Module 6
