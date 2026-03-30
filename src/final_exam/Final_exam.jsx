@@ -309,7 +309,7 @@ export function FinalQuizView({ prog, update, onBack, db }) {
                   <div className="exam-rule">📌 <span>This exam has <strong style={{color:"#e2e8f0"}}>{TOTAL_ITEMS} questions</strong> — MC, True/False, Fill in the Blank, Multi-select.</span></div>
                   <div className="exam-rule">⏱️ <span>Answer carefully. You <strong style={{color:"#e2e8f0"}}>cannot go back</strong> to a previous question.</span></div>
                   <div className="exam-rule">🔒 <span>You may only take this exam <strong style={{color:"#f87171"}}>once</strong>.</span></div>
-                  <div className="exam-rule">🙈 <span>Questions are <strong style={{color:"#e2e8f0"}}>in a randomized order</strong>. Do not share your screen.</span></div>
+                  <div className="exam-rule">🙈 <span>Questions are in a <strong style={{color:"#e2e8f0"}}>randomized order</strong>. Do not share your screen.</span></div>
                   <div className="exam-rule">✍️ <span>Enter your <strong style={{color:"#e2e8f0"}}>full name</strong> at the end to save your result.</span></div>
                   <div className="exam-rule">💾 <span>Progress is <strong style={{color:"#e2e8f0"}}>auto-saved</strong>. Refreshing or going back won't lose your answers.</span></div>
                   <div className="exam-rule">🚫 <span>Leaving the exam screen mid-exam adds a <strong style={{color:"#f87171"}}>1-minute time penalty</strong>.</span></div>
