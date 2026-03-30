@@ -49,9 +49,9 @@ export function ResourcesView({ onBack }) {
 
 // ── Video Reference Section (used inline on home page) ────────────────────────
 const VIDEOS = [
-  { id: "IDAj5T1ST7o", title: "Water Resources",          sub: "How water is distributed around the globe through the hydrologic cycle" },
-  { id: "WjYfr2YBio0", title: "PD 1067",                  sub: "Philippine Water Code of the Philippines" },
-  { id: "xkkUyvE1Tak", title: "NWRB Infographics",        sub: "Processes and functions of the NWRB" },
+  { id: "3Tp9511m4t8", title: "The Blue Covenant (SDG 6 and Agenda 2030) Water Resources Management",          sub: "Explains the 2030 Agenda and SDG 6" },
+  { id: "NdpXk2MNJOE", title: "Who Owns the Water in the Philippines? (PD 1067 and NWRB)",                  sub: "Explains the PD 1067 The Water Code of the Philippines and NWRB structure, functions and processes" },
+  { id: "WasEH5GuTGU", title: "The Crisis is No Longer \"Coming\"—It’s Here (WRMO and IWMP)",        sub: "Explains the EO 22, WRMO and the IWMP" },
 ];
 
 export function VideoSection() {
