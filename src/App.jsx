@@ -1,5 +1,5 @@
 // ── App.jsx ───────────────────────────────────────────────────────────────────
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./global.css";
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
@@ -22,9 +22,11 @@ const firebaseConfig = {
 };
 const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
-// change file name
+
 // ── Local storage ─────────────────────────────────────────────────────────────
-const KEY = "wrm_v3";
+const KEY       = "wrm_v3";
+const THEME_KEY = "wrm_theme";
+
 function loadP() {
   try {
     const r = localStorage.getItem(KEY);
@@ -35,7 +37,17 @@ function loadP() {
 }
 function saveP(p) { try { localStorage.setItem(KEY, JSON.stringify(p)); } catch {} }
 
-// ── Helpers to detect exam state from localStorage ────────────────────────────
+function loadTheme() {
+  try {
+    const savedTheme = localStorage.getItem(THEME_KEY);
+    return savedTheme === "dark" ? "dark" : "light";   // ← Light is now default
+  } catch {
+    return "light";   // ← Changed default to light
+  }
+}
+function saveTheme(t) { try { localStorage.setItem(THEME_KEY, t); } catch {} }
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
 function examIsOngoing() {
   try {
     const raw = localStorage.getItem("wrm_exam_progress");
@@ -44,50 +56,69 @@ function examIsOngoing() {
     return !!s?.started;
   } catch { return false; }
 }
-
 function hasPendingSave() {
-  try {
-    return !!localStorage.getItem("wrm_pending_save");
-  } catch { return false; }
+  try { return !!localStorage.getItem("wrm_pending_save"); } catch { return false; }
+}
+function hasReviewData() {
+  try { return !!localStorage.getItem("wrm_final_review"); } catch { return false; }
 }
 
-function hasReviewData() {
-  try {
-    return !!localStorage.getItem("wrm_final_review");
-  } catch { return false; }
+// ── Theme Toggle Button ───────────────────────────────────────────────────────
+function ThemeToggle({ theme, onToggle }) {
+  return (
+    <button
+      onClick={onToggle}
+      aria-label="Toggle theme"
+      className="theme-toggle"
+    >
+      <span className="theme-toggle-icon">
+        {theme === "dark" ? "☀️" : "🌙"}
+      </span>
+      {theme === "dark" ? "Light" : "Dark"}
+    </button>
+  );
 }
 
 // ── App ───────────────────────────────────────────────────────────────────────
 export default function App() {
-  const [prog, setProg]   = useState(loadP);
-  const [view, setView]   = useState(() => {
-    // If there's a pending save (exam done but name not submitted), go straight to final
+  const [prog, setProg]     = useState(loadP);
+  const [theme, setTheme]   = useState(loadTheme);   // Now defaults to light
+  const [view, setView]     = useState(() => {
     if (hasPendingSave()) return "final";
     return "home";
   });
   const [modIdx, setModIdx] = useState(null);
 
+  // Apply data-theme to <html>
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    saveTheme(theme);
+  }, [theme]);
+
+  const toggleTheme = () => setTheme(t => t === "dark" ? "light" : "dark");
+
   const update = (p) => { setProg(p); saveP(p); };
   const completedCount = Object.keys(prog.completed).length;
   const allDone = completedCount >= MODULES.length;
-
-  // Detect if exam is currently in-progress (blocks other navigation)
   const examOngoing = examIsOngoing();
 
+  const toggle = <ThemeToggle theme={theme} onToggle={toggleTheme} />;
+
   // ── Route to sub-pages ────────────────────────────────────────────────────
-  if (view === "module")      return <ModuleView     mod={MODULES[modIdx]} prog={prog} update={update} onBack={() => setView("home")} />;
-  if (view === "flashcards")  return <FlashcardsView onBack={() => setView("home")} />;
-  if (view === "final")       return <FinalQuizView  prog={prog} update={update} onBack={() => setView("home")} db={db} />;
-  if (view === "leaderboard") return <LeaderboardView onBack={() => setView("home")} db={db} />;
-  if (view === "resources")   return <ResourcesView  onBack={() => setView("home")} />;
+  if (view === "module")      return <>{toggle}<ModuleView     mod={MODULES[modIdx]} prog={prog} update={update} onBack={() => setView("home")} /></>;
+  if (view === "flashcards")  return <>{toggle}<FlashcardsView onBack={() => setView("home")} /></>;
+  if (view === "final")       return <>{toggle}<FinalQuizView  prog={prog} update={update} onBack={() => setView("home")} db={db} /></>;
+  if (view === "leaderboard") return <>{toggle}<LeaderboardView onBack={() => setView("home")} db={db} /></>;
+  if (view === "resources")   return <>{toggle}<ResourcesView  onBack={() => setView("home")} /></>;
 
   // ── Home screen ───────────────────────────────────────────────────────────
   return (
     <div className="page">
+      {toggle}
       <div className="home-wrap">
         <div className="denr-stripe" />
 
-        {/* ── Exam lockout banner ── */}
+        {/* Exam lockout banner */}
         {examOngoing && (
           <div style={{
             background:"rgba(248,113,113,0.1)", border:"1px solid rgba(248,113,113,0.35)",
@@ -130,7 +161,6 @@ export default function App() {
         {/* Learning Modules */}
         <div className="section-label">📚 Learning Modules</div>
         <div className="module-grid" style={{ position:"relative" }}>
-          {/* Overlay to block modules during exam */}
           {examOngoing && (
             <div style={{
               position:"absolute", inset:0, zIndex:10,
@@ -149,7 +179,7 @@ export default function App() {
               <button
                 key={mod.id}
                 className="mod-card"
-                style={{ "--c": mod.color, borderColor: done ? mod.color + "44" : "rgba(255,255,255,0.07)" }}
+                style={{ "--c": mod.color, borderColor: done ? mod.color + "44" : undefined }}
                 onClick={() => !examOngoing && (setModIdx(i), setView("module"))}
                 disabled={examOngoing}
               >
@@ -208,7 +238,7 @@ export default function App() {
           )}
         </button>
 
-        {/* Answer Review — only visible after exam is done */}
+        {/* Answer Review */}
         {hasReviewData() && (
           <>
             <div className="section-label" style={{ marginTop: 28 }}>📝 Answer Review</div>
@@ -251,7 +281,8 @@ export default function App() {
         <button
           className="flashcard-banner"
           style={{
-            marginBottom: 20, borderColor: examOngoing ? "rgba(248,113,113,0.2)" : "rgba(251,191,36,0.2)",
+            marginBottom: 20,
+            borderColor: examOngoing ? "rgba(248,113,113,0.2)" : "rgba(251,191,36,0.2)",
             background: examOngoing ? "rgba(248,113,113,0.04)" : "rgba(251,191,36,0.05)",
             opacity: examOngoing ? 0.4 : 1, cursor: examOngoing ? "not-allowed" : "pointer",
           }}

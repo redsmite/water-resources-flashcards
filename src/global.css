@@ -109,6 +109,7 @@ body {
 .done-score { font-size: 48px; font-weight: 900; margin-bottom: 4px; }
 .done-sub   { font-size: 13px; color: #4a7c59; }
 
+
 /* ── Responsive ── */
 @media (max-width: 480px) {
   .module-grid { grid-template-columns: 1fr 1fr; }
@@ -116,4 +117,363 @@ body {
   .fc-left     { gap: 10px; }
   .denr-logo   { width: 64px; height: 64px; }
   .done-box    { padding: 32px 18px; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   THEME TOGGLE BUTTON
+   Fixed pill button, top-right corner, persists across all views
+───────────────────────────────────────────────────────────────────────────── */
+.theme-toggle {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(30, 41, 59, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: #e2e8f0;
+  font-family: inherit;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+  transition: background 0.25s, color 0.25s, border-color 0.25s, box-shadow 0.25s;
+}
+.theme-toggle:hover {
+  background: rgba(51, 65, 85, 0.95);
+}
+.theme-toggle-icon {
+  font-size: 15px;
+  line-height: 1;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   LIGHT THEME — applied when <html data-theme="light">
+   Strategy: override every color-bearing CSS variable and key classes.
+   Dark theme is the default (no attribute needed).
+───────────────────────────────────────────────────────────────────────────── */
+[data-theme="light"] {
+
+  /* ── Toggle button appearance in light mode ── */
+  .theme-toggle {
+    border-color: rgba(0, 0, 0, 0.12);
+    background: rgba(255, 255, 255, 0.92);
+    color: #1e293b;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  }
+  .theme-toggle:hover {
+    background: rgba(241, 245, 249, 0.98);
+  }
+
+  /* ── Page & layout backgrounds ── */
+  .page,
+  .exam-page {
+    background: #f8fafc;
+    color: #1e293b;
+  }
+
+  .home-wrap,
+  .inner-wrap {
+    background: transparent;
+  }
+
+  /* ── DENR stripe ── */
+  .denr-stripe {
+    background: linear-gradient(90deg, #0ea5e9, #38bdf8, #0ea5e9);
+  }
+
+  /* ── Header text ── */
+  .denr-agency,
+  .denr-office {
+    color: #475569;
+  }
+
+  .home-title {
+    color: #0f172a;
+  }
+
+  .home-sub {
+    color: #64748b;
+  }
+
+  .stat-label {
+    color: #64748b;
+  }
+
+  .divider {
+    background: #cbd5e1;
+  }
+
+  /* ── Section labels ── */
+  .section-label {
+    color: #334155;
+  }
+
+  /* ── Module cards ── */
+  .mod-card {
+    background: #ffffff;
+    border-color: #e2e8f0;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+  }
+  .mod-card:hover {
+    background: #f1f5f9;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  }
+
+  .mod-num {
+    color: #64748b;
+  }
+
+  .mod-title {
+    color: #0f172a;
+  }
+
+  .mod-sub {
+    color: #64748b;
+  }
+
+  .done-badge {
+    /* color/bg set inline via mod.color, this just adjusts opacity */
+    opacity: 0.9;
+  }
+
+  /* ── Module header (inside chapter view) ── */
+  .mod-header {
+    background: #ffffff;
+    border-color: #e2e8f0;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+  }
+
+  .mod-header-title {
+    color: #0f172a;
+  }
+
+  .mod-label,
+  .mod-header-sub {
+    color: #64748b;
+  }
+
+  /* ── Content card (chapter reading) ── */
+  .content-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);
+  }
+
+  .content-title {
+    color: #0f172a;
+  }
+
+  .content-body p {
+    color: #334155;
+  }
+
+  /* ── Tabs ── */
+  .tab {
+    background: #f1f5f9;
+    color: #475569;
+    border-color: #e2e8f0;
+  }
+  .tab:hover {
+    background: #e2e8f0;
+  }
+  .tab.active {
+    background: color-mix(in srgb, var(--c) 15%, transparent);
+    color: var(--c);
+    border-color: var(--c);
+  }
+
+  /* ── Nav row buttons ── */
+  .btn {
+    border-color: #cbd5e1;
+    color: #334155;
+    background: #f8fafc;
+  }
+  .btn:hover {
+    background: #e2e8f0;
+  }
+  .btn.ghost {
+    color: #475569;
+    border-color: #cbd5e1;
+    background: transparent;
+  }
+  .btn.ghost:hover {
+    background: #f1f5f9;
+  }
+  /* primary stays colorful — no override needed */
+
+  /* ── Quiz box ── */
+  .quiz-box {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);
+  }
+
+  .quiz-label {
+    /* color set inline via mod.color / #fbbf24 */
+  }
+
+  .quiz-q {
+    color: #0f172a;
+  }
+
+  /* ── Options ── */
+  .opt {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+    color: #1e293b;
+  }
+  .opt:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+  }
+  .opt.selected {
+    background: color-mix(in srgb, var(--c) 10%, #fff);
+    border-color: var(--c);
+    color: var(--c);
+  }
+  .opt.correct {
+    background: rgba(52, 211, 153, 0.12);
+    border-color: #34d399;
+    color: #065f46;
+  }
+  .opt.wrong {
+    background: rgba(248, 113, 113, 0.1);
+    border-color: #f87171;
+    color: #991b1b;
+  }
+
+  .opt-letter {
+    background: #e2e8f0;
+    color: #475569;
+  }
+  .opt.selected .opt-letter {
+    background: color-mix(in srgb, var(--c) 20%, transparent);
+    color: var(--c);
+  }
+
+  /* ── Feedback ── */
+  .feedback.correct {
+    background: rgba(52, 211, 153, 0.1);
+    color: #065f46;
+    border-color: rgba(52, 211, 153, 0.3);
+  }
+  .feedback.wrong {
+    background: rgba(248, 113, 113, 0.08);
+    color: #991b1b;
+    border-color: rgba(248, 113, 113, 0.25);
+  }
+
+  /* ── Done box ── */
+  .done-box {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  .done-title {
+    color: #0f172a;
+  }
+
+  .done-sub {
+    color: #64748b;
+  }
+
+  /* ── Flashcard banner / leaderboard card / final card ── */
+  .flashcard-banner,
+  .leaderboard-card {
+    background: #ffffff;
+    border-color: #e2e8f0;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+  }
+  .flashcard-banner:hover,
+  .leaderboard-card:hover {
+    background: #f8fafc;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  }
+
+  .fc-title {
+    color: #0f172a;
+  }
+  .fc-sub {
+    color: #64748b;
+  }
+  .fc-arrow {
+    color: #94a3b8;
+  }
+
+  .final-card {
+    background: #ffffff;
+    border-color: #e2e8f0;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+  }
+  .final-card:hover {
+    background: #f8fafc;
+  }
+
+  .final-title {
+    color: #0f172a;
+  }
+  .final-sub {
+    color: #64748b;
+  }
+
+  /* ── Back button ── */
+  .back-btn {
+    color: #475569;
+    background: transparent;
+  }
+  .back-btn:hover {
+    color: #0f172a;
+    background: #f1f5f9;
+  }
+
+  /* ── Name input ── */
+  .name-input {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    color: #0f172a;
+  }
+  .name-input::placeholder {
+    color: #94a3b8;
+  }
+  .name-input:focus {
+    border-color: #0ea5e9;
+    background: #ffffff;
+  }
+
+  /* ── Exam intro card ── */
+  .exam-intro-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+    color: #1e293b;
+  }
+
+  .exam-rules {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+  }
+
+  .exam-rule {
+    color: #334155;
+    border-bottom-color: #f1f5f9;
+  }
+
+  /* ── Scrollbar (webkit) ── */
+  ::-webkit-scrollbar-track {
+    background: #f1f5f9;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
 }

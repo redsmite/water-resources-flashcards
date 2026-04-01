@@ -1,5 +1,52 @@
 /* ── flashcard/flashcard.css ─────────────────────────────────────────────── */
 
+:root {
+  --fc-progress-track:    rgba(255,255,255,0.06);
+  --fc-progress-label:    #94a3b8;
+  --fc-progress-known:    #34d399;
+
+  --fc-front-bg:          linear-gradient(145deg,rgba(26,79,138,0.5),rgba(15,56,100,0.6));
+  --fc-front-border:      rgba(125,211,252,0.2);
+  --fc-front-label:       #818cf8;
+  --fc-front-text:        #e2e8f0;
+  --fc-front-hint:        #818cf8;
+
+  --fc-back-bg:           linear-gradient(145deg,rgba(26,107,47,0.5),rgba(15,70,30,0.6));
+  --fc-back-border:       rgba(74,222,128,0.2);
+  --fc-back-label:        #34d399;
+  --fc-back-text:         #f0fdf4;
+
+  --fc-done-bg:           rgba(26,107,47,0.08);
+  --fc-done-border:       rgba(74,222,128,0.12);
+  --fc-done-shadow:       none;
+  --fc-done-title:        #f0fdf4;
+  --fc-done-stat-label:   #64748b;
+}
+
+[data-theme="light"] {
+  --fc-progress-track:    #e2e8f0;
+  --fc-progress-label:    #64748b;
+  --fc-progress-known:    #16a34a;
+
+  --fc-front-bg:          linear-gradient(145deg,#dbeafe,#eff6ff);
+  --fc-front-border:      #93c5fd;
+  --fc-front-label:       #2563eb;
+  --fc-front-text:        #1e3a5f;
+  --fc-front-hint:        #17181a;
+
+  --fc-back-bg:           linear-gradient(145deg,#dcfce7,#f0fdf4);
+  --fc-back-border:       #86efac;
+  --fc-back-label:        #16a34a;
+  --fc-back-text:         #14532d;
+
+  --fc-done-bg:           #ffffff;
+  --fc-done-border:       #e2e8f0;
+  --fc-done-shadow:       0 2px 12px rgba(0,0,0,0.07);
+  --fc-done-title:        #0f172a;
+  --fc-done-stat-label:   #64748b;
+}
+
+/* ── Card flip mechanics ─────────────────────────────────────────────────── */
 .fc-card-wrap {
   width: 100%;
   perspective: 1000px;
@@ -13,21 +60,11 @@
   width: 100%;
   min-height: 220px;
   transform-style: preserve-3d;
-  transition: transform 0.42s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.42s cubic-bezier(0.4,0,0.2,1);
 }
-
-.fc-inner.flipped {
-  transform: rotateY(180deg);
-}
-
-.fc-inner.flipped .fc-front {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.fc-front {
-  transition: opacity 0.42s;
-}
+.fc-inner.flipped { transform: rotateY(180deg); }
+.fc-inner.flipped .fc-front { opacity:0; pointer-events:none; }
+.fc-front { transition: opacity 0.42s; }
 
 .fc-face {
   position: absolute;
@@ -43,33 +80,40 @@
   padding: 28px 22px;
 }
 
-.fc-front {
-  background: linear-gradient(145deg, rgba(26,79,138,0.5), rgba(15,56,100,0.6));
-  border: 1px solid rgba(125, 211, 252, 0.2);
-}
+.fc-front { background:var(--fc-front-bg); border:1px solid var(--fc-front-border); }
+.fc-back  { background:var(--fc-back-bg);  border:1px solid var(--fc-back-border); transform:rotateY(180deg); }
 
-.fc-back {
-  background: linear-gradient(145deg, rgba(26,107,47,0.5), rgba(15,70,30,0.6));
-  border: 1px solid rgba(74, 222, 128, 0.2);
-  transform: rotateY(180deg);
-}
+/* ── Labels (Question / Answer) ──────────────────────────────────────────── */
+.fc-label-q { font-size:9px; letter-spacing:3px; text-transform:uppercase; margin-bottom:14px; opacity:0.8; color:var(--fc-front-label); }
+.fc-label-a { font-size:9px; letter-spacing:3px; text-transform:uppercase; margin-bottom:14px; opacity:0.8; color:var(--fc-back-label); }
 
-/* done box (shared) */
+/* ── Card text ───────────────────────────────────────────────────────────── */
+.fc-question-text { font-size:clamp(14px,3vw,17px); color:var(--fc-front-text); line-height:1.65; text-align:center; margin:0; }
+.fc-answer-text   { font-size:clamp(15px,3vw,18px); color:var(--fc-back-text);  line-height:1.65; text-align:center; margin:0; font-weight:600; }
+.fc-hint          { margin-top:20px; font-size:11px; color:var(--fc-front-hint); opacity:0.4; }
+
+/* ── Progress bar ────────────────────────────────────────────────────────── */
+.fc-progress-wrap  { margin-bottom:14px; }
+.fc-progress-meta  { display:flex; justify-content:space-between; font-size:12px; margin-bottom:6px; }
+.fc-progress-card  { color:var(--fc-progress-label); }
+.fc-progress-known { color:var(--fc-progress-known); }
+.fc-progress-track { height:3px; background:var(--fc-progress-track); border-radius:2px; overflow:hidden; }
+.fc-progress-fill  { height:100%; background:linear-gradient(90deg,#818cf8,#a78bfa); border-radius:2px; transition:width 0.4s ease; }
+
+/* ── Done box ────────────────────────────────────────────────────────────── */
 .done-box {
-  background: rgba(26, 107, 47, 0.08);
-  border: 1px solid rgba(74, 222, 128, 0.12);
+  background: var(--fc-done-bg);
+  border: 1px solid var(--fc-done-border);
   border-radius: 20px;
   padding: 44px 28px;
   text-align: center;
+  box-shadow: var(--fc-done-shadow);
 }
+.done-title { font-size:22px; font-weight:700; color:var(--fc-done-title); margin-bottom:8px; }
 
-.done-title {
-  font-size: 22px;
-  font-weight: 700;
-  color: #f0fdf4;
-  margin-bottom: 8px;
-}
+/* Done stats */
+.fc-done-stats       { display:flex; justify-content:center; gap:28px; margin:20px 0; }
+.fc-done-stat        { text-align:center; }
+.fc-done-stat-label  { font-size:11px; color:var(--fc-done-stat-label); letter-spacing:1px; text-transform:uppercase; }
 
-@media (max-width: 480px) {
-  .done-box { padding: 32px 18px; }
-}
+@media (max-width:480px) { .done-box { padding:32px 18px; } }
