@@ -207,3 +207,52 @@
 .callout-fact   { color: var(--ch-text-fact); }
 .callout-legal  { color: var(--ch-text-legal); }
 .callout-tip    { color: var(--ch-text-tip); }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   APPEND TO: chapter.css
+   (Adds sepia values for all --ch-* variables)
+═══════════════════════════════════════════════════════════════════════════ */
+[data-theme="sepia"] {
+  --ch-text-primary:     #2c1a0e;
+  --ch-text-secondary:   #4a3728;
+  --ch-text-muted:       #8b6f5e;
+  --ch-text-subtle:      #7a6248;
+  --ch-text-know:        #4a7a9e;   /* muted slate blue  */
+  --ch-text-fact:        #8b6a2e;   /* warm amber-brown  */
+  --ch-text-legal:       #6b4a8b;   /* muted plum        */
+  --ch-text-tip:         #4a7a42;   /* muted olive green */
+  --ch-text-bullet:      #8b7060;
+
+  --ch-card-bg:          #faf6ee;
+  --ch-card-border:      #d4c5a9;
+  --ch-card-shadow:      0 1px 8px rgba(100,60,20,0.07);
+
+  --ch-tab-bg:           #f0e8d8;
+  --ch-tab-color:        #8b6f5e;
+  --ch-tab-border:       #d4c5a9;
+
+  --ch-opt-bg:           #f5f0e8;
+  --ch-opt-border:       #d4c5a9;
+  --ch-opt-color:        #4a3728;
+  --ch-opt-hover-bg:     #ede4d4;
+  --ch-opt-hover-border: #b8a48c;
+  --ch-opt-letter-bg:    rgba(139,94,60,0.12);
+  --ch-opt-letter-color: #8b5e3c;
+
+  --ch-done-bg:          #faf6ee;
+  --ch-done-border:      #d4c5a9;
+  --ch-done-shadow:      0 2px 12px rgba(100,60,20,0.08);
+
+  --ch-quiz-bg:          #faf6ee;
+  --ch-quiz-border:      #d4c5a9;
+  --ch-quiz-shadow:      0 1px 8px rgba(100,60,20,0.07);
+
+  --ch-progress-track:   #e4d9c8;
+}
+
+/* Sepia overrides that can't be done with variables alone */
+[data-theme="sepia"] .opt.correct { color: #3a5c2a !important; }
+[data-theme="sepia"] .opt.wrong   { color: #7a2a2a !important; }
+[data-theme="sepia"] .opt.selected { background: color-mix(in srgb, var(--c, #8b5e3c) 10%, #f5f0e8); }
+[data-theme="sepia"] .feedback.correct { color: #3a5c2a; }
+[data-theme="sepia"] .feedback.wrong   { color: #7a2a2a; }

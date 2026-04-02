@@ -303,7 +303,7 @@ export function FinalQuizView({ prog, update, onBack, db }) {
                   <div className="exam-rule">🙈 <span>Questions are in a <strong className="fe-strong">randomized order</strong>. Do not share your screen.</span></div>
                   <div className="exam-rule">✍️ <span>Enter your <strong className="fe-strong">full name</strong> at the end to save your result.</span></div>
                   <div className="exam-rule">💾 <span>Progress is <strong className="fe-strong">auto-saved</strong>. Refreshing or going back won't lose your answers.</span></div>
-                  <div className="exam-rule">🚫 <span>Each time you leave, minimize, alt+tab, or reload, a <strong className="fe-danger">5-minute penalty</strong> is added to your time.</span></div>
+                  <div className="exam-rule">🚫 <span>Each time you leave, minimize, look-away, or reload, a <strong className="fe-danger">5-minute penalty</strong> is added to your time.</span></div>
                 </div>
                 <div className="fe-confirm-box">
                   ⚠️ By clicking Start, you confirm your answers are your own and this exam cannot be retaken.

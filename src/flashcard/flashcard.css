@@ -117,3 +117,30 @@
 .fc-done-stat-label  { font-size:11px; color:var(--fc-done-stat-label); letter-spacing:1px; text-transform:uppercase; }
 
 @media (max-width:480px) { .done-box { padding:32px 18px; } }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   APPEND TO: flashcard.css
+   (Adds sepia values for all --fc-* variables)
+═══════════════════════════════════════════════════════════════════════════ */
+[data-theme="sepia"] {
+  --fc-progress-track:   #e4d9c8;
+  --fc-progress-label:   #8b6f5e;
+  --fc-progress-known:   #4a7a42;
+
+  --fc-front-bg:         linear-gradient(145deg, #f0e8d8, #faf6ee);
+  --fc-front-border:     #c8b49a;
+  --fc-front-label:      #8b5e3c;
+  --fc-front-text:       #2c1a0e;
+  --fc-front-hint:       #c8b49a;
+
+  --fc-back-bg:          linear-gradient(145deg, #e8f0e0, #f0f5ec);
+  --fc-back-border:      #a8c490;
+  --fc-back-label:       #4a7a42;
+  --fc-back-text:        #1e3010;
+
+  --fc-done-bg:          #faf6ee;
+  --fc-done-border:      #d4c5a9;
+  --fc-done-shadow:      0 2px 12px rgba(100,60,20,0.08);
+  --fc-done-title:       #2c1a0e;
+  --fc-done-stat-label:  #8b6f5e;
+}

@@ -599,3 +599,260 @@ body {
 
   .final-score-line { color: #059669; }
 }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SEPIA THEME  [data-theme="sepia"]
+   Warm cream paper tones — optimised for long reading sessions.
+   Append this block to the bottom of global.css.
+─────────────────────────────────────────────────────────────────────────────
+
+   Palette
+   ───────
+   Page bg       #f5f0e8  warm cream parchment
+   Card bg       #faf6ee  lighter cream
+   Border        #d4c5a9  soft tan
+   Text primary  #2c1a0e  dark warm brown
+   Text body     #4a3728  medium brown
+   Text muted    #8b6f5e  muted warm tan
+   Text subtle   #7a6248  subtle brown
+   Accent        #8b5e3c  amber-brown
+   Green tones   #5a7a42  muted olive (replaces bright greens)
+   Danger        #9e3a3a  muted brick red
+───────────────────────────────────────────────────────────────────────────── */
+
+[data-theme="sepia"] {
+
+  /* ── Toggle button ─────────────────────────────────────────────────────── */
+  .theme-toggle {
+    border-color: rgba(139,94,60,0.25);
+    background: rgba(250,246,238,0.95);
+    color: #2c1a0e;
+    box-shadow: 0 2px 12px rgba(100,60,20,0.15);
+  }
+  .theme-toggle:hover {
+    background: #f0e8d8;
+  }
+
+  /* ── Page & layout ─────────────────────────────────────────────────────── */
+  .page,
+  .exam-page {
+    background: #f5f0e8;
+    color: #2c1a0e;
+  }
+
+  body { background: #f5f0e8; }
+
+  /* ── DENR stripe ───────────────────────────────────────────────────────── */
+  .denr-stripe {
+    background: linear-gradient(90deg, #8b5e3c, #c49a6c, #8b5e3c);
+  }
+
+  /* ── Header ────────────────────────────────────────────────────────────── */
+  .denr-logo    { box-shadow: 0 0 0 3px rgba(139,94,60,0.3), 0 0 24px rgba(139,94,60,0.2); }
+  .denr-agency  { color: #8b5e3c; }
+  .denr-office  { color: #a07850; }
+  .home-title   { color: #2c1a0e; }
+  .home-sub     { color: #5c3d2e; }
+  .stat-label   { color: #7a6248; }
+  .stat-done    { color: #5a7a42; }
+  .stat-passed  { color: #6a8a52; }
+  .divider      { background: #d4c5a9; }
+  .section-label { color: #8b5e3c; }
+
+  /* ── Module cards ──────────────────────────────────────────────────────── */
+  .mod-card {
+    background: #faf6ee;
+    border-color: #d4c5a9;
+    box-shadow: 0 1px 6px rgba(100,60,20,0.08);
+  }
+  .mod-card:hover {
+    background: #f0e8d8;
+    border-color: #b8a48c;
+    box-shadow: 0 4px 14px rgba(100,60,20,0.12);
+    transform: translateY(-2px);
+  }
+  .mod-num   { color: #8b6f5e; }
+  .mod-title { color: #2c1a0e; }
+  .mod-sub   { color: #7a6248; }
+
+  /* ── Module header (inner pages) ───────────────────────────────────────── */
+  .mod-header {
+    background: #faf6ee;
+    border-color: #d4c5a9;
+    box-shadow: 0 1px 6px rgba(100,60,20,0.07);
+  }
+  .mod-header-title { color: #2c1a0e; }
+  .mod-label        { color: #8b6f5e; }
+  .mod-header-sub   { color: #7a6248; }
+
+  /* ── Banners ───────────────────────────────────────────────────────────── */
+  .flashcard-banner,
+  .leaderboard-card {
+    background: #faf6ee;
+    border-color: #d4c5a9;
+    box-shadow: 0 1px 6px rgba(100,60,20,0.07);
+  }
+  .flashcard-banner:hover,
+  .leaderboard-card:hover {
+    background: #f0e8d8;
+    box-shadow: 0 4px 14px rgba(100,60,20,0.1);
+  }
+  .fc-title { color: #2c1a0e; }
+  .fc-sub   { color: #7a6248; }
+  .fc-icon  { background: rgba(139,94,60,0.12); color: #8b5e3c; }
+  .fc-arrow { color: #a07850; opacity: 0.7; }
+
+  /* ── Final card ────────────────────────────────────────────────────────── */
+  .final-card {
+    background: #faf6ee;
+    border-color: #d4c5a9;
+    box-shadow: 0 1px 6px rgba(100,60,20,0.07);
+  }
+  .final-card:hover { background: #f0e8d8; }
+  .final-title      { color: #8b5e3c; }
+  .final-sub        { color: #7a6248; }
+  .final-score-line { color: #5a7a42; }
+
+  /* ── Buttons ───────────────────────────────────────────────────────────── */
+  .btn {
+    border-color: #d4c5a9;
+    color: #4a3728;
+    background: #f0e8d8;
+  }
+  .btn:hover { background: #e8ddc8; }
+
+  .btn.ghost {
+    color: #7a6248;
+    border-color: #d4c5a9;
+    background: transparent;
+  }
+  .btn.ghost:hover {
+    background: #f0e8d8;
+    color: #4a3728;
+  }
+
+  /* ── Back button ───────────────────────────────────────────────────────── */
+  .back-btn       { color: #8b6f5e; }
+  .back-btn:hover { color: #2c1a0e; background: #f0e8d8; }
+
+  /* ── Done box ──────────────────────────────────────────────────────────── */
+  .done-box {
+    background: #faf6ee;
+    border-color: #d4c5a9;
+    box-shadow: 0 2px 12px rgba(100,60,20,0.08);
+  }
+  .done-title { color: #2c1a0e; }
+  .done-sub   { color: #7a6248; }
+
+  /* ── Content card (chapter reading) ───────────────────────────────────── */
+  .content-card {
+    background: #faf6ee;
+    border-color: #d4c5a9;
+    box-shadow: 0 1px 8px rgba(100,60,20,0.07);
+  }
+  .content-title { color: #2c1a0e; }
+
+  /* ── Tabs ──────────────────────────────────────────────────────────────── */
+  .tab {
+    background: #f0e8d8;
+    color: #8b6f5e;
+    border-color: #d4c5a9;
+  }
+  .tab:hover, .tab.active {
+    background: color-mix(in srgb, var(--c, #8b5e3c) 10%, #f5f0e8);
+    color: var(--c, #8b5e3c);
+    border-color: var(--c, #8b5e3c);
+  }
+
+  /* ── Quiz box ──────────────────────────────────────────────────────────── */
+  .quiz-box {
+    background: #faf6ee;
+    border-color: #d4c5a9;
+    box-shadow: 0 1px 8px rgba(100,60,20,0.07);
+  }
+  .quiz-q { color: #2c1a0e; }
+
+  /* ── Options ───────────────────────────────────────────────────────────── */
+  .opt {
+    background: #f5f0e8;
+    border-color: #d4c5a9;
+    color: #4a3728;
+  }
+  .opt:hover {
+    background: #ede4d4;
+    border-color: #b8a48c;
+  }
+  .opt.selected {
+    background: color-mix(in srgb, var(--c, #8b5e3c) 12%, #f5f0e8);
+    border-color: var(--c, #8b5e3c);
+    color: var(--c, #8b5e3c);
+  }
+  .opt.correct { color: #3a5c2a !important; }
+  .opt.wrong   { color: #7a2a2a !important; }
+
+  .opt-letter {
+    background: rgba(139,94,60,0.12);
+    color: #8b5e3c;
+  }
+  .opt.selected .opt-letter {
+    background: color-mix(in srgb, var(--c, #8b5e3c) 18%, transparent);
+    color: var(--c, #8b5e3c);
+  }
+
+  /* ── Feedback ──────────────────────────────────────────────────────────── */
+  .feedback.correct { color: #3a5c2a; background: rgba(90,122,66,0.1); border-color: rgba(90,122,66,0.3); }
+  .feedback.wrong   { color: #7a2a2a; background: rgba(158,58,58,0.08); border-color: rgba(158,58,58,0.25); }
+
+  /* ── Name input ────────────────────────────────────────────────────────── */
+  .name-input {
+    background: #f5f0e8;
+    border-color: #c8b49a;
+    color: #2c1a0e;
+  }
+  .name-input::placeholder { color: #a89080; }
+  .name-input:focus        { border-color: #8b5e3c; background: #faf6ee; }
+
+  /* ── Exam intro card ───────────────────────────────────────────────────── */
+  .exam-intro-card {
+    background: #faf6ee;
+    border-color: #d4c5a9;
+    box-shadow: 0 4px 24px rgba(100,60,20,0.1);
+    color: #2c1a0e;
+  }
+  .exam-rules      { background: #f5f0e8; border-color: #d4c5a9; }
+  .exam-rule       { color: #5c3d2e; border-color: #ede4d4; }
+
+  /* ── Exam lockout banner ───────────────────────────────────────────────── */
+  .exam-lockout-title { color: #9e3a3a; }
+  .exam-lockout-text  { color: #7a6248; }
+
+  /* ── Module lockout overlay ────────────────────────────────────────────── */
+  .module-lockout-overlay { background: rgba(245,240,232,0.85); }
+  .module-lockout-label   { color: #9e3a3a; }
+
+  /* ── Answer review banner ──────────────────────────────────────────────── */
+  .answer-review-banner { background: rgba(139,94,60,0.06) !important; border-color: rgba(139,94,60,0.25) !important; }
+  .answer-review-icon   { background: rgba(139,94,60,0.12) !important; color: #8b5e3c !important; }
+  .answer-review-title  { color: #8b5e3c !important; }
+  .answer-review-arrow  { color: #8b5e3c !important; }
+
+  /* ── Leaderboard accents ───────────────────────────────────────────────── */
+  .leaderboard-icon  { background: rgba(139,94,60,0.12) !important; color: #8b5e3c !important; }
+  .leaderboard-title { color: #8b5e3c !important; }
+  .leaderboard-arrow { color: #8b5e3c !important; }
+
+  /* ── Legal refs banner ─────────────────────────────────────────────────── */
+  .refs-banner       { background: rgba(139,94,60,0.05) !important; border-color: rgba(139,94,60,0.2) !important; }
+  .refs-icon         { background: rgba(139,94,60,0.1) !important; color: #8b5e3c !important; }
+  .refs-title        { color: #8b5e3c !important; }
+  .refs-arrow        { color: #a07850 !important; }
+  .refs-banner--locked { background: rgba(158,58,58,0.05) !important; border-color: rgba(158,58,58,0.2) !important; }
+  .refs-icon--locked   { background: rgba(158,58,58,0.1) !important; color: #9e3a3a !important; }
+  .refs-title--locked  { color: #9e3a3a !important; }
+  .refs-arrow--locked  { color: #9e3a3a !important; }
+
+  /* ── Scrollbar ─────────────────────────────────────────────────────────── */
+  ::-webkit-scrollbar-track { background: #ede4d4; }
+  ::-webkit-scrollbar-thumb { background: #c4a882; }
+  ::-webkit-scrollbar-thumb:hover { background: #a08060; }
+}

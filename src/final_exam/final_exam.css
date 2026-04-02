@@ -444,3 +444,116 @@
 .fe-lb-list        { display:flex; flex-direction:column; gap:8px; }
 .fe-lb-info        { flex:1; }
 .fe-lb-scores      { text-align:right; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   APPEND TO: final_exam.css
+   (Adds sepia values for all --fe-* variables)
+═══════════════════════════════════════════════════════════════════════════ */
+[data-theme="sepia"] {
+  --fe-page-bg:           #f5f0e8;
+  --fe-card-bg:           #faf6ee;
+  --fe-card-border:       #d4c5a9;
+  --fe-card-shadow:       0 4px 24px rgba(100,60,20,0.1);
+
+  --fe-text-primary:      #2c1a0e;
+  --fe-text-secondary:    #4a3728;
+  --fe-text-muted:        #8b6f5e;
+  --fe-text-subtle:       #7a6248;
+  --fe-text-danger:       #9e3a3a;
+  --fe-text-warn:         #8b6a2e;
+
+  --fe-rule-bg:           #f5f0e8;
+  --fe-rule-border:       #d4c5a9;
+  --fe-rule-color:        #7a6248;
+
+  --fe-quiz-bg:           #faf6ee;
+  --fe-quiz-border:       #d4c5a9;
+  --fe-quiz-shadow:       0 1px 8px rgba(100,60,20,0.07);
+
+  --fe-opt-bg:            #f5f0e8;
+  --fe-opt-border:        #d4c5a9;
+  --fe-opt-color:         #4a3728;
+  --fe-opt-hover-border:  #b8a48c;
+  --fe-opt-letter-bg:     rgba(139,94,60,0.12);
+  --fe-opt-letter-color:  #8b5e3c;
+
+  --fe-input-bg:          #f5f0e8;
+  --fe-input-border:      #c8b49a;
+  --fe-input-color:       #2c1a0e;
+  --fe-input-placeholder: #a89080;
+  --fe-input-focus:       #8b5e3c;
+
+  --fe-done-bg:           #faf6ee;
+  --fe-done-border:       #d4c5a9;
+  --fe-done-shadow:       0 2px 12px rgba(100,60,20,0.08);
+
+  --fe-name-box-bg:       #f5f0e8;
+  --fe-name-box-border:   #d4c5a9;
+  --fe-name-label:        #7a6248;
+
+  --fe-review-label:      #8b6f5e;
+  --fe-lb-row-top-bg:     rgba(139,94,60,0.08);
+  --fe-lb-row-bg:         #faf6ee;
+  --fe-lb-row-top-border: rgba(139,94,60,0.3);
+  --fe-lb-row-border:     #d4c5a9;
+  --fe-lb-name:           #2c1a0e;
+  --fe-lb-sub:            #8b6f5e;
+  --fe-lb-rank:           #8b6f5e;
+
+  --fe-year-pill-border:      #d4c5a9;
+  --fe-year-pill-bg:          #f5f0e8;
+  --fe-year-pill-color:       #7a6248;
+  --fe-year-active-border:    #8b5e3c;
+  --fe-year-active-bg:        rgba(139,94,60,0.1);
+  --fe-year-active-color:     #5a3018;
+
+  --fe-progress-track:        #e4d9c8;
+}
+
+/* Sepia overrides for fixed-color classes in final_exam */
+[data-theme="sepia"] .fe-official-label  { color: #9e3a3a; }
+[data-theme="sepia"] .fe-danger          { color: #9e3a3a; }
+[data-theme="sepia"] .fe-strong          { color: #2c1a0e; }
+[data-theme="sepia"] .fe-confirm-box     { background: rgba(158,58,58,0.06); border-color: rgba(158,58,58,0.2); color: #9e3a3a; }
+[data-theme="sepia"] .fe-penalty-note    { background: rgba(158,58,58,0.06); border-color: rgba(158,58,58,0.2); color: #9e3a3a; }
+[data-theme="sepia"] .fe-resume-banner   { background: rgba(139,106,46,0.08); border-color: rgba(139,106,46,0.3); }
+[data-theme="sepia"] .fe-resume-title    { color: #8b6a2e; }
+[data-theme="sepia"] .fe-resume-body     { color: #5c3d2e; }
+[data-theme="sepia"] .fe-resume-strong   { color: #2c1a0e; }
+[data-theme="sepia"] .fe-timer           { color: #8b5e3c; }
+[data-theme="sepia"] .fe-exam-icon       { background: rgba(139,94,60,0.15) !important; color: #8b5e3c !important; }
+[data-theme="sepia"] .fe-exam-label      { color: #8b5e3c !important; }
+[data-theme="sepia"] .fe-quiz-type-label { color: #8b5e3c; }
+[data-theme="sepia"] .fe-opt             { --c: #8b5e3c; }
+[data-theme="sepia"] .opt-letter--checked { background: rgba(139,94,60,0.18) !important; }
+[data-theme="sepia"] .fe-next-btn        { background: #8b5e3c; color: #faf6ee; }
+[data-theme="sepia"] .fe-next-btn--disabled { background: #e4d9c8 !important; color: #a89080 !important; }
+[data-theme="sepia"] .opt.selected       { background: color-mix(in srgb, var(--c, #8b5e3c) 10%, #f5f0e8); }
+[data-theme="sepia"] .opt.correct        { color: #3a5c2a !important; }
+[data-theme="sepia"] .opt.wrong          { color: #7a2a2a !important; }
+[data-theme="sepia"] .feedback.correct   { color: #3a5c2a; background: rgba(90,122,66,0.1); }
+[data-theme="sepia"] .feedback.wrong     { color: #7a2a2a; background: rgba(158,58,58,0.08); }
+[data-theme="sepia"] .fe-name-warn       { color: #9e3a3a; }
+[data-theme="sepia"] .fe-save-error      { color: #9e3a3a; }
+[data-theme="sepia"] .fe-saved-msg       { color: #4a7a42; }
+[data-theme="sepia"] .fe-review-item.correct { background: rgba(90,122,66,0.07); border-color: rgba(90,122,66,0.25); }
+[data-theme="sepia"] .fe-review-item.wrong   { background: rgba(158,58,58,0.06); border-color: rgba(158,58,58,0.2); }
+[data-theme="sepia"] .fe-review-cell.correct .fe-review-cell-label,
+[data-theme="sepia"] .fe-review-cell.correct .fe-review-cell-value { color: #3a5c2a; }
+[data-theme="sepia"] .fe-review-cell.wrong .fe-review-cell-label,
+[data-theme="sepia"] .fe-review-cell.wrong .fe-review-cell-value   { color: #7a2a2a; }
+[data-theme="sepia"] .fe-review-cell.correct { background: rgba(90,122,66,0.08); }
+[data-theme="sepia"] .fe-review-cell.wrong   { background: rgba(158,58,58,0.08); }
+[data-theme="sepia"] .fe-review-toggle  { color: #8b5e3c; border-color: rgba(139,94,60,0.3); background: rgba(139,94,60,0.06); }
+[data-theme="sepia"] .fe-home-btn       { background: #8b5e3c; color: #faf6ee; }
+[data-theme="sepia"] .fe-resume-btn     { background: #8b6a2e; color: #faf6ee; }
+[data-theme="sepia"] .fe-begin-btn      { background: #9e3a3a; color: #faf6ee; }
+[data-theme="sepia"] .fe-lb-header      { border-color: rgba(139,94,60,0.3) !important; }
+[data-theme="sepia"] .fe-lb-icon        { background: rgba(139,94,60,0.15) !important; color: #8b5e3c !important; }
+[data-theme="sepia"] .fe-lb-label       { color: #8b5e3c !important; }
+[data-theme="sepia"] .fe-year-pill.active { color: #5a3018; }
+[data-theme="sepia"] .fe-error-msg      { color: #9e3a3a; }
+[data-theme="sepia"] .fe-penalty-toast  { background: #3d1a1a; border-color: #9e3a3a; color: #d4a0a0; }
+[data-theme="sepia"] .fe-submit-btn     { background: #f0e8d8; color: #7a6248; }
+[data-theme="sepia"] .fe-submit-btn--active { background: #4a7a42 !important; color: #faf6ee !important; }
+[data-theme="sepia"] .fe-exam-header    { border-color: rgba(139,94,60,0.25) !important; }

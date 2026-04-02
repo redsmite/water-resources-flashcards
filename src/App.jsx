@@ -37,9 +37,16 @@ function loadP() {
 }
 function saveP(p) { try { localStorage.setItem(KEY, JSON.stringify(p)); } catch {} }
 
+const VALID_THEMES = ["light", "dark", "sepia"];
+
 function loadTheme() {
-  try { return localStorage.getItem(THEME_KEY) === "dark" ? "dark" : "light"; }
-  catch { return "light"; }
+  try {
+    const t = localStorage.getItem(THEME_KEY);
+    // Sepia is now the default theme
+    return VALID_THEMES.includes(t) ? t : "sepia";
+  } catch { 
+    return "sepia"; 
+  }
 }
 function saveTheme(t) { try { localStorage.setItem(THEME_KEY, t); } catch {} }
 
@@ -56,11 +63,20 @@ function hasReviewData() {
 }
 
 // ── Theme Toggle ──────────────────────────────────────────────────────────────
+// Cycles: light → dark → sepia → light
+// Button shows what the NEXT theme will be
+const THEME_CYCLE = {
+  light:  { next: "dark",  icon: "🌙", label: "Dark"  },
+  dark:   { next: "sepia", icon: "📜", label: "Sepia" },
+  sepia:  { next: "light", icon: "☀️", label: "Light" },
+};
+
 function ThemeToggle({ theme, onToggle }) {
+  const meta = THEME_CYCLE[theme] ?? THEME_CYCLE.light;
   return (
-    <button onClick={onToggle} aria-label="Toggle theme" className="theme-toggle">
-      <span className="theme-toggle-icon">{theme === "dark" ? "☀️" : "🌙"}</span>
-      {theme === "dark" ? "Light" : "Dark"}
+    <button onClick={onToggle} aria-label="Switch theme" className="theme-toggle">
+      <span className="theme-toggle-icon">{meta.icon}</span>
+      {meta.label}
     </button>
   );
 }
@@ -68,7 +84,7 @@ function ThemeToggle({ theme, onToggle }) {
 // ── App ───────────────────────────────────────────────────────────────────────
 export default function App() {
   const [prog, setProg]     = useState(loadP);
-  const [theme, setTheme]   = useState(loadTheme);
+  const [theme, setTheme]   = useState(loadTheme);   // Now defaults to sepia
   const [view, setView]     = useState(() => hasPendingSave() ? "final" : "home");
   const [modIdx, setModIdx] = useState(null);
 
@@ -77,7 +93,7 @@ export default function App() {
     saveTheme(theme);
   }, [theme]);
 
-  const toggleTheme  = () => setTheme(t => t === "dark" ? "light" : "dark");
+  const toggleTheme  = () => setTheme(t => THEME_CYCLE[t]?.next ?? "light");
   const update       = (p) => { setProg(p); saveP(p); };
   const completedCount = Object.keys(prog.completed).length;
   const allDone        = completedCount >= MODULES.length;
@@ -150,8 +166,6 @@ export default function App() {
               <button
                 key={mod.id}
                 className="mod-card"
-                // --c and mod.color-based bg/color are genuinely dynamic
-                // (different per module) — these 3 cannot move to static CSS
                 style={{ "--c": mod.color, borderColor: done ? mod.color + "44" : undefined }}
                 onClick={() => !examOngoing && (setModIdx(i), setView("module"))}
                 disabled={examOngoing}

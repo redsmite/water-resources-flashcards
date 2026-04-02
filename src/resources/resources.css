@@ -125,3 +125,28 @@
 .vid-info  { padding:10px 12px; }
 .vid-title { font-size:12px; font-weight:700; color:var(--res-vid-title); line-height:1.35; margin-bottom:3px; }
 .vid-sub   { font-size:11px; color:var(--res-vid-sub); }
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   APPEND TO: resources.css
+   (Adds sepia values for all --res-* variables)
+═══════════════════════════════════════════════════════════════════════════ */
+[data-theme="sepia"] {
+  --res-card-bg:          #faf6ee;
+  --res-card-border:      #d4c5a9;
+  --res-card-shadow:      0 1px 6px rgba(100,60,20,0.07);
+  --res-card-hover-bg:    #f0e8d8;
+  --res-title:            #2c1a0e;
+  --res-desc:             #7a6248;
+
+  --res-info-bg:          #f5f0e8;
+  --res-info-border:      #d4c5a9;
+  --res-info-color:       #5a3a20;
+
+  --res-vid-bg:           #f5f0e8;
+  --res-vid-border:       #d4c5a9;
+  --res-vid-hover-border: #b8a48c;
+  --res-vid-title:        #2c1a0e;
+  --res-vid-sub:          #7a6248;
+  --res-vid-img-opacity:  0.9;
+}
