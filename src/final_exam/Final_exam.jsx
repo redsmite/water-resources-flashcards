@@ -7,7 +7,7 @@ import "./final_exam.css";
 
 const PROGRESS_KEY    = "wrm_exam_progress";
 const PENDING_KEY     = "wrm_pending_save";
-const PENALTY_SECONDS = 60;
+const PENALTY_SECONDS = 5 * 60; // 5-minute penalty per offence
 
 function saveProgress(state) { try { localStorage.setItem(PROGRESS_KEY, JSON.stringify(state)); } catch {} }
 function loadProgress() { try { const r = localStorage.getItem(PROGRESS_KEY); return r ? JSON.parse(r) : null; } catch { return null; } }
@@ -51,58 +51,166 @@ export function FinalQuizView({ prog, update, onBack, db }) {
   const [quiz] = useState(() => saved?.quiz ?? shuffle(FINAL_QUIZ.map(shuffleQuestion)));
   const [started, setStarted] = useState(() => saved?.started ?? false);
   const [answeredUpTo, setAnsweredUpTo] = useState(() => saved?.answeredUpTo ?? 0);
-  const [qi, setQi]     = useState(() => saved?.answeredUpTo ?? 0);
+  const [qi, setQi]       = useState(() => saved?.answeredUpTo ?? 0);
   const [answers, setAnswers] = useState(() => saved?.answers ?? {});
   const [fitbVal, setFitbVal] = useState("");
 
   const pending = loadPending();
-  const [done, setDone]           = useState(() => !!prog.finalDone || !!pending);
+  const [done, setDone]             = useState(() => !!prog.finalDone || !!pending);
   const [finalScore, setFinalScore] = useState(() => prog.finalScore ?? pending?.score ?? 0);
 
+  // ── Penalty system ────────────────────────────────────────────────────────
+  // penaltiesRef tracks total penalties accumulated so the timer base stays
+  // correct across multiple leave events within a single session.
+  const penaltiesRef      = useRef(saved?.pendingPenalties ?? 0);
   const penaltyWasApplied = useRef(!!(saved?.leftDuringExam));
   const initialElapsedRef = useRef((() => {
     const rawBase = saved?.elapsed ?? prog.finalElapsed ?? pending?.elapsed ?? 0;
-    return penaltyWasApplied.current ? rawBase + PENALTY_SECONDS : rawBase;
+    // Apply any penalties that were flagged before this page load
+    const pendingPenalties = saved?.pendingPenalties ?? 0;
+    return rawBase + pendingPenalties * PENALTY_SECONDS;
   })());
 
   const [elapsed, setElapsed] = useState(() => initialElapsedRef.current);
-  const startTimeRef = useRef(null);
-  const timerRef     = useRef(null);
+  // penaltyFlash drives the "⚠️ +5 min penalty" toast shown to the student
+  const [penaltyFlash, setPenaltyFlash] = useState(false);
 
-  const [name, setName]           = useState("");
+  const startTimeRef  = useRef(null);
+  const timerRef      = useRef(null);
+  // baseRef stores the wall-clock anchor the interval uses — updated whenever
+  // a new penalty is added so the timer jumps forward immediately.
+  const baseRef       = useRef(null);
+
+  const [name, setName]             = useState("");
   const [nameLocked, setNameLocked] = useState(() => (!!prog.finalDone || !!pending) && nameAlreadySaved());
-  const [saving, setSaving]       = useState(false);
-  const [saveError, setSaveError] = useState("");
+  const [saving, setSaving]         = useState(false);
+  const [saveError, setSaveError]   = useState("");
 
   const q   = quiz[qi];
   const sel = answers[qi];
 
+  // ── Persist progress ──────────────────────────────────────────────────────
   useEffect(() => {
     if (!started || done || prog.finalDone) return;
-    saveProgress({ quiz, started, qi, answeredUpTo, answers, elapsed });
+    saveProgress({ quiz, started, qi, answeredUpTo, answers, elapsed, pendingPenalties: 0 });
   }, [qi, answeredUpTo, answers, elapsed, started]);
 
+  // ── Start / resume timer ──────────────────────────────────────────────────
   useEffect(() => {
     if (!started || done || prog.finalDone) return;
-    saveProgress({ quiz, started, qi, answeredUpTo, answers, elapsed:initialElapsedRef.current, leftDuringExam:false });
+
+    // Clear any saved penalty flags — we've already baked them into initialElapsed
+    saveProgress({
+      quiz, started, qi, answeredUpTo, answers,
+      elapsed:         initialElapsedRef.current,
+      pendingPenalties: 0,
+      leftDuringExam:  false,
+    });
+
     const base = Date.now() - initialElapsedRef.current * 1000;
+    baseRef.current      = base;
     startTimeRef.current = base;
-    timerRef.current = setInterval(() => setElapsed(Math.floor((Date.now()-base)/1000)), 1000);
+
+    timerRef.current = setInterval(() => {
+      setElapsed(Math.floor((Date.now() - baseRef.current) / 1000));
+    }, 1000);
+
     return () => clearInterval(timerRef.current);
   }, [started]);
 
-  const markLeft = () => { const s=loadProgress(); if (s && !s.leftDuringExam) saveProgress({...s,leftDuringExam:true}); };
+  // ── Apply a new penalty in real-time ─────────────────────────────────────
+  // Called every time a leave event fires while the exam is active.
+  const applyPenalty = () => {
+    if (!started || done || prog.finalDone) return;
+
+    // Shift the timer base forward by PENALTY_SECONDS so elapsed jumps up
+    baseRef.current = (baseRef.current ?? Date.now()) - PENALTY_SECONDS * 1000;
+
+    // Show the flash toast
+    setPenaltyFlash(true);
+    setTimeout(() => setPenaltyFlash(false), 3500);
+
+    // Persist the new elapsed immediately so a refresh also reflects the penalty
+    const newElapsed = Math.floor((Date.now() - baseRef.current) / 1000);
+    setElapsed(newElapsed);
+    saveProgress({ quiz, started, qi, answeredUpTo, answers, elapsed: newElapsed, pendingPenalties: 0, leftDuringExam: false });
+  };
+
+  // ── Leave-event listeners ─────────────────────────────────────────────────
+  //
+  // Detected behaviours:
+  //   • Alt+Tab / switching apps          → visibilitychange (hidden)
+  //   • Minimising window                 → visibilitychange (hidden)
+  //   • Opening incognito / other browser → not detectable, covered by pagehide
+  //   • Page reload (Ctrl+R / F5)         → beforeunload + pagehide
+  //   • Overlaying another window         → visibilitychange (hidden) on most OS
+  //   • Back button (React nav)           → handleBack calls applyPenalty directly
+  //
+  // Strategy: visibilitychange fires for all focus-loss cases synchronously.
+  // beforeunload fires for reload/close and lets us write to localStorage
+  // before the page dies. pagehide is the spec-recommended fallback for Safari.
+  //
+  // We debounce with a cooldown so rapid tab-switch + return doesn't stack.
+  const penaltyCooldownRef = useRef(false);
 
   useEffect(() => {
     if (!started || done || prog.finalDone) return;
-    const onVis = () => { if (document.visibilityState==="hidden") markLeft(); };
-    document.addEventListener("visibilitychange", onVis);
-    window.addEventListener("pagehide", markLeft);
-    return () => { document.removeEventListener("visibilitychange",onVis); window.removeEventListener("pagehide",markLeft); };
-  }, [started, done]);
 
-  const handleBack = () => { if (started && !done && !prog.finalDone) markLeft(); onBack(); };
+    const triggerPenalty = () => {
+      if (penaltyCooldownRef.current) return;
+      penaltyCooldownRef.current = true;
+      applyPenalty();
+      // 3-second cooldown so blur + visibilitychange firing together only count once
+      setTimeout(() => { penaltyCooldownRef.current = false; }, 3000);
+    };
 
+    // visibilitychange: tab hidden, window minimized, alt+tab, overlay
+    const onVisibility = () => {
+      if (document.visibilityState === "hidden") triggerPenalty();
+    };
+
+    // beforeunload: catches reload (Ctrl+R/F5) and browser close
+    // We can't show UI here but we CAN write to localStorage
+    const onBeforeUnload = () => {
+      const s = loadProgress();
+      if (s) {
+        const penalized = (s.pendingPenalties ?? 0) + 1;
+        saveProgress({ ...s, pendingPenalties: penalized, leftDuringExam: true });
+      }
+    };
+
+    // pagehide: Safari fallback + navigation away
+    const onPageHide = () => {
+      const s = loadProgress();
+      if (s && !s.leftDuringExam) {
+        saveProgress({ ...s, leftDuringExam: true });
+      }
+    };
+
+    // blur: window loses focus (overlaid by another window, OS notification, etc.)
+    // This fires in addition to visibilitychange on most platforms.
+    const onBlur = () => triggerPenalty();
+
+    document.addEventListener("visibilitychange", onVisibility);
+    window.addEventListener("beforeunload", onBeforeUnload);
+    window.addEventListener("pagehide", onPageHide);
+    window.addEventListener("blur", onBlur);
+
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibility);
+      window.removeEventListener("beforeunload", onBeforeUnload);
+      window.removeEventListener("pagehide", onPageHide);
+      window.removeEventListener("blur", onBlur);
+    };
+  }, [started, done, qi, answeredUpTo, answers]);
+
+  // handleBack: marks penalty before React unmounts the component
+  const handleBack = () => {
+    if (started && !done && !prog.finalDone) applyPenalty();
+    onBack();
+  };
+
+  // ── Actions ───────────────────────────────────────────────────────────────
   const toggleMulti = (i) => {
     const cur = answers[qi] || [];
     const updated = cur.includes(i) ? cur.filter(x=>x!==i) : cur.length<3 ? [...cur,i] : cur;
@@ -121,17 +229,17 @@ export function FinalQuizView({ prog, update, onBack, db }) {
     if (q.type==="fitb")  ans = fitbVal;
     if (q.type==="multi") ans = answers[qi];
     const newAnswers = {...answers,[qi]:ans};
-    const newUpTo = qi+1;
-    saveProgress({quiz,started,qi,answeredUpTo:newUpTo,answers:newAnswers,elapsed,leftDuringExam:false});
+    const newUpTo    = qi + 1;
+    saveProgress({quiz, started, qi, answeredUpTo:newUpTo, answers:newAnswers, elapsed, pendingPenalties:0, leftDuringExam:false});
     if (qi+1 >= FINAL_QUIZ.length) {
-      const total = quiz.reduce((acc,q,i) => acc+(isCorrect(q,newAnswers[i])?1:0),0);
+      const total = quiz.reduce((acc,q,i) => acc+(isCorrect(q,newAnswers[i])?1:0), 0);
       clearInterval(timerRef.current);
-      const finalElapsed = Math.floor((Date.now()-startTimeRef.current)/1000);
-      try { localStorage.setItem("wrm_final_review",JSON.stringify({quiz,answers:newAnswers})); } catch {}
+      const finalElapsed = Math.floor((Date.now() - baseRef.current) / 1000);
+      try { localStorage.setItem("wrm_final_review", JSON.stringify({quiz, answers:newAnswers})); } catch {}
       clearProgress();
-      savePending({score:total,elapsed:finalElapsed});
+      savePending({score:total, elapsed:finalElapsed});
       setFinalScore(total); setElapsed(finalElapsed);
-      update({...prog,finalDone:true,finalScore:total,finalElapsed});
+      update({...prog, finalDone:true, finalScore:total, finalElapsed});
       setDone(true);
     } else {
       setAnswers(newAnswers); setAnsweredUpTo(newUpTo); setQi(i=>i+1); setFitbVal("");
@@ -142,7 +250,10 @@ export function FinalQuizView({ prog, update, onBack, db }) {
     if (!name.trim() || nameLocked) return;
     setSaving(true); setSaveError("");
     try {
-      await addDoc(collection(db,"test_score"), { name:name.trim(), score:finalScore, total:TOTAL_ITEMS, time_elapsed:elapsed, year:new Date().getFullYear(), timestamp:new Date().toISOString() });
+      await addDoc(collection(db,"test_score"), {
+        name: name.trim(), score: finalScore, total: TOTAL_ITEMS,
+        time_elapsed: elapsed, year: new Date().getFullYear(), timestamp: new Date().toISOString(),
+      });
       clearPending(); setNameLocked(true);
     } catch { setSaveError("Failed to save. Please try again."); }
     setSaving(false);
@@ -150,12 +261,13 @@ export function FinalQuizView({ prog, update, onBack, db }) {
 
   // ── Intro / resume screen ─────────────────────────────────────────────────
   if (!started) {
-    const hasResume = !!saved?.started && !prog.finalDone;
+    const hasResume      = !!saved?.started && !prog.finalDone;
+    const savedPenalties = saved?.pendingPenalties ?? 0;
     return (
       <div className="exam-page">
-        <div className="inner-wrap" style={{ display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",minHeight:"100vh",paddingTop:0 }}>
+        <div className="inner-wrap fe-intro-wrap">
           <div className="exam-intro-card">
-            <div style={{ fontSize:52,marginBottom:16 }}>📋</div>
+            <div className="fe-intro-emoji">📋</div>
             <div className="fe-official-label">Official Examination</div>
             <h1 className="fe-intro-title">Final Assessment</h1>
 
@@ -165,14 +277,18 @@ export function FinalQuizView({ prog, update, onBack, db }) {
                 <div className="fe-resume-body">
                   You left during the exam. Your progress was saved automatically.<br />
                   <strong className="fe-resume-strong">Question {(saved.answeredUpTo??0)+1}</strong> of {TOTAL_ITEMS} &nbsp;·&nbsp;
-                  <strong className="fe-resume-strong">Time elapsed: {String(Math.floor((saved.elapsed??0)/60)).padStart(2,"0")}:{String((saved.elapsed??0)%60).padStart(2,"0")}</strong>
+                  <strong className="fe-resume-strong">
+                    Time elapsed: {String(Math.floor((saved.elapsed??0)/60)).padStart(2,"0")}:{String((saved.elapsed??0)%60).padStart(2,"0")}
+                  </strong>
                 </div>
-                <div className="fe-penalty-note">
-                  ⏱ Note: A <strong>1-minute time penalty</strong> will be added for leaving the exam screen.
-                </div>
-                <div style={{ display:"flex",gap:8 }}>
-                  <button className="btn primary" style={{ flex:1,background:"#fbbf24",color:"#0f172a",fontSize:13,padding:"10px" }} onClick={() => setStarted(true)}>↩ Resume Exam</button>
-                  <button className="btn ghost"   style={{ flex:1,fontSize:13,padding:"10px" }} onClick={() => { clearProgress(); window.location.reload(); }}>🗑 Start Over</button>
+                {savedPenalties > 0 && (
+                  <div className="fe-penalty-note">
+                    ⏱ <strong>{savedPenalties} × 5-minute {savedPenalties === 1 ? "penalty" : "penalties"}</strong> ({savedPenalties * 5} min) will be added for leaving the exam screen.
+                  </div>
+                )}
+                <div className="fe-resume-actions">
+                  <button className="btn fe-resume-btn" onClick={() => setStarted(true)}>↩ Resume Exam</button>
+                  <button className="btn ghost fe-startover-btn" onClick={() => { clearProgress(); window.location.reload(); }}>🗑 Start Over</button>
                 </div>
               </div>
             )}
@@ -187,15 +303,15 @@ export function FinalQuizView({ prog, update, onBack, db }) {
                   <div className="exam-rule">🙈 <span>Questions are in a <strong className="fe-strong">randomized order</strong>. Do not share your screen.</span></div>
                   <div className="exam-rule">✍️ <span>Enter your <strong className="fe-strong">full name</strong> at the end to save your result.</span></div>
                   <div className="exam-rule">💾 <span>Progress is <strong className="fe-strong">auto-saved</strong>. Refreshing or going back won't lose your answers.</span></div>
-                  <div className="exam-rule">🚫 <span>Leaving the exam screen mid-exam adds a <strong className="fe-danger">1-minute time penalty</strong>.</span></div>
+                  <div className="exam-rule">🚫 <span>Each time you leave, minimize, alt+tab, or reload, a <strong className="fe-danger">5-minute penalty</strong> is added to your time.</span></div>
                 </div>
                 <div className="fe-confirm-box">
                   ⚠️ By clicking Start, you confirm your answers are your own and this exam cannot be retaken.
                 </div>
-                <button className="btn primary" style={{ background:"#f87171",color:"#fff",width:"100%",padding:"14px",fontSize:16 }} onClick={() => { clearProgress(); setStarted(true); }}>Begin Exam →</button>
+                <button className="btn fe-begin-btn" onClick={() => { clearProgress(); setStarted(true); }}>Begin Exam →</button>
               </>
             )}
-            <button className="back-btn" style={{ marginTop:14,padding:0 }} onClick={handleBack}>← Back to Home</button>
+            <button className="back-btn fe-back-spacing" onClick={handleBack}>← Back to Home</button>
           </div>
         </div>
       </div>
@@ -219,17 +335,22 @@ export function FinalQuizView({ prog, update, onBack, db }) {
         <div className="denr-stripe" />
         <button className="back-btn" onClick={handleBack}>← Back to Home</button>
 
-        <div className="mod-header" style={{ borderColor:"#fbbf2433" }}>
-          <div className="mod-icon lg" style={{ background:"#fbbf2422",color:"#fbbf24" }}>🏆</div>
-          <div style={{ flex:1 }}>
-            <div className="mod-label" style={{ color:"#fbbf24" }}>Final Assessment</div>
+        {/* Penalty flash toast */}
+        {penaltyFlash && (
+          <div className="fe-penalty-toast">
+            ⚠️ +5 min penalty — leaving the exam screen is not allowed
+          </div>
+        )}
+
+        <div className="mod-header fe-exam-header">
+          <div className="mod-icon lg fe-exam-icon">🏆</div>
+          <div className="fe-exam-header-body">
+            <div className="mod-label fe-exam-label">Final Assessment</div>
             <div className="mod-header-title">Comprehensive Quiz</div>
             <div className="mod-header-sub">Question {qi+1} of {TOTAL_ITEMS}</div>
           </div>
-          <div style={{ textAlign:"right",flexShrink:0 }}>
-            <div style={{ fontSize:18,fontWeight:800,color:"#fbbf24",fontVariantNumeric:"tabular-nums" }}>
-              {String(Math.floor(elapsed/60)).padStart(2,"0")}:{String(elapsed%60).padStart(2,"0")}
-            </div>
+          <div className="fe-timer-wrap">
+            <div className="fe-timer">{String(Math.floor(elapsed/60)).padStart(2,"0")}:{String(elapsed%60).padStart(2,"0")}</div>
             <div className="fe-elapsed-label">ELAPSED</div>
           </div>
         </div>
@@ -239,13 +360,13 @@ export function FinalQuizView({ prog, update, onBack, db }) {
         </div>
 
         <div className="quiz-box">
-          <div className="quiz-label" style={{ color:"#fbbf24" }}>{typeLabel[q.type]}</div>
+          <div className="quiz-label fe-quiz-type-label">{typeLabel[q.type]}</div>
           <div className="quiz-q">{q.q}</div>
 
           {q.type==="mc" && (
             <div className="options">
               {q.options.map((opt,i) => (
-                <button key={i} className={`opt${sel===i?" selected":""}`} style={{ "--c":"#fbbf24" }} onClick={() => setAnswers(a=>({...a,[qi]:i}))}>
+                <button key={i} className={`opt fe-opt${sel===i?" selected":""}`} onClick={() => setAnswers(a=>({...a,[qi]:i}))}>
                   <span className="opt-letter">{["A","B","C","D"][i]}</span>{opt}
                 </button>
               ))}
@@ -255,7 +376,7 @@ export function FinalQuizView({ prog, update, onBack, db }) {
           {q.type==="tf" && (
             <div className="options tf-row">
               {["True","False"].map((label,i) => (
-                <button key={i} className={`opt tf${sel===i?" selected":""}`} style={{ "--c":"#fbbf24" }} onClick={() => setAnswers(a=>({...a,[qi]:i}))}>
+                <button key={i} className={`opt tf fe-opt${sel===i?" selected":""}`} onClick={() => setAnswers(a=>({...a,[qi]:i}))}>
                   {label}
                 </button>
               ))}
@@ -263,7 +384,7 @@ export function FinalQuizView({ prog, update, onBack, db }) {
           )}
 
           {q.type==="fitb" && (
-            <div style={{ marginBottom:18 }}>
+            <div className="fe-fitb-wrap">
               <input className="name-input" type="text" placeholder="Type your answer here..." value={fitbVal} onChange={e=>setFitbVal(e.target.value)} onKeyDown={e=>e.key==="Enter"&&submitAndNext()} />
             </div>
           )}
@@ -274,8 +395,8 @@ export function FinalQuizView({ prog, update, onBack, db }) {
                 const curSel = answers[qi]||[];
                 const isSel  = curSel.includes(i);
                 return (
-                  <button key={i} className={`opt${isSel?" selected":""}`} style={{ "--c":"#fbbf24" }} onClick={() => toggleMulti(i)}>
-                    <span className="opt-letter" style={{ background:isSel?"#fbbf2433":undefined }}>{isSel?"✓":["A","B","C","D","E"][i]}</span>{opt}
+                  <button key={i} className={`opt fe-opt${isSel?" selected":""}`} onClick={() => toggleMulti(i)}>
+                    <span className={`opt-letter${isSel?" opt-letter--checked":""}`}>{isSel?"✓":["A","B","C","D","E"][i]}</span>{opt}
                   </button>
                 );
               })}
@@ -283,9 +404,11 @@ export function FinalQuizView({ prog, update, onBack, db }) {
             </div>
           )}
 
-          <button className="btn primary fe-next-btn"
-            style={{ background:canConfirm()?"#fbbf24":"rgba(255,255,255,0.05)", color:canConfirm()?"#0f172a":"#475569", width:"100%" }}
-            onClick={submitAndNext}>
+          <button
+            className={`btn fe-next-btn${canConfirm()?"":" fe-next-btn--disabled"}`}
+            onClick={submitAndNext}
+            disabled={!canConfirm()}
+          >
             {qi+1<TOTAL_ITEMS?"Next Question →":"See Results →"}
           </button>
         </div>
@@ -319,28 +442,29 @@ function FinalResultScreen({ pct, finalScore, elapsed, name, setName, nameLocked
   return (
     <div className="page">
       <div className="inner-wrap">
-        <div className="done-box" style={{ marginTop:32 }}>
-          <div style={{ fontSize:52,marginBottom:12 }}>{pct>=80?"🏆":pct>=60?"🌊":"📚"}</div>
+        <div className="done-box fe-result-box">
+          <div className="fe-result-emoji">{pct>=80?"🏆":pct>=60?"🌊":"📚"}</div>
           <div className="done-title">Assessment Complete!</div>
-          <div className="done-score" style={{ color:scoreColor }}>
+          <div className="done-score fe-result-score" style={{ color:scoreColor }}>
             {finalScore}<span className="fe-score-denom">/{TOTAL_ITEMS}</span>
           </div>
-          <div className="done-sub" style={{ marginBottom:8 }}>{pct}% — {pct>=80?"Excellent!":pct>=60?"Good Job!":"Keep Studying!"}</div>
+          <div className="done-sub fe-result-sub">{pct}% — {pct>=80?"Excellent!":pct>=60?"Good Job!":"Keep Studying!"}</div>
           <div className="fe-time-display">
             ⏱ Time: {String(Math.floor(elapsed/60)).padStart(2,"0")}:{String(elapsed%60).padStart(2,"0")}
           </div>
 
-          {/* Name submission box */}
           <div className="fe-name-box">
             <div className="fe-name-label">📝 Enter your full name to save your result</div>
             {!nameLocked ? (
               <>
                 <div className="fe-name-warn">⚠️ Warning: Once submitted, your name cannot be changed.</div>
-                <div style={{ display:"flex",gap:8 }}>
+                <div className="fe-name-row">
                   <input className="name-input" type="text" placeholder="Enter your full name..." value={name} onChange={e=>setName(e.target.value)} onKeyDown={e=>e.key==="Enter"&&handleSaveName()} />
-                  <button className="btn primary"
-                    style={{ background:name.trim()?"#34d399":"rgba(255,255,255,0.05)", color:name.trim()?"#0f172a":"#475569", whiteSpace:"nowrap",padding:"11px 16px" }}
-                    onClick={handleSaveName} disabled={saving||!name.trim()}>
+                  <button
+                    className={`btn fe-submit-btn${name.trim()?" fe-submit-btn--active":""}`}
+                    onClick={handleSaveName}
+                    disabled={saving||!name.trim()}
+                  >
                     {saving?"Saving...":"Submit"}
                   </button>
                 </div>
@@ -354,31 +478,31 @@ function FinalResultScreen({ pct, finalScore, elapsed, name, setName, nameLocked
           </div>
 
           {reviewData && (
-            <button className="btn ghost" style={{ width:"100%",marginBottom:10,color:"#818cf8",borderColor:"rgba(129,140,248,0.3)",background:"rgba(129,140,248,0.06)" }} onClick={() => setShowReview(r=>!r)}>
+            <button className="btn ghost fe-review-toggle" onClick={() => setShowReview(r=>!r)}>
               {showReview?"▲ Hide Answer Review":"▼ Review My Answers"}
             </button>
           )}
-          <button className="btn primary" style={{ background:"#fbbf24",color:"#0f172a",width:"100%" }} onClick={onBack}>← Back to Home</button>
+          <button className="btn fe-home-btn" onClick={onBack}>← Back to Home</button>
         </div>
 
         {showReview && reviewData && (
-          <div style={{ marginTop:20,display:"flex",flexDirection:"column",gap:10 }}>
+          <div className="fe-review-list">
             <div className="fe-review-label">Answer Review</div>
             {reviewData.quiz.map((q,i) => {
-              const a = reviewData.answers[i];
+              const a       = reviewData.answers[i];
               const correct = isCorrect(q,a);
               return (
                 <div key={i} className={`fe-review-item ${correct?"correct":"wrong"}`}>
                   <div className="fe-review-header">
-                    <span style={{ fontSize:16,flexShrink:0 }}>{correct?"✅":"❌"}</span>
-                    <div style={{ flex:1 }}>
+                    <span className="fe-review-emoji">{correct?"✅":"❌"}</span>
+                    <div className="fe-review-qwrap">
                       <div className="fe-review-type">Q{i+1} · {typeLabel[q.type]}</div>
                       <div className="fe-review-q">{q.q}</div>
                     </div>
                   </div>
                   <div className="fe-review-answers" style={{ gridTemplateColumns:correct?"1fr":"1fr 1fr" }}>
                     <div className={`fe-review-cell ${correct?"correct":"wrong"}`}>
-                      <div className="fe-review-cell-label">{correct?"Your Answer":"Your Answer"}</div>
+                      <div className="fe-review-cell-label">Your Answer</div>
                       <div className="fe-review-cell-value">{getAnswerText(q,a)}</div>
                     </div>
                     {!correct && (
@@ -409,9 +533,11 @@ export function LeaderboardView({ onBack, db }) {
   const fetchResults = async () => {
     setLoading(true); setError("");
     try {
-      const q = query(collection(db,"test_score"), orderBy("score","desc"));
+      const q    = query(collection(db,"test_score"), orderBy("score","desc"));
       const snap = await getDocs(q);
-      const data = snap.docs.map(d=>({id:d.id,...d.data()})).map(r=>({...r,_year:r.year??(r.timestamp?new Date(r.timestamp).getFullYear():null)}))
+      const data = snap.docs
+        .map(d => ({id:d.id,...d.data()}))
+        .map(r => ({...r, _year:r.year??(r.timestamp?new Date(r.timestamp).getFullYear():null)}))
         .sort((a,b) => b.score!==a.score ? b.score-a.score : (a.time_elapsed??99999)-(b.time_elapsed??99999));
       setAllResults(data);
     } catch { setError("Could not load results. Check your connection."); }
@@ -429,19 +555,20 @@ export function LeaderboardView({ onBack, db }) {
       <div className="inner-wrap">
         <button className="back-btn" onClick={onBack}>← Back to Home</button>
 
-        <div className="mod-header" style={{ borderColor:"#fbbf2433" }}>
-          <div className="mod-icon lg" style={{ background:"#fbbf2422",color:"#fbbf24" }}>📊</div>
-          <div style={{ flex:1 }}>
-            <div className="mod-label" style={{ color:"#fbbf24" }}>Student Results</div>
+        <div className="mod-header fe-lb-header">
+          <div className="mod-icon lg fe-lb-icon">📊</div>
+          <div className="fe-lb-header-body">
+            <div className="mod-label fe-lb-label">Student Results</div>
             <div className="mod-header-title">Leaderboard</div>
-            <div className="mod-header-sub">{loading?"Loading...":`${results.length} submission${results.length!==1?"s":""} in ${selectedYear}`}</div>
+            <div className="mod-header-sub">
+              {loading?"Loading...":`${results.length} submission${results.length!==1?"s":""} in ${selectedYear}`}
+            </div>
           </div>
-          <button className="btn ghost" style={{ padding:"8px 14px",fontSize:13,flexShrink:0 }} onClick={fetchResults} disabled={loading}>
+          <button className="btn ghost fe-refresh-btn" onClick={fetchResults} disabled={loading}>
             {loading?"⏳":"↺ Refresh"}
           </button>
         </div>
 
-        {/* Year pills */}
         {!loading && years.length > 0 && (
           <div className="fe-year-pills">
             <span className="fe-year-label">Year:</span>
@@ -458,22 +585,24 @@ export function LeaderboardView({ onBack, db }) {
         {!loading && !error && results.length===0 && <div className="fe-status-msg">No submissions for {selectedYear}.</div>}
 
         {!loading && results.length>0 && (
-          <div style={{ display:"flex",flexDirection:"column",gap:8 }}>
+          <div className="fe-lb-list">
             {results.map((r,i) => {
               const pct = Math.round((r.score/(r.total||TOTAL_ITEMS))*100);
               return (
                 <div key={r.id} className={`fe-lb-row${i<3?" top":""}`}>
                   <div className="fe-lb-rank">{i<3?medals[i]:`${i+1}`}</div>
-                  <div style={{ flex:1 }}>
+                  <div className="fe-lb-info">
                     <div className="fe-lb-name">{r.name}</div>
                     <div className="fe-lb-sub">{r._year}</div>
                   </div>
-                  <div style={{ textAlign:"right" }}>
+                  <div className="fe-lb-scores">
                     <div className="fe-lb-score" style={{ color:pct>=80?"#34d399":pct>=60?"#fbbf24":"#f87171" }}>
                       {r.score}<span className="fe-lb-total">/{r.total||TOTAL_ITEMS}</span>
                     </div>
                     <div className="fe-lb-pct">{pct}%</div>
-                    {r.time_elapsed!=null && <div className="fe-lb-time">⏱ {String(Math.floor(r.time_elapsed/60)).padStart(2,"0")}:{String(r.time_elapsed%60).padStart(2,"0")}</div>}
+                    {r.time_elapsed!=null && (
+                      <div className="fe-lb-time">⏱ {String(Math.floor(r.time_elapsed/60)).padStart(2,"0")}:{String(r.time_elapsed%60).padStart(2,"0")}</div>
+                    )}
                   </div>
                 </div>
               );

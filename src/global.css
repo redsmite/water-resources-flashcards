@@ -477,3 +477,125 @@ body {
     background: #94a3b8;
   }
 }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   APPEND THIS TO THE BOTTOM OF global.css
+   New classes replacing inline styles removed from App.jsx
+───────────────────────────────────────────────────────────────────────────── */
+
+/* ── Stat numbers in header ──────────────────────────────────────────────── */
+.stat-done   { color: #4ade80; font-weight: 700; }
+.stat-passed { color: #86efac; font-weight: 700; }
+
+/* ── section-label spacing modifier ─────────────────────────────────────── */
+.section-label--mt { margin-top: 28px; }
+
+/* ── Exam lockout banner ─────────────────────────────────────────────────── */
+.exam-lockout-banner {
+  background: rgba(248,113,113,0.1);
+  border: 1px solid rgba(248,113,113,0.35);
+  border-radius: 12px;
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.exam-lockout-icon  { font-size: 22px; flex-shrink: 0; }
+.exam-lockout-body  { flex: 1; }
+.exam-lockout-title { font-size: 13px; color: #f87171; font-weight: 700; margin-bottom: 3px; }
+.exam-lockout-text  { font-size: 12px; color: #94a3b8; line-height: 1.5; }
+.exam-lockout-btn   {
+  background: #f87171 !important;
+  color: #fff !important;
+  white-space: nowrap;
+  padding: 10px 16px !important;
+  font-size: 13px !important;
+  flex-shrink: 0;
+  border: none !important;
+}
+
+/* ── Module grid locked state ────────────────────────────────────────────── */
+.module-grid--locked { position: relative; }
+
+.module-lockout-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  background: rgba(15,23,42,0.7);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  backdrop-filter: blur(2px);
+}
+.module-lockout-icon  { font-size: 28px; }
+.module-lockout-label { font-size: 13px; color: #f87171; font-weight: 700; }
+
+/* ── Flashcard banner — locked state ─────────────────────────────────────── */
+.flashcard-banner--locked {
+  opacity: 0.4;
+  cursor: not-allowed !important;
+}
+
+/* ── Final assessment card states ────────────────────────────────────────── */
+.final-card-icon  { font-size: 28px; }
+.final-score-line { color: #34d399; font-size: 13px; font-weight: 600; }
+.final-card--locked { opacity: 0.4; cursor: not-allowed !important; }
+
+/* ── Answer review banner ────────────────────────────────────────────────── */
+.answer-review-banner {
+  border-color: rgba(129,140,248,0.25) !important;
+  background: rgba(129,140,248,0.05) !important;
+  margin-bottom: 0;
+}
+.answer-review-icon  { background: rgba(129,140,248,0.15) !important; color: #818cf8 !important; }
+.answer-review-title { color: #818cf8 !important; }
+.answer-review-arrow { color: #818cf8 !important; }
+
+/* ── Leaderboard card accents ────────────────────────────────────────────── */
+.leaderboard-icon  { background: rgba(251,191,36,0.15) !important; color: #fbbf24 !important; }
+.leaderboard-title { color: #fbbf24 !important; }
+.leaderboard-arrow { color: #fbbf24 !important; }
+
+/* ── Legal refs banner ───────────────────────────────────────────────────── */
+.refs-banner {
+  margin-bottom: 20px;
+  border-color: rgba(251,191,36,0.2) !important;
+  background: rgba(251,191,36,0.05) !important;
+}
+.refs-icon  { background: rgba(251,191,36,0.12) !important; color: #fbbf24 !important; }
+.refs-title { color: #fbbf24 !important; }
+.refs-arrow { color: #fbbf24 !important; }
+
+/* locked state overrides */
+.refs-banner--locked {
+  opacity: 0.4;
+  cursor: not-allowed !important;
+  border-color: rgba(248,113,113,0.2) !important;
+  background: rgba(248,113,113,0.04) !important;
+}
+.refs-icon--locked  { background: rgba(248,113,113,0.12) !important; color: #f87171 !important; }
+.refs-title--locked { color: #f87171 !important; }
+.refs-arrow--locked { color: #f87171 !important; }
+
+/* ── Light theme overrides for new classes ───────────────────────────────── */
+[data-theme="light"] {
+
+  .exam-lockout-text  { color: #64748b; }
+
+  .module-lockout-overlay { background: rgba(241,245,249,0.85); }
+  .module-lockout-label   { color: #dc2626; }
+
+  .answer-review-banner { background: rgba(129,140,248,0.06) !important; }
+
+  .refs-banner         { background: rgba(251,191,36,0.06) !important; }
+  .refs-banner--locked { background: rgba(248,113,113,0.04) !important; }
+
+  .stat-done   { color: #16a34a; }
+  .stat-passed { color: #15803d; }
+
+  .final-score-line { color: #059669; }
+}
