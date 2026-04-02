@@ -150,3 +150,27 @@
   --res-vid-sub:          #7a6248;
   --res-vid-img-opacity:  0.9;
 }
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   5. APPEND TO: resources.css
+═══════════════════════════════════════════════════════════════════════════ */
+[data-theme="pink"] {
+  --res-card-bg:          #fff5fb;
+  --res-card-border:      #f0c8dc;
+  --res-card-shadow:      0 1px 6px rgba(194,24,91,0.07);
+  --res-card-hover-bg:    #fce4ef;
+  --res-title:            #2d1a24;
+  --res-desc:             #7a5568;
+
+  --res-info-bg:          #fdf2f8;
+  --res-info-border:      #f0c8dc;
+  --res-info-color:       #7a0038;
+
+  --res-vid-bg:           #fdf2f8;
+  --res-vid-border:       #f0c8dc;
+  --res-vid-hover-border: #e091b8;
+  --res-vid-title:        #2d1a24;
+  --res-vid-sub:          #7a5568;
+  --res-vid-img-opacity:  0.92;
+}

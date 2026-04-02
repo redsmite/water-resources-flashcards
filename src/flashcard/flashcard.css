@@ -144,3 +144,30 @@
   --fc-done-title:       #2c1a0e;
   --fc-done-stat-label:  #8b6f5e;
 }
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   4. APPEND TO: flashcard.css
+═══════════════════════════════════════════════════════════════════════════ */
+[data-theme="pink"] {
+  --fc-progress-track:   #fce4ef;
+  --fc-progress-label:   #8b6070;
+  --fc-progress-known:   #2e7d32;
+
+  --fc-front-bg:         linear-gradient(145deg, #fce4ef, #fff5fb);
+  --fc-front-border:     #e8b4cc;
+  --fc-front-label:      #c2185b;
+  --fc-front-text:       #2d1a24;
+  --fc-front-hint:       #e8b4cc;
+
+  --fc-back-bg:          linear-gradient(145deg, #e8f5e9, #f1f8f1);
+  --fc-back-border:      #a5d6a7;
+  --fc-back-label:       #2e7d32;
+  --fc-back-text:        #1b3a1e;
+
+  --fc-done-bg:          #fff5fb;
+  --fc-done-border:      #f0c8dc;
+  --fc-done-shadow:      0 2px 12px rgba(194,24,91,0.08);
+  --fc-done-title:       #2d1a24;
+  --fc-done-stat-label:  #8b6070;
+}

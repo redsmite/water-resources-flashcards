@@ -557,3 +557,115 @@
 [data-theme="sepia"] .fe-submit-btn     { background: #f0e8d8; color: #7a6248; }
 [data-theme="sepia"] .fe-submit-btn--active { background: #4a7a42 !important; color: #faf6ee !important; }
 [data-theme="sepia"] .fe-exam-header    { border-color: rgba(139,94,60,0.25) !important; }
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   3. APPEND TO: final_exam.css
+═══════════════════════════════════════════════════════════════════════════ */
+[data-theme="pink"] {
+  --fe-page-bg:           #fdf2f8;
+  --fe-card-bg:           #fff5fb;
+  --fe-card-border:       #f0c8dc;
+  --fe-card-shadow:       0 4px 24px rgba(194,24,91,0.1);
+
+  --fe-text-primary:      #2d1a24;
+  --fe-text-secondary:    #4a2d3a;
+  --fe-text-muted:        #8b6070;
+  --fe-text-subtle:       #7a5568;
+  --fe-text-danger:       #b71c3c;
+  --fe-text-warn:         #b05a00;
+
+  --fe-rule-bg:           #fdf2f8;
+  --fe-rule-border:       #f0c8dc;
+  --fe-rule-color:        #7a5568;
+
+  --fe-quiz-bg:           #fff5fb;
+  --fe-quiz-border:       #f0c8dc;
+  --fe-quiz-shadow:       0 1px 8px rgba(194,24,91,0.07);
+
+  --fe-opt-bg:            #fdf2f8;
+  --fe-opt-border:        #f0c8dc;
+  --fe-opt-color:         #4a2d3a;
+  --fe-opt-hover-border:  #e091b8;
+  --fe-opt-letter-bg:     rgba(194,24,91,0.1);
+  --fe-opt-letter-color:  #c2185b;
+
+  --fe-input-bg:          #fdf2f8;
+  --fe-input-border:      #e8b4cc;
+  --fe-input-color:       #2d1a24;
+  --fe-input-placeholder: #b08898;
+  --fe-input-focus:       #c2185b;
+
+  --fe-done-bg:           #fff5fb;
+  --fe-done-border:       #f0c8dc;
+  --fe-done-shadow:       0 2px 12px rgba(194,24,91,0.08);
+
+  --fe-name-box-bg:       #fdf2f8;
+  --fe-name-box-border:   #f0c8dc;
+  --fe-name-label:        #7a5568;
+
+  --fe-review-label:      #8b6070;
+  --fe-lb-row-top-bg:     rgba(194,24,91,0.07);
+  --fe-lb-row-bg:         #fff5fb;
+  --fe-lb-row-top-border: rgba(194,24,91,0.25);
+  --fe-lb-row-border:     #f0c8dc;
+  --fe-lb-name:           #2d1a24;
+  --fe-lb-sub:            #8b6070;
+  --fe-lb-rank:           #8b6070;
+
+  --fe-year-pill-border:     #f0c8dc;
+  --fe-year-pill-bg:         #fdf2f8;
+  --fe-year-pill-color:      #7a5568;
+  --fe-year-active-border:   #c2185b;
+  --fe-year-active-bg:       rgba(194,24,91,0.08);
+  --fe-year-active-color:    #7a0038;
+
+  --fe-progress-track:       #fce4ef;
+}
+
+[data-theme="pink"] .fe-official-label  { color: #b71c3c; }
+[data-theme="pink"] .fe-danger          { color: #b71c3c; }
+[data-theme="pink"] .fe-strong          { color: #2d1a24; }
+[data-theme="pink"] .fe-confirm-box     { background: rgba(183,28,60,0.06); border-color: rgba(183,28,60,0.2); color: #b71c3c; }
+[data-theme="pink"] .fe-penalty-note    { background: rgba(183,28,60,0.06); border-color: rgba(183,28,60,0.2); color: #b71c3c; }
+[data-theme="pink"] .fe-resume-banner   { background: rgba(194,24,91,0.06); border-color: rgba(194,24,91,0.25); }
+[data-theme="pink"] .fe-resume-title    { color: #c2185b; }
+[data-theme="pink"] .fe-resume-body     { color: #5c3548; }
+[data-theme="pink"] .fe-resume-strong   { color: #2d1a24; }
+[data-theme="pink"] .fe-timer           { color: #c2185b; }
+[data-theme="pink"] .fe-exam-icon       { background: rgba(194,24,91,0.12) !important; color: #c2185b !important; }
+[data-theme="pink"] .fe-exam-label      { color: #c2185b !important; }
+[data-theme="pink"] .fe-exam-header     { border-color: rgba(194,24,91,0.2) !important; }
+[data-theme="pink"] .fe-quiz-type-label { color: #c2185b; }
+[data-theme="pink"] .fe-opt             { --c: #c2185b; }
+[data-theme="pink"] .opt-letter--checked { background: rgba(194,24,91,0.15) !important; }
+[data-theme="pink"] .fe-next-btn        { background: #c2185b; color: #fff5fb; }
+[data-theme="pink"] .fe-next-btn--disabled { background: #fce4ef !important; color: #b08898 !important; }
+[data-theme="pink"] .opt.selected       { background: color-mix(in srgb, var(--c, #c2185b) 10%, #fdf2f8); }
+[data-theme="pink"] .opt.correct        { color: #2d5a1e !important; }
+[data-theme="pink"] .opt.wrong          { color: #7a1a1a !important; }
+[data-theme="pink"] .feedback.correct   { color: #2d5a1e; background: rgba(52,211,153,0.1); }
+[data-theme="pink"] .feedback.wrong     { color: #7a1a1a; background: rgba(183,28,60,0.08); }
+[data-theme="pink"] .fe-name-warn       { color: #b71c3c; }
+[data-theme="pink"] .fe-save-error      { color: #b71c3c; }
+[data-theme="pink"] .fe-saved-msg       { color: #2e7d32; }
+[data-theme="pink"] .fe-review-item.correct { background: rgba(52,211,153,0.06); border-color: rgba(52,211,153,0.2); }
+[data-theme="pink"] .fe-review-item.wrong   { background: rgba(183,28,60,0.06); border-color: rgba(183,28,60,0.2); }
+[data-theme="pink"] .fe-review-cell.correct { background: rgba(52,211,153,0.1); }
+[data-theme="pink"] .fe-review-cell.wrong   { background: rgba(183,28,60,0.08); }
+[data-theme="pink"] .fe-review-cell.correct .fe-review-cell-label,
+[data-theme="pink"] .fe-review-cell.correct .fe-review-cell-value { color: #2d5a1e; }
+[data-theme="pink"] .fe-review-cell.wrong .fe-review-cell-label,
+[data-theme="pink"] .fe-review-cell.wrong .fe-review-cell-value   { color: #7a1a1a; }
+[data-theme="pink"] .fe-review-toggle  { color: #c2185b; border-color: rgba(194,24,91,0.25); background: rgba(194,24,91,0.05); }
+[data-theme="pink"] .fe-home-btn       { background: #c2185b; color: #fff5fb; }
+[data-theme="pink"] .fe-resume-btn     { background: #c2185b; color: #fff5fb; }
+[data-theme="pink"] .fe-begin-btn      { background: #b71c3c; color: #fff5fb; }
+[data-theme="pink"] .fe-lb-header      { border-color: rgba(194,24,91,0.25) !important; }
+[data-theme="pink"] .fe-lb-icon        { background: rgba(194,24,91,0.12) !important; color: #c2185b !important; }
+[data-theme="pink"] .fe-lb-label       { color: #c2185b !important; }
+[data-theme="pink"] .fe-submit-btn        { background: #fce4ef; color: #7a5568; }
+[data-theme="pink"] .fe-submit-btn--active { background: #2e7d32 !important; color: #fff !important; }
+[data-theme="pink"] .fe-penalty-toast  { background: #3d0a1a; border-color: #c2185b; color: #f8bbd0; }
+[data-theme="pink"] .fe-error-msg      { color: #b71c3c; }
+[data-theme="pink"] .fe-lb-row.top .fe-lb-rank { font-size: 22px; }

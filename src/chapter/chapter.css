@@ -256,3 +256,51 @@
 [data-theme="sepia"] .opt.selected { background: color-mix(in srgb, var(--c, #8b5e3c) 10%, #f5f0e8); }
 [data-theme="sepia"] .feedback.correct { color: #3a5c2a; }
 [data-theme="sepia"] .feedback.wrong   { color: #7a2a2a; }
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   2. APPEND TO: chapter.css
+═══════════════════════════════════════════════════════════════════════════ */
+[data-theme="pink"] {
+  --ch-text-primary:     #2d1a24;
+  --ch-text-secondary:   #4a2d3a;
+  --ch-text-muted:       #8b6070;
+  --ch-text-subtle:      #7a5568;
+  --ch-text-know:        #1565c0;   /* kept readable blue for "did you know" */
+  --ch-text-fact:        #b05a00;   /* warm amber, readable on blush */
+  --ch-text-legal:       #6a1b9a;   /* kept purple for legal — distinct */
+  --ch-text-tip:         #2e7d32;   /* kept green for tips — universal */
+  --ch-text-bullet:      #8b6070;
+
+  --ch-card-bg:          #fff5fb;
+  --ch-card-border:      #f0c8dc;
+  --ch-card-shadow:      0 1px 8px rgba(194,24,91,0.07);
+
+  --ch-tab-bg:           #fce4ef;
+  --ch-tab-color:        #8b6070;
+  --ch-tab-border:       #f0c8dc;
+
+  --ch-opt-bg:           #fdf2f8;
+  --ch-opt-border:       #f0c8dc;
+  --ch-opt-color:        #4a2d3a;
+  --ch-opt-hover-bg:     #fce4ef;
+  --ch-opt-hover-border: #e091b8;
+  --ch-opt-letter-bg:    rgba(194,24,91,0.1);
+  --ch-opt-letter-color: #c2185b;
+
+  --ch-done-bg:          #fff5fb;
+  --ch-done-border:      #f0c8dc;
+  --ch-done-shadow:      0 2px 12px rgba(194,24,91,0.08);
+
+  --ch-quiz-bg:          #fff5fb;
+  --ch-quiz-border:      #f0c8dc;
+  --ch-quiz-shadow:      0 1px 8px rgba(194,24,91,0.07);
+
+  --ch-progress-track:   #fce4ef;
+}
+
+[data-theme="pink"] .opt.selected  { background: color-mix(in srgb, var(--c, #c2185b) 10%, #fdf2f8); }
+[data-theme="pink"] .opt.correct   { color: #2d5a1e !important; }
+[data-theme="pink"] .opt.wrong     { color: #7a1a1a !important; }
+[data-theme="pink"] .feedback.correct { color: #2d5a1e; }
+[data-theme="pink"] .feedback.wrong   { color: #7a1a1a; }

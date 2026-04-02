@@ -37,16 +37,12 @@ function loadP() {
 }
 function saveP(p) { try { localStorage.setItem(KEY, JSON.stringify(p)); } catch {} }
 
-const VALID_THEMES = ["light", "dark", "sepia"];
-
+const VALID_THEMES = ["light", "dark", "sepia", "pink"];
 function loadTheme() {
   try {
     const t = localStorage.getItem(THEME_KEY);
-    // Sepia is now the default theme
-    return VALID_THEMES.includes(t) ? t : "sepia";
-  } catch { 
-    return "sepia"; 
-  }
+    return VALID_THEMES.includes(t) ? t : "light";
+  } catch { return "light"; }
 }
 function saveTheme(t) { try { localStorage.setItem(THEME_KEY, t); } catch {} }
 
@@ -66,9 +62,10 @@ function hasReviewData() {
 // Cycles: light → dark → sepia → light
 // Button shows what the NEXT theme will be
 const THEME_CYCLE = {
-  light:  { next: "dark",  icon: "🌙", label: "Dark"  },
-  dark:   { next: "sepia", icon: "📜", label: "Sepia" },
-  sepia:  { next: "light", icon: "☀️", label: "Light" },
+  light: { next: "dark",  icon: "🌙", label: "Dark"  },
+  dark:  { next: "sepia", icon: "📜", label: "Sepia" },
+  sepia: { next: "pink",  icon: "🌸", label: "Pink"  },
+  pink:  { next: "light", icon: "☀️", label: "Light" },
 };
 
 function ThemeToggle({ theme, onToggle }) {
@@ -84,7 +81,7 @@ function ThemeToggle({ theme, onToggle }) {
 // ── App ───────────────────────────────────────────────────────────────────────
 export default function App() {
   const [prog, setProg]     = useState(loadP);
-  const [theme, setTheme]   = useState(loadTheme);   // Now defaults to sepia
+  const [theme, setTheme]   = useState(loadTheme);
   const [view, setView]     = useState(() => hasPendingSave() ? "final" : "home");
   const [modIdx, setModIdx] = useState(null);
 

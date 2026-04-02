@@ -856,3 +856,232 @@ body {
   ::-webkit-scrollbar-thumb { background: #c4a882; }
   ::-webkit-scrollbar-thumb:hover { background: #a08060; }
 }
+
+[data-theme="pink"] {
+
+  /* ── Toggle button ─────────────────────────────────────────────────────── */
+  .theme-toggle {
+    border-color: rgba(194,24,91,0.2);
+    background: rgba(253,242,248,0.95);
+    color: #2d1a24;
+    box-shadow: 0 2px 12px rgba(194,24,91,0.12);
+  }
+  .theme-toggle:hover { background: #fce4ef; }
+
+  /* ── Page & layout ─────────────────────────────────────────────────────── */
+  .page,
+  .exam-page { background: #fdf2f8; color: #2d1a24; }
+
+  body { background: #fdf2f8; }
+
+  /* ── DENR stripe ───────────────────────────────────────────────────────── */
+  .denr-stripe { background: linear-gradient(90deg, #c2185b, #f06292, #c2185b); }
+
+  /* ── Header ────────────────────────────────────────────────────────────── */
+  .denr-logo    { box-shadow: 0 0 0 3px rgba(194,24,91,0.25), 0 0 24px rgba(194,24,91,0.15); }
+  .denr-agency  { color: #c2185b; }
+  .denr-office  { color: #ad7090; }
+  .home-title   { color: #2d1a24; }
+  .home-sub     { color: #5c3548; }
+  .stat-label   { color: #7a5568; }
+  .stat-done    { color: #c2185b; font-weight: 700; }
+  .stat-passed  { color: #d4508a; font-weight: 700; }
+  .divider      { background: #f0c8dc; }
+  .section-label { color: #9c3575; }
+
+  /* ── Module cards ──────────────────────────────────────────────────────── */
+  .mod-card {
+    background: #fff5fb;
+    border-color: #f0c8dc;
+    box-shadow: 0 1px 6px rgba(194,24,91,0.07);
+  }
+  .mod-card:hover {
+    background: #fce4ef;
+    border-color: #e091b8;
+    box-shadow: 0 4px 14px rgba(194,24,91,0.12);
+    transform: translateY(-2px);
+  }
+  .mod-num   { color: #8b6070; }
+  .mod-title { color: #2d1a24; }
+  .mod-sub   { color: #7a5568; }
+
+  /* ── Module header (inner pages) ───────────────────────────────────────── */
+  .mod-header {
+    background: #fff5fb;
+    border-color: #f0c8dc;
+    box-shadow: 0 1px 6px rgba(194,24,91,0.07);
+  }
+  .mod-header-title { color: #2d1a24; }
+  .mod-label        { color: #8b6070; }
+  .mod-header-sub   { color: #7a5568; }
+
+  /* ── Banners ───────────────────────────────────────────────────────────── */
+  .flashcard-banner,
+  .leaderboard-card {
+    background: #fff5fb;
+    border-color: #f0c8dc;
+    box-shadow: 0 1px 6px rgba(194,24,91,0.06);
+  }
+  .flashcard-banner:hover,
+  .leaderboard-card:hover {
+    background: #fce4ef;
+    box-shadow: 0 4px 14px rgba(194,24,91,0.1);
+  }
+  .fc-title { color: #2d1a24; }
+  .fc-sub   { color: #7a5568; }
+  .fc-icon  { background: rgba(194,24,91,0.1); color: #c2185b; }
+  .fc-arrow { color: #d4508a; opacity: 0.75; }
+
+  /* ── Final card ────────────────────────────────────────────────────────── */
+  .final-card {
+    background: #fff5fb;
+    border-color: #f0c8dc;
+    box-shadow: 0 1px 6px rgba(194,24,91,0.06);
+  }
+  .final-card:hover { background: #fce4ef; }
+  .final-title      { color: #c2185b; }
+  .final-sub        { color: #7a5568; }
+  .final-score-line { color: #5a7a42; }
+
+  /* ── Buttons ───────────────────────────────────────────────────────────── */
+  .btn {
+    border-color: #f0c8dc;
+    color: #4a2d3a;
+    background: #fce4ef;
+  }
+  .btn:hover { background: #f8d0e4; }
+
+  .btn.ghost {
+    color: #7a5568;
+    border-color: #f0c8dc;
+    background: transparent;
+  }
+  .btn.ghost:hover { background: #fce4ef; color: #4a2d3a; }
+
+  /* ── Back button ───────────────────────────────────────────────────────── */
+  .back-btn       { color: #8b6070; }
+  .back-btn:hover { color: #2d1a24; background: #fce4ef; }
+
+  /* ── Done box ──────────────────────────────────────────────────────────── */
+  .done-box {
+    background: #fff5fb;
+    border-color: #f0c8dc;
+    box-shadow: 0 2px 12px rgba(194,24,91,0.08);
+  }
+  .done-title { color: #2d1a24; }
+  .done-sub   { color: #7a5568; }
+
+  /* ── Content card ──────────────────────────────────────────────────────── */
+  .content-card {
+    background: #fff5fb;
+    border-color: #f0c8dc;
+    box-shadow: 0 1px 8px rgba(194,24,91,0.07);
+  }
+  .content-title { color: #2d1a24; }
+
+  /* ── Tabs ──────────────────────────────────────────────────────────────── */
+  .tab {
+    background: #fce4ef;
+    color: #8b6070;
+    border-color: #f0c8dc;
+  }
+  .tab:hover,
+  .tab.active {
+    background: color-mix(in srgb, var(--c, #c2185b) 10%, #fdf2f8);
+    color: var(--c, #c2185b);
+    border-color: var(--c, #c2185b);
+  }
+
+  /* ── Quiz box ──────────────────────────────────────────────────────────── */
+  .quiz-box {
+    background: #fff5fb;
+    border-color: #f0c8dc;
+    box-shadow: 0 1px 8px rgba(194,24,91,0.07);
+  }
+  .quiz-q { color: #2d1a24; }
+
+  /* ── Options ───────────────────────────────────────────────────────────── */
+  .opt {
+    background: #fdf2f8;
+    border-color: #f0c8dc;
+    color: #4a2d3a;
+  }
+  .opt:hover {
+    background: #fce4ef;
+    border-color: #e091b8;
+  }
+  .opt.selected {
+    background: color-mix(in srgb, var(--c, #c2185b) 10%, #fdf2f8);
+    border-color: var(--c, #c2185b);
+    color: var(--c, #c2185b);
+  }
+  /* correct/wrong keep universally understood green/red — just darkened */
+  .opt.correct { color: #2d5a1e !important; }
+  .opt.wrong   { color: #7a1a1a !important; }
+
+  .opt-letter {
+    background: rgba(194,24,91,0.1);
+    color: #c2185b;
+  }
+  .opt.selected .opt-letter {
+    background: color-mix(in srgb, var(--c, #c2185b) 18%, transparent);
+    color: var(--c, #c2185b);
+  }
+
+  /* ── Feedback ──────────────────────────────────────────────────────────── */
+  .feedback.correct { color: #2d5a1e; background: rgba(52,211,153,0.1);  border-color: rgba(52,211,153,0.3); }
+  .feedback.wrong   { color: #7a1a1a; background: rgba(183,28,60,0.08);  border-color: rgba(183,28,60,0.2); }
+
+  /* ── Name input ────────────────────────────────────────────────────────── */
+  .name-input {
+    background: #fdf2f8;
+    border-color: #e8b4cc;
+    color: #2d1a24;
+  }
+  .name-input::placeholder { color: #b08898; }
+  .name-input:focus        { border-color: #c2185b; background: #fff5fb; }
+
+  /* ── Exam intro card ───────────────────────────────────────────────────── */
+  .exam-intro-card {
+    background: #fff5fb;
+    border-color: #f0c8dc;
+    box-shadow: 0 4px 24px rgba(194,24,91,0.1);
+    color: #2d1a24;
+  }
+  .exam-rules      { background: #fdf2f8; border-color: #f0c8dc; }
+  .exam-rule       { color: #5c3548; border-color: #fce4ef; }
+
+  /* ── Exam lockout banner ───────────────────────────────────────────────── */
+  .exam-lockout-title { color: #b71c3c; }
+  .exam-lockout-text  { color: #7a5568; }
+
+  /* ── Module lockout overlay ────────────────────────────────────────────── */
+  .module-lockout-overlay { background: rgba(253,242,248,0.88); }
+  .module-lockout-label   { color: #b71c3c; }
+
+  /* ── Answer review banner ──────────────────────────────────────────────── */
+  .answer-review-banner { background: rgba(194,24,91,0.05) !important; border-color: rgba(194,24,91,0.2) !important; }
+  .answer-review-icon   { background: rgba(194,24,91,0.1) !important; color: #c2185b !important; }
+  .answer-review-title  { color: #c2185b !important; }
+  .answer-review-arrow  { color: #c2185b !important; }
+
+  /* ── Leaderboard accents ───────────────────────────────────────────────── */
+  .leaderboard-icon  { background: rgba(194,24,91,0.1) !important; color: #c2185b !important; }
+  .leaderboard-title { color: #c2185b !important; }
+  .leaderboard-arrow { color: #d4508a !important; }
+
+  /* ── Legal refs banner ─────────────────────────────────────────────────── */
+  .refs-banner        { background: rgba(194,24,91,0.04) !important; border-color: rgba(194,24,91,0.18) !important; }
+  .refs-icon          { background: rgba(194,24,91,0.1) !important; color: #c2185b !important; }
+  .refs-title         { color: #c2185b !important; }
+  .refs-arrow         { color: #d4508a !important; }
+  .refs-banner--locked { background: rgba(183,28,60,0.05) !important; border-color: rgba(183,28,60,0.2) !important; }
+  .refs-icon--locked   { background: rgba(183,28,60,0.1) !important; color: #b71c3c !important; }
+  .refs-title--locked  { color: #b71c3c !important; }
+  .refs-arrow--locked  { color: #b71c3c !important; }
+
+  /* ── Scrollbar ─────────────────────────────────────────────────────────── */
+  ::-webkit-scrollbar-track { background: #fce4ef; }
+  ::-webkit-scrollbar-thumb { background: #e091b8; }
+  ::-webkit-scrollbar-thumb:hover { background: #c2185b; }
+}
