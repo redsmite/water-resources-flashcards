@@ -174,3 +174,49 @@
   --res-vid-sub:          #7a5568;
   --res-vid-img-opacity:  0.92;
 }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   APPEND TO: resources.css
+   New classes replacing the remaining inline styles in Resources.jsx
+───────────────────────────────────────────────────────────────────────────── */
+
+/* ── Resources header band ───────────────────────────────────────────────── */
+.res-header       { border-color: #fbbf2433 !important; }
+.res-header-icon  { background: #fbbf2422 !important; color: #fbbf24 !important; }
+.res-header-label { color: #fbbf24 !important; }
+
+/* ── Ref list container ──────────────────────────────────────────────────── */
+.res-ref-list { display: flex; flex-direction: column; gap: 10px; }
+.res-ref-link { text-decoration: none; }
+
+/* ── Ref card inner layout ───────────────────────────────────────────────── */
+.ref-card-inner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* ── Ref badge ───────────────────────────────────────────────────────────── */
+.ref-badge-code { font-size: 13px; font-weight: 800; }
+.ref-badge-year { font-size: 10px; opacity: 0.7; }
+
+/* ── Ref body ────────────────────────────────────────────────────────────── */
+.ref-body  { flex: 1; }
+
+/* ── Ref arrow ───────────────────────────────────────────────────────────── */
+.ref-arrow { font-size: 16px; opacity: 0.6; flex-shrink: 0; }
+
+/* ── Sepia overrides ─────────────────────────────────────────────────────── */
+[data-theme="sepia"] .res-header       { border-color: rgba(139,94,60,0.25) !important; }
+[data-theme="sepia"] .res-header-icon  { background: rgba(139,94,60,0.12) !important; color: #8b5e3c !important; }
+[data-theme="sepia"] .res-header-label { color: #8b5e3c !important; }
+
+/* ── Pink overrides ──────────────────────────────────────────────────────── */
+[data-theme="pink"] .res-header       { border-color: rgba(194,24,91,0.2) !important; }
+[data-theme="pink"] .res-header-icon  { background: rgba(194,24,91,0.1) !important; color: #c2185b !important; }
+[data-theme="pink"] .res-header-label { color: #c2185b !important; }
+
+/* ── Light overrides ─────────────────────────────────────────────────────── */
+[data-theme="light"] .res-header       { border-color: rgba(251,191,36,0.2) !important; }
+[data-theme="light"] .res-header-icon  { background: rgba(251,191,36,0.1) !important; color: #b45309 !important; }
+[data-theme="light"] .res-header-label { color: #b45309 !important; }

@@ -1,9 +1,10 @@
-// ── chapter/chapter.jsx ───────────────────────────────────────────────────────
-import { useState, useRef } from "react";
+// ── chapter/Chapter.jsx ───────────────────────────────────────────────────────
+import { useState } from "react";
 import "../global.css";
 import "./chapter.css";
+import { scrollToTop } from "../scrollToTop.js";
 
-// ── SVG Illustrations — always dark-themed (self-contained) ──────────────────
+// ── SVG Illustrations ─────────────────────────────────────────────────────────
 const ILLUSTRATIONS = {
   "1-0": () => (
     <svg viewBox="0 0 420 180" xmlns="http://www.w3.org/2000/svg" style={{ width:"100%", borderRadius:12, marginBottom:20 }}>
@@ -232,13 +233,11 @@ export function ModuleView({ mod, prog, update, onBack }) {
   const [qi, setQi]               = useState(0);
   const [score, setScore]         = useState(0);
   const [done, setDone]           = useState(false);
-  const topRef                    = useRef(null);
 
-  const scrollToTop = () => {
-    if (topRef.current) topRef.current.scrollIntoView({ behavior:"smooth", block:"start" });
-    else window.scrollTo({ top:0, behavior:"smooth" });
-  };
-  const goToChapter = (i) => { setCh(i); scrollToTop(); };
+  // ── All chapter/quiz navigation calls scrollToTop first ───────────────────
+  const goToChapter = (i) => { scrollToTop(); setCh(i); };
+
+  const startQuiz = () => { scrollToTop(); setPhase("quiz"); };
 
   const q = mod.quiz[qi];
 
@@ -249,6 +248,7 @@ export function ModuleView({ mod, prog, update, onBack }) {
   };
 
   const next = () => {
+    scrollToTop(); // ← scroll before switching question
     if (qi + 1 >= mod.quiz.length) {
       update({ ...prog, completed:{ ...prog.completed,[mod.id]:true }, scores:{ ...prog.scores,[mod.id]:score } });
       setDone(true);
@@ -257,8 +257,8 @@ export function ModuleView({ mod, prog, update, onBack }) {
     }
   };
 
-  // renderLine uses CSS variables — colors set via className where possible,
-  // inline style only for the accent colors that can't use classes
+  const handleBack = () => { scrollToTop(); onBack(); };
+
   const renderLine = (line, i) => {
     let cls = "";
     if (line.startsWith("❓")) cls = "callout-know";
@@ -276,9 +276,8 @@ export function ModuleView({ mod, prog, update, onBack }) {
 
   return (
     <div className="page">
-      <div ref={topRef} style={{ position:"relative", top:-8 }} />
       <div className="inner-wrap">
-        <button className="back-btn" onClick={onBack}>← Back to Modules</button>
+        <button className="back-btn" onClick={handleBack}>← Back to Modules</button>
 
         <div className="mod-header" style={{ borderColor: mod.color + "33" }}>
           <div className="mod-icon lg" style={{ background: mod.color + "22", color: mod.color }}>{mod.icon}</div>
@@ -316,7 +315,7 @@ export function ModuleView({ mod, prog, update, onBack }) {
                   Next →
                 </button>
               ) : (
-                <button className="btn primary" style={{ background:mod.color, color:"#0f172a" }} onClick={() => { setPhase("quiz"); scrollToTop(); }}>
+                <button className="btn primary" style={{ background:mod.color, color:"#0f172a" }} onClick={startQuiz}>
                   Take Mini Quiz →
                 </button>
               )}
@@ -366,7 +365,7 @@ export function ModuleView({ mod, prog, update, onBack }) {
             <div className="done-title">Module Complete!</div>
             <div className="done-score" style={{ color: mod.color }}>{prog.scores[mod.id]}/{mod.quiz.length}</div>
             <div className="done-sub">Quiz Score</div>
-            <button className="btn primary" style={{ background:mod.color, color:"#0f172a", marginTop:24 }} onClick={onBack}>← Back to Modules</button>
+            <button className="btn primary" style={{ background:mod.color, color:"#0f172a", marginTop:24 }} onClick={handleBack}>← Back to Modules</button>
           </div>
         )}
       </div>

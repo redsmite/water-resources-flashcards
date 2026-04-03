@@ -2,36 +2,39 @@
 import { LEGAL_REFS } from "../data.js";
 import "../global.css";
 import "./resources.css";
+import { scrollToTop } from "../scrollToTop.js";
 
 export function ResourcesView({ onBack }) {
+  const handleBack = () => { scrollToTop(); onBack(); };
+
   return (
     <div className="page">
       <div className="inner-wrap">
-        <button className="back-btn" onClick={onBack}>← Back to Home</button>
+        <button className="back-btn" onClick={handleBack}>← Back to Home</button>
 
-        <div className="mod-header" style={{ borderColor:"#fbbf2433" }}>
-          <div className="mod-icon lg" style={{ background:"#fbbf2422",color:"#fbbf24" }}>📖</div>
+        <div className="mod-header res-header">
+          <div className="mod-icon lg res-header-icon">📖</div>
           <div>
-            <div className="mod-label" style={{ color:"#fbbf24" }}>Legal References</div>
+            <div className="mod-label res-header-label">Legal References</div>
             <div className="mod-header-title">Philippine Water Law</div>
             <div className="mod-header-sub">7 key issuances — tap to open full text</div>
           </div>
         </div>
 
-        <div style={{ display:"flex",flexDirection:"column",gap:10 }}>
+        <div className="res-ref-list">
           {LEGAL_REFS.map(ref => (
-            <a key={ref.code} href={ref.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration:"none" }}>
-              <div className="ref-card" style={{ "--rc":ref.color }}>
-                <div style={{ display:"flex",alignItems:"center",gap:14 }}>
-                  <div className="ref-badge" style={{ background:ref.color+"22",color:ref.color,borderColor:ref.color+"44" }}>
-                    <div style={{ fontSize:13,fontWeight:800 }}>{ref.code}</div>
-                    <div style={{ fontSize:10,opacity:0.7 }}>{ref.year}</div>
+            <a key={ref.code} href={ref.url} target="_blank" rel="noopener noreferrer" className="res-ref-link">
+              <div className="ref-card" style={{ "--rc": ref.color }}>
+                <div className="ref-card-inner">
+                  <div className="ref-badge" style={{ background:ref.color+"22", color:ref.color, borderColor:ref.color+"44" }}>
+                    <div className="ref-badge-code">{ref.code}</div>
+                    <div className="ref-badge-year">{ref.year}</div>
                   </div>
-                  <div style={{ flex:1 }}>
+                  <div className="ref-body">
                     <div className="ref-title">{ref.title}</div>
                     <div className="ref-desc">{ref.desc}</div>
                   </div>
-                  <div style={{ fontSize:16,color:ref.color,opacity:0.6,flexShrink:0 }}>↗</div>
+                  <div className="ref-arrow" style={{ color: ref.color }}>↗</div>
                 </div>
               </div>
             </a>

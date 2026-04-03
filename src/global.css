@@ -1085,3 +1085,13 @@ body {
   ::-webkit-scrollbar-thumb { background: #e091b8; }
   ::-webkit-scrollbar-thumb:hover { background: #c2185b; }
 }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   APPEND TO: global.css
+   Prevents the browser's CSS smooth-scroll from overriding window.scrollTo(0,0).
+   Without this, some browsers ignore the instant scroll if scroll-behavior:smooth
+   is set anywhere in the stylesheet.
+───────────────────────────────────────────────────────────────────────────── */
+html {
+  scroll-behavior: auto !important;
+}

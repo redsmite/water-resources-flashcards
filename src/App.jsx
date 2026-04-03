@@ -5,6 +5,7 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
 import { DENR_LOGO, MODULES, FLASHCARDS, TOTAL_ITEMS } from "./data.js";
+import { scrollToTop } from "./scrollToTop.js";
 
 import { ModuleView }      from "./chapter/Chapter.jsx";
 import { FlashcardsView }  from "./flashcard/Flashcard.jsx";
@@ -59,8 +60,6 @@ function hasReviewData() {
 }
 
 // ── Theme Toggle ──────────────────────────────────────────────────────────────
-// Cycles: light → dark → sepia → light
-// Button shows what the NEXT theme will be
 const THEME_CYCLE = {
   light: { next: "dark",  icon: "🌙", label: "Dark"  },
   dark:  { next: "sepia", icon: "📜", label: "Sepia" },
@@ -90,21 +89,26 @@ export default function App() {
     saveTheme(theme);
   }, [theme]);
 
-  const toggleTheme  = () => setTheme(t => THEME_CYCLE[t]?.next ?? "light");
-  const update       = (p) => { setProg(p); saveP(p); };
+
+  const toggleTheme = () => setTheme(t => THEME_CYCLE[t]?.next ?? "light");
+  const update      = (p) => { setProg(p); saveP(p); };
+
   const completedCount = Object.keys(prog.completed).length;
   const allDone        = completedCount >= MODULES.length;
   const examOngoing    = examIsOngoing();
   const finalUnlocked  = allDone && !prog.finalDone;
 
+  // goTo: scroll first, then change view
+  const goTo = (v) => { scrollToTop(); setView(v); };
+
   const toggle = <ThemeToggle theme={theme} onToggle={toggleTheme} />;
 
   // ── Sub-page routing ──────────────────────────────────────────────────────
-  if (view === "module")      return <>{toggle}<ModuleView      mod={MODULES[modIdx]} prog={prog} update={update} onBack={() => setView("home")} /></>;
-  if (view === "flashcards")  return <>{toggle}<FlashcardsView  onBack={() => setView("home")} /></>;
-  if (view === "final")       return <>{toggle}<FinalQuizView   prog={prog} update={update} onBack={() => setView("home")} db={db} /></>;
-  if (view === "leaderboard") return <>{toggle}<LeaderboardView onBack={() => setView("home")} db={db} /></>;
-  if (view === "resources")   return <>{toggle}<ResourcesView   onBack={() => setView("home")} /></>;
+  if (view === "module")      return <>{toggle}<ModuleView      mod={MODULES[modIdx]} prog={prog} update={update} onBack={() => goTo("home")} /></>;
+  if (view === "flashcards")  return <>{toggle}<FlashcardsView  onBack={() => goTo("home")} /></>;
+  if (view === "final")       return <>{toggle}<FinalQuizView   prog={prog} update={update} onBack={() => goTo("home")} db={db} /></>;
+  if (view === "leaderboard") return <>{toggle}<LeaderboardView onBack={() => goTo("home")} db={db} /></>;
+  if (view === "resources")   return <>{toggle}<ResourcesView   onBack={() => goTo("home")} /></>;
 
   // ── Home screen ───────────────────────────────────────────────────────────
   return (
@@ -113,7 +117,6 @@ export default function App() {
       <div className="home-wrap">
         <div className="denr-stripe" />
 
-        {/* Exam lockout banner */}
         {examOngoing && (
           <div className="exam-lockout-banner">
             <span className="exam-lockout-icon">🔒</span>
@@ -123,13 +126,12 @@ export default function App() {
                 You have an unfinished exam. Modules, flashcards, and references are locked until you complete it.
               </div>
             </div>
-            <button className="btn exam-lockout-btn" onClick={() => setView("final")}>
+            <button className="btn exam-lockout-btn" onClick={() => goTo("final")}>
               Resume Exam →
             </button>
           </div>
         )}
 
-        {/* Header */}
         <header className="home-header">
           <div className="denr-logo-wrap">
             <img src={DENR_LOGO} alt="DENR Logo" className="denr-logo" />
@@ -147,7 +149,6 @@ export default function App() {
           </div>
         </header>
 
-        {/* Learning Modules */}
         <div className="section-label">📚 Learning Modules</div>
         <div className={`module-grid${examOngoing ? " module-grid--locked" : ""}`}>
           {examOngoing && (
@@ -164,7 +165,7 @@ export default function App() {
                 key={mod.id}
                 className="mod-card"
                 style={{ "--c": mod.color, borderColor: done ? mod.color + "44" : undefined }}
-                onClick={() => !examOngoing && (setModIdx(i), setView("module"))}
+                onClick={() => !examOngoing && (setModIdx(i), goTo("module"))}
                 disabled={examOngoing}
               >
                 <div className="card-top">
@@ -183,11 +184,10 @@ export default function App() {
           })}
         </div>
 
-        {/* Flashcards */}
         <div className="section-label section-label--mt">🃏 Flashcard Review</div>
         <button
           className={`flashcard-banner${examOngoing ? " flashcard-banner--locked" : ""}`}
-          onClick={() => !examOngoing && setView("flashcards")}
+          onClick={() => !examOngoing && goTo("flashcards")}
           disabled={examOngoing}
         >
           <div className="fc-left">
@@ -202,11 +202,10 @@ export default function App() {
           <div className="fc-arrow">→</div>
         </button>
 
-        {/* Final Assessment */}
         <div className="section-label section-label--mt">🏆 Assessment</div>
         <button
           className={`final-card${finalUnlocked ? "" : " final-card--locked"}`}
-          onClick={() => finalUnlocked && setView("final")}
+          onClick={() => finalUnlocked && goTo("final")}
           disabled={!finalUnlocked}
         >
           <span className="final-card-icon">🏆</span>
@@ -223,11 +222,10 @@ export default function App() {
           )}
         </button>
 
-        {/* Answer Review */}
         {hasReviewData() && (
           <>
             <div className="section-label section-label--mt">📝 Answer Review</div>
-            <button className="flashcard-banner answer-review-banner" onClick={() => setView("final")}>
+            <button className="flashcard-banner answer-review-banner" onClick={() => goTo("final")}>
               <div className="fc-left">
                 <div className="fc-icon answer-review-icon">📝</div>
                 <div>
@@ -240,9 +238,8 @@ export default function App() {
           </>
         )}
 
-        {/* Leaderboard */}
         <div className="section-label section-label--mt">📊 Student Results</div>
-        <button className="leaderboard-card" onClick={() => setView("leaderboard")}>
+        <button className="leaderboard-card" onClick={() => goTo("leaderboard")}>
           <div className="fc-left">
             <div className="fc-icon leaderboard-icon">📊</div>
             <div>
@@ -253,15 +250,13 @@ export default function App() {
           <div className="fc-arrow leaderboard-arrow">→</div>
         </button>
 
-        {/* Video References */}
         <div className="section-label section-label--mt">🎬 Video References</div>
         <VideoSection />
 
-        {/* Legal References */}
         <div className="section-label">📖 References</div>
         <button
           className={`flashcard-banner refs-banner${examOngoing ? " refs-banner--locked" : ""}`}
-          onClick={() => !examOngoing && setView("resources")}
+          onClick={() => !examOngoing && goTo("resources")}
           disabled={examOngoing}
         >
           <div className="fc-left">

@@ -27,7 +27,7 @@ export function FlashcardsView({ onBack }) {
     if (mark==="know")   setKnown(s => new Set([...s, deck[index].q]));
     if (mark==="review") setUnknown(s => new Set([...s, deck[index].q]));
     if (index+1 >= total) { setDone(true); }
-    else { setTimeout(() => setIndex(i => i+1), 120); }
+    else { setIndex(i => i+1); }
   }, [deck, index, total]);
 
   const restart = (onlyUnknown = false) => {
@@ -36,10 +36,12 @@ export function FlashcardsView({ onBack }) {
     setIndex(0); setFlipped(false); setKnown(new Set()); setUnknown(new Set()); setDone(false);
   };
 
+  const handleBack = () => { onBack(); };
+
   return (
     <div className="page">
       <div className="inner-wrap">
-        <button className="back-btn" onClick={onBack}>← Back to Home</button>
+        <button className="back-btn" onClick={handleBack}>← Back to Home</button>
 
         <div className="mod-header fc-header">
           <div className="mod-icon lg fc-header-icon">🃏</div>
@@ -58,7 +60,6 @@ export function FlashcardsView({ onBack }) {
                 <span className="fc-progress-known">✓ {known.size} known</span>
               </div>
               <div className="fc-progress-track">
-                {/* width is genuinely dynamic — unavoidable inline style */}
                 <div className="fc-progress-fill" style={{ width:`${progress}%` }} />
               </div>
             </div>
