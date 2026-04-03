@@ -18,8 +18,8 @@ export function FlashcardsView({ onBack }) {
   const [unknown, setUnknown] = useState(new Set());
   const [done, setDone]       = useState(false);
 
-  const card    = deck[index];
-  const total   = deck.length;
+  const card     = deck[index];
+  const total    = deck.length;
   const progress = (index / total) * 100;
 
   const goNext = useCallback((mark) => {
@@ -41,10 +41,10 @@ export function FlashcardsView({ onBack }) {
       <div className="inner-wrap">
         <button className="back-btn" onClick={onBack}>← Back to Home</button>
 
-        <div className="mod-header" style={{ borderColor:"#a78bfa33" }}>
-          <div className="mod-icon lg" style={{ background:"#a78bfa22",color:"#a78bfa" }}>🃏</div>
+        <div className="mod-header fc-header">
+          <div className="mod-icon lg fc-header-icon">🃏</div>
           <div>
-            <div className="mod-label" style={{ color:"#a78bfa" }}>Flashcard Review</div>
+            <div className="mod-label fc-header-label">Flashcard Review</div>
             <div className="mod-header-title">Study All Modules</div>
             <div className="mod-header-sub">{FLASHCARDS.length} cards · tap card to flip</div>
           </div>
@@ -52,18 +52,17 @@ export function FlashcardsView({ onBack }) {
 
         {!done ? (
           <>
-            {/* Progress bar */}
             <div className="fc-progress-wrap">
               <div className="fc-progress-meta">
                 <span className="fc-progress-card">Card {index+1} of {total}</span>
                 <span className="fc-progress-known">✓ {known.size} known</span>
               </div>
               <div className="fc-progress-track">
+                {/* width is genuinely dynamic — unavoidable inline style */}
                 <div className="fc-progress-fill" style={{ width:`${progress}%` }} />
               </div>
             </div>
 
-            {/* Flip card */}
             <div className="fc-card-wrap" onClick={() => setFlipped(f => !f)}>
               <div className={`fc-inner ${flipped?"flipped":""}`}>
                 <div className="fc-face fc-front">
@@ -78,51 +77,44 @@ export function FlashcardsView({ onBack }) {
               </div>
             </div>
 
-            {/* Action buttons */}
-            <div style={{ display:"flex",gap:10,marginTop:16 }}>
+            <div className="fc-actions">
               {flipped ? (
                 <>
-                  <button className="btn ghost fc-action"
-                    style={{ flex:1,color:"#f87171",borderColor:"rgba(248,113,113,0.3)",background:"rgba(248,113,113,0.08)" }}
-                    onClick={() => goNext("review")}>✗ Still Learning</button>
-                  <button className="btn ghost fc-action"
-                    style={{ flex:1,color:"#34d399",borderColor:"rgba(52,211,153,0.3)",background:"rgba(52,211,153,0.08)" }}
-                    onClick={() => goNext("know")}>✓ Got It</button>
+                  <button className="btn ghost fc-action fc-btn-learning" onClick={() => goNext("review")}>✗ Still Learning</button>
+                  <button className="btn ghost fc-action fc-btn-got"      onClick={() => goNext("know")}>✓ Got It</button>
                 </>
               ) : (
-                <button className="btn ghost fc-action"
-                  style={{ flex:1,color:"#818cf8",borderColor:"rgba(129,140,248,0.3)" }}
-                  onClick={() => setFlipped(true)}>Flip Card</button>
+                <button className="btn ghost fc-action fc-btn-flip" onClick={() => setFlipped(true)}>Flip Card</button>
               )}
             </div>
           </>
         ) : (
           <div className="done-box">
-            <div style={{ fontSize:44,marginBottom:12 }}>{known.size/total>=0.8?"🌊":known.size/total>=0.5?"💧":"📚"}</div>
+            <div className="fc-done-emoji">{known.size/total>=0.8?"🌊":known.size/total>=0.5?"💧":"📚"}</div>
             <div className="done-title">Round Complete!</div>
             <div className="fc-done-stats">
               <div className="fc-done-stat">
-                <div style={{ fontSize:28,fontWeight:800,color:"#34d399" }}>{known.size}</div>
+                <div className="fc-stat-num fc-stat-known">{known.size}</div>
                 <div className="fc-done-stat-label">Got It</div>
               </div>
               <div className="fc-done-stat">
-                <div style={{ fontSize:28,fontWeight:800,color:"#f87171" }}>{unknown.size}</div>
+                <div className="fc-stat-num fc-stat-learning">{unknown.size}</div>
                 <div className="fc-done-stat-label">Learning</div>
               </div>
               <div className="fc-done-stat">
-                <div style={{ fontSize:28,fontWeight:800,color:"#a78bfa" }}>{Math.round((known.size/total)*100)}%</div>
+                <div className="fc-stat-num fc-stat-score">{Math.round((known.size/total)*100)}%</div>
                 <div className="fc-done-stat-label">Score</div>
               </div>
             </div>
-            <div style={{ display:"flex",flexDirection:"column",gap:10 }}>
+            <div className="fc-done-actions">
               {unknown.size>0 && (
-                <button className="btn ghost fc-action"
-                  style={{ color:"#fbbf24",borderColor:"rgba(251,191,36,0.3)",background:"rgba(251,191,36,0.08)" }}
-                  onClick={() => restart(true)}>↺ Review Missed ({unknown.size})</button>
+                <button className="btn ghost fc-action fc-btn-missed" onClick={() => restart(true)}>
+                  ↺ Review Missed ({unknown.size})
+                </button>
               )}
-              <button className="btn ghost fc-action"
-                style={{ color:"#a78bfa",borderColor:"rgba(167,139,250,0.3)" }}
-                onClick={() => restart(false)}>↺ Restart All Cards</button>
+              <button className="btn ghost fc-action fc-btn-restart" onClick={() => restart(false)}>
+                ↺ Restart All Cards
+              </button>
             </div>
           </div>
         )}

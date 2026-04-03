@@ -669,3 +669,79 @@
 [data-theme="pink"] .fe-penalty-toast  { background: #3d0a1a; border-color: #c2185b; color: #f8bbd0; }
 [data-theme="pink"] .fe-error-msg      { color: #b71c3c; }
 [data-theme="pink"] .fe-lb-row.top .fe-lb-rank { font-size: 22px; }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   APPEND TO: final_exam.css
+   New classes for:
+   • Penalty counter badge (active exam header + result screen)
+   • Leaderboard penalty column
+   • fe-result-sub margin
+───────────────────────────────────────────────────────────────────────────── */
+
+/* ── Live penalty counter in exam header timer area ─────────────────────── */
+.fe-penalty-counter {
+  font-size: 11px;
+  font-weight: 700;
+  color: #f87171;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+/* ── Penalty count on result screen ─────────────────────────────────────── */
+.fe-result-penalty {
+  font-size: 13px;
+  color: #f87171;
+  background: rgba(248,113,113,0.08);
+  border: 1px solid rgba(248,113,113,0.25);
+  border-radius: 8px;
+  padding: 7px 14px;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+.fe-result-penalty strong { color: #f87171; }
+
+/* ── Result sub margin ───────────────────────────────────────────────────── */
+.fe-result-sub { margin-bottom: 8px; }
+
+/* ── Leaderboard penalty column ──────────────────────────────────────────── */
+/* Default: muted grey for zero — not alarming */
+.fe-lb-penalty {
+  font-size: 10px;
+  color: var(--fe-text-muted, #475569);
+  margin-top: 2px;
+  letter-spacing: 0.3px;
+}
+/* Flagged (> 0): red, bold, hard to miss */
+.fe-lb-penalty.flagged {
+  color: #f87171;
+  font-weight: 700;
+}
+
+/* ── Light theme ─────────────────────────────────────────────────────────── */
+[data-theme="light"] .fe-result-penalty {
+  background: rgba(220,38,38,0.05);
+  border-color: rgba(220,38,38,0.2);
+  color: #dc2626;
+}
+[data-theme="light"] .fe-result-penalty strong { color: #dc2626; }
+[data-theme="light"] .fe-lb-penalty.flagged    { color: #dc2626; }
+
+/* ── Sepia theme ─────────────────────────────────────────────────────────── */
+[data-theme="sepia"] .fe-result-penalty {
+  background: rgba(158,58,58,0.07);
+  border-color: rgba(158,58,58,0.2);
+  color: #9e3a3a;
+}
+[data-theme="sepia"] .fe-result-penalty strong { color: #9e3a3a; }
+[data-theme="sepia"] .fe-penalty-counter       { color: #9e3a3a; }
+[data-theme="sepia"] .fe-lb-penalty.flagged    { color: #9e3a3a; }
+
+/* ── Pink theme ──────────────────────────────────────────────────────────── */
+[data-theme="pink"] .fe-result-penalty {
+  background: rgba(183,28,60,0.06);
+  border-color: rgba(183,28,60,0.2);
+  color: #b71c3c;
+}
+[data-theme="pink"] .fe-result-penalty strong { color: #b71c3c; }
+[data-theme="pink"] .fe-penalty-counter       { color: #b71c3c; }
+[data-theme="pink"] .fe-lb-penalty.flagged    { color: #b71c3c; }

@@ -7,7 +7,7 @@ import "./final_exam.css";
 
 const PROGRESS_KEY    = "wrm_exam_progress";
 const PENDING_KEY     = "wrm_pending_save";
-const PENALTY_SECONDS = 5 * 60; // 5-minute penalty per offence
+const PENALTY_SECONDS = 5 * 60;
 
 function saveProgress(state) { try { localStorage.setItem(PROGRESS_KEY, JSON.stringify(state)); } catch {} }
 function loadProgress() { try { const r = localStorage.getItem(PROGRESS_KEY); return r ? JSON.parse(r) : null; } catch { return null; } }
@@ -16,6 +16,7 @@ function savePending(data) { try { localStorage.setItem(PENDING_KEY, JSON.string
 function loadPending() { try { const r = localStorage.getItem(PENDING_KEY); return r ? JSON.parse(r) : null; } catch { return null; } }
 function clearPending() { try { localStorage.removeItem(PENDING_KEY); } catch {} }
 function nameAlreadySaved() { try { return !localStorage.getItem(PENDING_KEY); } catch { return false; } }
+function hasReviewKey() { try { return !!localStorage.getItem("wrm_final_review"); } catch { return false; } }
 
 function shuffle(arr) {
   const a = [...arr];
@@ -38,164 +39,119 @@ function normalizeFitb(s) {
   return v;
 }
 function isCorrect(q, a) {
-  if (q.type==="mc") return a === q.answer;
-  if (q.type==="tf") return a === (q.answer ? 0 : 1);
-  if (q.type==="fitb") { if (typeof a !== "string") return false; const na=normalizeFitb(a); const acc=Array.isArray(q.answer)?q.answer:q.answer.split("|"); return acc.some(x=>normalizeFitb(x)===na); }
+  if (q.type==="mc")    return a === q.answer;
+  if (q.type==="tf")    return a === (q.answer ? 0 : 1);
+  if (q.type==="fitb")  { if (typeof a !== "string") return false; const na=normalizeFitb(a); const acc=Array.isArray(q.answer)?q.answer:q.answer.split("|"); return acc.some(x=>normalizeFitb(x)===na); }
   if (q.type==="multi") { if (!Array.isArray(a)) return false; return [...a].sort().join(",")===([...q.answer].sort().join(",")); }
   return false;
 }
 
 // ── FinalQuizView ─────────────────────────────────────────────────────────────
 export function FinalQuizView({ prog, update, onBack, db }) {
-  const saved = loadProgress();
-  const [quiz] = useState(() => saved?.quiz ?? shuffle(FINAL_QUIZ.map(shuffleQuestion)));
-  const [started, setStarted] = useState(() => saved?.started ?? false);
-  const [answeredUpTo, setAnsweredUpTo] = useState(() => saved?.answeredUpTo ?? 0);
-  const [qi, setQi]       = useState(() => saved?.answeredUpTo ?? 0);
-  const [answers, setAnswers] = useState(() => saved?.answers ?? {});
-  const [fitbVal, setFitbVal] = useState("");
-
+  const saved   = loadProgress();
   const pending = loadPending();
-  const [done, setDone]             = useState(() => !!prog.finalDone || !!pending);
-  const [finalScore, setFinalScore] = useState(() => prog.finalScore ?? pending?.score ?? 0);
 
-  // ── Penalty system ────────────────────────────────────────────────────────
-  // penaltiesRef tracks total penalties accumulated so the timer base stays
-  // correct across multiple leave events within a single session.
-  const penaltiesRef      = useRef(saved?.pendingPenalties ?? 0);
-  const penaltyWasApplied = useRef(!!(saved?.leftDuringExam));
+  const [quiz] = useState(() => saved?.quiz ?? shuffle(FINAL_QUIZ.map(shuffleQuestion)));
+  const [started, setStarted]           = useState(() => saved?.started ?? false);
+  const [answeredUpTo, setAnsweredUpTo] = useState(() => saved?.answeredUpTo ?? 0);
+  const [qi, setQi]                     = useState(() => saved?.answeredUpTo ?? 0);
+  const [answers, setAnswers]           = useState(() => saved?.answers ?? {});
+  const [fitbVal, setFitbVal]           = useState("");
+
+  // ── If review key exists → skip straight to result screen ────────────────
+  const [done, setDone]               = useState(() => !!prog.finalDone || !!pending || hasReviewKey());
+  const [finalScore, setFinalScore]   = useState(() => prog.finalScore ?? pending?.score ?? 0);
+
+  // ── Penalty counter — persisted inside wrm_exam_progress.penaltyCount ────
+  // Incremented on every confirmed look-away event (with 3s cooldown).
+  // Survives reload via localStorage; carried into pending save; written to Firestore.
+  const penaltyCountRef = useRef(saved?.penaltyCount ?? pending?.penaltyCount ?? 0);
+  const [penaltyCount, setPenaltyCount] = useState(() => penaltyCountRef.current);
+
   const initialElapsedRef = useRef((() => {
-    const rawBase = saved?.elapsed ?? prog.finalElapsed ?? pending?.elapsed ?? 0;
-    // Apply any penalties that were flagged before this page load
+    const rawBase          = saved?.elapsed ?? prog.finalElapsed ?? pending?.elapsed ?? 0;
     const pendingPenalties = saved?.pendingPenalties ?? 0;
     return rawBase + pendingPenalties * PENALTY_SECONDS;
   })());
 
-  const [elapsed, setElapsed] = useState(() => initialElapsedRef.current);
-  // penaltyFlash drives the "⚠️ +5 min penalty" toast shown to the student
+  const [elapsed, setElapsed]           = useState(() => initialElapsedRef.current);
   const [penaltyFlash, setPenaltyFlash] = useState(false);
 
-  const startTimeRef  = useRef(null);
-  const timerRef      = useRef(null);
-  // baseRef stores the wall-clock anchor the interval uses — updated whenever
-  // a new penalty is added so the timer jumps forward immediately.
-  const baseRef       = useRef(null);
+  const startTimeRef       = useRef(null);
+  const timerRef           = useRef(null);
+  const baseRef            = useRef(null);
+  const penaltyCooldownRef = useRef(false);
 
-  const [name, setName]             = useState("");
-  const [nameLocked, setNameLocked] = useState(() => (!!prog.finalDone || !!pending) && nameAlreadySaved());
-  const [saving, setSaving]         = useState(false);
-  const [saveError, setSaveError]   = useState("");
+  const [name, setName]               = useState("");
+  const [nameLocked, setNameLocked]   = useState(() => (!!prog.finalDone || !!pending || hasReviewKey()) && nameAlreadySaved());
+  const [saving, setSaving]           = useState(false);
+  const [saveError, setSaveError]     = useState("");
 
   const q   = quiz[qi];
   const sel = answers[qi];
 
-  // ── Persist progress ──────────────────────────────────────────────────────
+  // ── Persist progress (includes penaltyCount) ──────────────────────────────
   useEffect(() => {
     if (!started || done || prog.finalDone) return;
-    saveProgress({ quiz, started, qi, answeredUpTo, answers, elapsed, pendingPenalties: 0 });
+    saveProgress({ quiz, started, qi, answeredUpTo, answers, elapsed, pendingPenalties: 0, penaltyCount: penaltyCountRef.current });
   }, [qi, answeredUpTo, answers, elapsed, started]);
 
   // ── Start / resume timer ──────────────────────────────────────────────────
   useEffect(() => {
     if (!started || done || prog.finalDone) return;
-
-    // Clear any saved penalty flags — we've already baked them into initialElapsed
-    saveProgress({
-      quiz, started, qi, answeredUpTo, answers,
-      elapsed:         initialElapsedRef.current,
-      pendingPenalties: 0,
-      leftDuringExam:  false,
-    });
-
+    saveProgress({ quiz, started, qi, answeredUpTo, answers, elapsed: initialElapsedRef.current, pendingPenalties: 0, penaltyCount: penaltyCountRef.current, leftDuringExam: false });
     const base = Date.now() - initialElapsedRef.current * 1000;
-    baseRef.current      = base;
-    startTimeRef.current = base;
-
-    timerRef.current = setInterval(() => {
-      setElapsed(Math.floor((Date.now() - baseRef.current) / 1000));
-    }, 1000);
-
+    baseRef.current = base; startTimeRef.current = base;
+    timerRef.current = setInterval(() => setElapsed(Math.floor((Date.now() - baseRef.current) / 1000)), 1000);
     return () => clearInterval(timerRef.current);
   }, [started]);
 
-  // ── Apply a new penalty in real-time ─────────────────────────────────────
-  // Called every time a leave event fires while the exam is active.
+  // ── Apply penalty: shift timer + increment counter ────────────────────────
   const applyPenalty = () => {
     if (!started || done || prog.finalDone) return;
-
-    // Shift the timer base forward by PENALTY_SECONDS so elapsed jumps up
+    // Shift the clock base back by PENALTY_SECONDS so elapsed jumps forward
     baseRef.current = (baseRef.current ?? Date.now()) - PENALTY_SECONDS * 1000;
-
-    // Show the flash toast
+    // Increment the look-away counter
+    penaltyCountRef.current += 1;
+    setPenaltyCount(penaltyCountRef.current);
+    // Show toast
     setPenaltyFlash(true);
     setTimeout(() => setPenaltyFlash(false), 3500);
-
-    // Persist the new elapsed immediately so a refresh also reflects the penalty
+    // Persist immediately
     const newElapsed = Math.floor((Date.now() - baseRef.current) / 1000);
     setElapsed(newElapsed);
-    saveProgress({ quiz, started, qi, answeredUpTo, answers, elapsed: newElapsed, pendingPenalties: 0, leftDuringExam: false });
+    saveProgress({ quiz, started, qi, answeredUpTo, answers, elapsed: newElapsed, pendingPenalties: 0, penaltyCount: penaltyCountRef.current, leftDuringExam: false });
   };
 
   // ── Leave-event listeners ─────────────────────────────────────────────────
-  //
-  // Detected behaviours:
-  //   • Alt+Tab / switching apps          → visibilitychange (hidden)
-  //   • Minimising window                 → visibilitychange (hidden)
-  //   • Opening incognito / other browser → not detectable, covered by pagehide
-  //   • Page reload (Ctrl+R / F5)         → beforeunload + pagehide
-  //   • Overlaying another window         → visibilitychange (hidden) on most OS
-  //   • Back button (React nav)           → handleBack calls applyPenalty directly
-  //
-  // Strategy: visibilitychange fires for all focus-loss cases synchronously.
-  // beforeunload fires for reload/close and lets us write to localStorage
-  // before the page dies. pagehide is the spec-recommended fallback for Safari.
-  //
-  // We debounce with a cooldown so rapid tab-switch + return doesn't stack.
-  const penaltyCooldownRef = useRef(false);
+  const penaltyCooldownRef2 = penaltyCooldownRef; // alias for clarity inside closure
 
   useEffect(() => {
     if (!started || done || prog.finalDone) return;
 
     const triggerPenalty = () => {
-      if (penaltyCooldownRef.current) return;
-      penaltyCooldownRef.current = true;
+      if (penaltyCooldownRef2.current) return;
+      penaltyCooldownRef2.current = true;
       applyPenalty();
-      // 3-second cooldown so blur + visibilitychange firing together only count once
-      setTimeout(() => { penaltyCooldownRef.current = false; }, 3000);
+      setTimeout(() => { penaltyCooldownRef2.current = false; }, 3000);
     };
 
-    // visibilitychange: tab hidden, window minimized, alt+tab, overlay
-    const onVisibility = () => {
-      if (document.visibilityState === "hidden") triggerPenalty();
-    };
-
-    // beforeunload: catches reload (Ctrl+R/F5) and browser close
-    // We can't show UI here but we CAN write to localStorage
+    // visibilitychange: tab hidden, alt+tab, minimise, window overlay
+    const onVisibility   = () => { if (document.visibilityState === "hidden") triggerPenalty(); };
+    // beforeunload: reload (Ctrl+R/F5), browser close — write to storage before page dies
     const onBeforeUnload = () => {
       const s = loadProgress();
-      if (s) {
-        const penalized = (s.pendingPenalties ?? 0) + 1;
-        saveProgress({ ...s, pendingPenalties: penalized, leftDuringExam: true });
-      }
+      if (s) saveProgress({ ...s, pendingPenalties: (s.pendingPenalties ?? 0) + 1, penaltyCount: penaltyCountRef.current + 1, leftDuringExam: true });
     };
-
-    // pagehide: Safari fallback + navigation away
-    const onPageHide = () => {
-      const s = loadProgress();
-      if (s && !s.leftDuringExam) {
-        saveProgress({ ...s, leftDuringExam: true });
-      }
-    };
-
-    // blur: window loses focus (overlaid by another window, OS notification, etc.)
-    // This fires in addition to visibilitychange on most platforms.
-    const onBlur = () => triggerPenalty();
+    // pagehide: Safari fallback
+    const onPageHide     = () => { const s = loadProgress(); if (s && !s.leftDuringExam) saveProgress({ ...s, leftDuringExam: true }); };
+    // blur: window loses focus to another app or OS notification
+    const onBlur         = () => triggerPenalty();
 
     document.addEventListener("visibilitychange", onVisibility);
     window.addEventListener("beforeunload", onBeforeUnload);
     window.addEventListener("pagehide", onPageHide);
     window.addEventListener("blur", onBlur);
-
     return () => {
       document.removeEventListener("visibilitychange", onVisibility);
       window.removeEventListener("beforeunload", onBeforeUnload);
@@ -204,13 +160,8 @@ export function FinalQuizView({ prog, update, onBack, db }) {
     };
   }, [started, done, qi, answeredUpTo, answers]);
 
-  // handleBack: marks penalty before React unmounts the component
-  const handleBack = () => {
-    if (started && !done && !prog.finalDone) applyPenalty();
-    onBack();
-  };
+  const handleBack = () => { if (started && !done && !prog.finalDone) applyPenalty(); onBack(); };
 
-  // ── Actions ───────────────────────────────────────────────────────────────
   const toggleMulti = (i) => {
     const cur = answers[qi] || [];
     const updated = cur.includes(i) ? cur.filter(x=>x!==i) : cur.length<3 ? [...cur,i] : cur;
@@ -230,14 +181,15 @@ export function FinalQuizView({ prog, update, onBack, db }) {
     if (q.type==="multi") ans = answers[qi];
     const newAnswers = {...answers,[qi]:ans};
     const newUpTo    = qi + 1;
-    saveProgress({quiz, started, qi, answeredUpTo:newUpTo, answers:newAnswers, elapsed, pendingPenalties:0, leftDuringExam:false});
+    saveProgress({ quiz, started, qi, answeredUpTo:newUpTo, answers:newAnswers, elapsed, pendingPenalties:0, penaltyCount:penaltyCountRef.current, leftDuringExam:false });
     if (qi+1 >= FINAL_QUIZ.length) {
       const total = quiz.reduce((acc,q,i) => acc+(isCorrect(q,newAnswers[i])?1:0), 0);
       clearInterval(timerRef.current);
       const finalElapsed = Math.floor((Date.now() - baseRef.current) / 1000);
       try { localStorage.setItem("wrm_final_review", JSON.stringify({quiz, answers:newAnswers})); } catch {}
       clearProgress();
-      savePending({score:total, elapsed:finalElapsed});
+      // penaltyCount is saved into pending so it survives page reload before name submission
+      savePending({ score:total, elapsed:finalElapsed, penaltyCount:penaltyCountRef.current });
       setFinalScore(total); setElapsed(finalElapsed);
       update({...prog, finalDone:true, finalScore:total, finalElapsed});
       setDone(true);
@@ -246,18 +198,46 @@ export function FinalQuizView({ prog, update, onBack, db }) {
     }
   };
 
+  // ── Save name + score + penaltyCount to Firestore ─────────────────────────
   const handleSaveName = async () => {
     if (!name.trim() || nameLocked) return;
     setSaving(true); setSaveError("");
     try {
-      await addDoc(collection(db,"test_score"), {
-        name: name.trim(), score: finalScore, total: TOTAL_ITEMS,
-        time_elapsed: elapsed, year: new Date().getFullYear(), timestamp: new Date().toISOString(),
+      const savedPenaltyCount = pending?.penaltyCount ?? penaltyCountRef.current ?? 0;
+      await addDoc(collection(db, "test_score"), {
+        name:          name.trim(),
+        score:         finalScore,
+        total:         TOTAL_ITEMS,
+        time_elapsed:  elapsed,
+        penalty_count: savedPenaltyCount,   // ← look-away counter
+        year:          new Date().getFullYear(),
+        timestamp:     new Date().toISOString(),
       });
-      clearPending(); setNameLocked(true);
+      clearPending();
+      setNameLocked(true);
     } catch { setSaveError("Failed to save. Please try again."); }
     setSaving(false);
   };
+
+  // ── Routing ───────────────────────────────────────────────────────────────
+  // done === true when: exam finished, pending save exists, OR review key exists.
+  // This ensures the result screen is shown directly on revisit without going
+  // through the intro screen.
+  if (done) {
+    const pct = Math.round((finalScore/TOTAL_ITEMS)*100);
+    let reviewData = null;
+    try { const r = localStorage.getItem("wrm_final_review"); reviewData = r ? JSON.parse(r) : null; } catch {}
+    const displayPenaltyCount = pending?.penaltyCount ?? penaltyCountRef.current ?? 0;
+    return (
+      <FinalResultScreen
+        pct={pct} finalScore={finalScore} elapsed={elapsed}
+        penaltyCount={displayPenaltyCount}
+        name={name} setName={setName} nameLocked={nameLocked}
+        saving={saving} saveError={saveError} handleSaveName={handleSaveName}
+        onBack={onBack} reviewData={reviewData}
+      />
+    );
+  }
 
   // ── Intro / resume screen ─────────────────────────────────────────────────
   if (!started) {
@@ -277,13 +257,11 @@ export function FinalQuizView({ prog, update, onBack, db }) {
                 <div className="fe-resume-body">
                   You left during the exam. Your progress was saved automatically.<br />
                   <strong className="fe-resume-strong">Question {(saved.answeredUpTo??0)+1}</strong> of {TOTAL_ITEMS} &nbsp;·&nbsp;
-                  <strong className="fe-resume-strong">
-                    Time elapsed: {String(Math.floor((saved.elapsed??0)/60)).padStart(2,"0")}:{String((saved.elapsed??0)%60).padStart(2,"0")}
-                  </strong>
+                  <strong className="fe-resume-strong">Time elapsed: {String(Math.floor((saved.elapsed??0)/60)).padStart(2,"0")}:{String((saved.elapsed??0)%60).padStart(2,"0")}</strong>
                 </div>
                 {savedPenalties > 0 && (
                   <div className="fe-penalty-note">
-                    ⏱ <strong>{savedPenalties} × 5-minute {savedPenalties === 1 ? "penalty" : "penalties"}</strong> ({savedPenalties * 5} min) will be added for leaving the exam screen.
+                    ⏱ <strong>{savedPenalties} × 5-minute {savedPenalties === 1 ? "penalty" : "penalties"}</strong> ({savedPenalties * 5} min total) will be added to your time.
                   </div>
                 )}
                 <div className="fe-resume-actions">
@@ -303,7 +281,7 @@ export function FinalQuizView({ prog, update, onBack, db }) {
                   <div className="exam-rule">🙈 <span>Questions are in a <strong className="fe-strong">randomized order</strong>. Do not share your screen.</span></div>
                   <div className="exam-rule">✍️ <span>Enter your <strong className="fe-strong">full name</strong> at the end to save your result.</span></div>
                   <div className="exam-rule">💾 <span>Progress is <strong className="fe-strong">auto-saved</strong>. Refreshing or going back won't lose your answers.</span></div>
-                  <div className="exam-rule">🚫 <span>Each time you leave, minimize, look-away, or reload, a <strong className="fe-danger">5-minute penalty</strong> is added to your time.</span></div>
+                  <div className="exam-rule">🚫 <span>Each time you leave, minimize, look-away, or reload, a <strong className="fe-danger">5-minute penalty</strong> is added and <strong className="fe-danger">counted</strong>.</span></div>
                 </div>
                 <div className="fe-confirm-box">
                   ⚠️ By clicking Start, you confirm your answers are your own and this exam cannot be retaken.
@@ -318,14 +296,6 @@ export function FinalQuizView({ prog, update, onBack, db }) {
     );
   }
 
-  // ── Results screen ────────────────────────────────────────────────────────
-  if (done) {
-    const pct = Math.round((finalScore/TOTAL_ITEMS)*100);
-    let reviewData = null;
-    try { const r = localStorage.getItem("wrm_final_review"); reviewData = r ? JSON.parse(r) : null; } catch {}
-    return <FinalResultScreen pct={pct} finalScore={finalScore} elapsed={elapsed} name={name} setName={setName} nameLocked={nameLocked} saving={saving} saveError={saveError} handleSaveName={handleSaveName} onBack={onBack} reviewData={reviewData} />;
-  }
-
   // ── Active exam ───────────────────────────────────────────────────────────
   const typeLabel = { mc:"Multiple Choice", tf:"True or False", fitb:"Fill in the Blank", multi:"Select 3 Correct Answers" };
 
@@ -335,10 +305,9 @@ export function FinalQuizView({ prog, update, onBack, db }) {
         <div className="denr-stripe" />
         <button className="back-btn" onClick={handleBack}>← Back to Home</button>
 
-        {/* Penalty flash toast */}
         {penaltyFlash && (
           <div className="fe-penalty-toast">
-            ⚠️ +5 min penalty — leaving the exam screen is not allowed
+            ⚠️ +5 min penalty — look-away #{penaltyCount} recorded
           </div>
         )}
 
@@ -352,10 +321,14 @@ export function FinalQuizView({ prog, update, onBack, db }) {
           <div className="fe-timer-wrap">
             <div className="fe-timer">{String(Math.floor(elapsed/60)).padStart(2,"0")}:{String(elapsed%60).padStart(2,"0")}</div>
             <div className="fe-elapsed-label">ELAPSED</div>
+            {penaltyCount > 0 && (
+              <div className="fe-penalty-counter">👁 {penaltyCount}×</div>
+            )}
           </div>
         </div>
 
         <div className="fe-progress-bar-wrap">
+          {/* width is genuinely dynamic — unavoidable inline style */}
           <div className="fe-progress-bar" style={{ width:`${(qi/TOTAL_ITEMS)*100}%` }} />
         </div>
 
@@ -418,7 +391,7 @@ export function FinalQuizView({ prog, update, onBack, db }) {
 }
 
 // ── FinalResultScreen ─────────────────────────────────────────────────────────
-function FinalResultScreen({ pct, finalScore, elapsed, name, setName, nameLocked, saving, saveError, handleSaveName, onBack, reviewData }) {
+function FinalResultScreen({ pct, finalScore, elapsed, penaltyCount, name, setName, nameLocked, saving, saveError, handleSaveName, onBack, reviewData }) {
   const [showReview, setShowReview] = useState(false);
   const typeLabel = { mc:"MC", tf:"T/F", fitb:"Fill in Blank", multi:"Multi-select" };
 
@@ -437,6 +410,7 @@ function FinalResultScreen({ pct, finalScore, elapsed, name, setName, nameLocked
     return "—";
   };
 
+  // scoreColor is runtime-computed — unavoidable inline style
   const scoreColor = pct>=80?"#34d399":pct>=60?"#fbbf24":"#f87171";
 
   return (
@@ -445,13 +419,19 @@ function FinalResultScreen({ pct, finalScore, elapsed, name, setName, nameLocked
         <div className="done-box fe-result-box">
           <div className="fe-result-emoji">{pct>=80?"🏆":pct>=60?"🌊":"📚"}</div>
           <div className="done-title">Assessment Complete!</div>
-          <div className="done-score fe-result-score" style={{ color:scoreColor }}>
+          <div className="done-score" style={{ color:scoreColor }}>
             {finalScore}<span className="fe-score-denom">/{TOTAL_ITEMS}</span>
           </div>
           <div className="done-sub fe-result-sub">{pct}% — {pct>=80?"Excellent!":pct>=60?"Good Job!":"Keep Studying!"}</div>
           <div className="fe-time-display">
             ⏱ Time: {String(Math.floor(elapsed/60)).padStart(2,"0")}:{String(elapsed%60).padStart(2,"0")}
           </div>
+          {/* Penalty count on result screen */}
+          {penaltyCount > 0 && (
+            <div className="fe-result-penalty">
+              👁 Look-away penalties: <strong>{penaltyCount}</strong>
+            </div>
+          )}
 
           <div className="fe-name-box">
             <div className="fe-name-label">📝 Enter your full name to save your result</div>
@@ -500,6 +480,7 @@ function FinalResultScreen({ pct, finalScore, elapsed, name, setName, nameLocked
                       <div className="fe-review-q">{q.q}</div>
                     </div>
                   </div>
+                  {/* gridTemplateColumns switches between 1 and 2 cols — unavoidable inline */}
                   <div className="fe-review-answers" style={{ gridTemplateColumns:correct?"1fr":"1fr 1fr" }}>
                     <div className={`fe-review-cell ${correct?"correct":"wrong"}`}>
                       <div className="fe-review-cell-label">Your Answer</div>
@@ -533,11 +514,11 @@ export function LeaderboardView({ onBack, db }) {
   const fetchResults = async () => {
     setLoading(true); setError("");
     try {
-      const q    = query(collection(db,"test_score"), orderBy("score","desc"));
+      const q    = query(collection(db, "test_score"), orderBy("score", "desc"));
       const snap = await getDocs(q);
       const data = snap.docs
-        .map(d => ({id:d.id,...d.data()}))
-        .map(r => ({...r, _year:r.year??(r.timestamp?new Date(r.timestamp).getFullYear():null)}))
+        .map(d => ({id:d.id, ...d.data()}))
+        .map(r => ({...r, _year: r.year ?? (r.timestamp ? new Date(r.timestamp).getFullYear() : null)}))
         .sort((a,b) => b.score!==a.score ? b.score-a.score : (a.time_elapsed??99999)-(b.time_elapsed??99999));
       setAllResults(data);
     } catch { setError("Could not load results. Check your connection."); }
@@ -561,11 +542,11 @@ export function LeaderboardView({ onBack, db }) {
             <div className="mod-label fe-lb-label">Student Results</div>
             <div className="mod-header-title">Leaderboard</div>
             <div className="mod-header-sub">
-              {loading?"Loading...":`${results.length} submission${results.length!==1?"s":""} in ${selectedYear}`}
+              {loading ? "Loading..." : `${results.length} submission${results.length!==1?"s":""} in ${selectedYear}`}
             </div>
           </div>
           <button className="btn ghost fe-refresh-btn" onClick={fetchResults} disabled={loading}>
-            {loading?"⏳":"↺ Refresh"}
+            {loading ? "⏳" : "↺ Refresh"}
           </button>
         </div>
 
@@ -588,6 +569,7 @@ export function LeaderboardView({ onBack, db }) {
           <div className="fe-lb-list">
             {results.map((r,i) => {
               const pct = Math.round((r.score/(r.total||TOTAL_ITEMS))*100);
+              const pc  = r.penalty_count ?? 0;
               return (
                 <div key={r.id} className={`fe-lb-row${i<3?" top":""}`}>
                   <div className="fe-lb-rank">{i<3?medals[i]:`${i+1}`}</div>
@@ -596,6 +578,7 @@ export function LeaderboardView({ onBack, db }) {
                     <div className="fe-lb-sub">{r._year}</div>
                   </div>
                   <div className="fe-lb-scores">
+                    {/* score color is pct-based runtime value — unavoidable inline */}
                     <div className="fe-lb-score" style={{ color:pct>=80?"#34d399":pct>=60?"#fbbf24":"#f87171" }}>
                       {r.score}<span className="fe-lb-total">/{r.total||TOTAL_ITEMS}</span>
                     </div>
@@ -603,6 +586,10 @@ export function LeaderboardView({ onBack, db }) {
                     {r.time_elapsed!=null && (
                       <div className="fe-lb-time">⏱ {String(Math.floor(r.time_elapsed/60)).padStart(2,"0")}:{String(r.time_elapsed%60).padStart(2,"0")}</div>
                     )}
+                    {/* Penalty counter — shown in red, always visible (0 = clean) */}
+                    <div className={`fe-lb-penalty${pc>0?" flagged":""}`}>
+                      👁 {pc} {pc===1?"penalty":"penalties"}
+                    </div>
                   </div>
                 </div>
               );
