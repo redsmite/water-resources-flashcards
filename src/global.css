@@ -856,32 +856,54 @@ body {
   ::-webkit-scrollbar-thumb { background: #c4a882; }
   ::-webkit-scrollbar-thumb:hover { background: #a08060; }
 }
+/* ─────────────────────────────────────────────────────────────────────────────
+   PINK THEME  [data-theme="pink"]
+   White background, pink used only on text / borders / buttons / highlights.
+   Easy on the eyes — no pink-tinted surfaces anywhere.
+─────────────────────────────────────────────────────────────────────────────
+
+   Palette
+   ───────
+   Page bg        #ffffff   pure white
+   Card bg        #ffffff   pure white
+   Border         #f0c8dc   soft rose — cards, inputs
+   Text primary   #1a0d13   very dark, almost black (warm-tinted for harmony)
+   Text body      #3d2535   dark rose-brown
+   Text muted     #7a5568   muted rose-grey
+   Text subtle    #a07088   subtle rose
+   Accent         #c2185b   deep rose — readable, not neon
+   Accent light   #e91e8c   brighter hover state
+   Danger         #b71c3c   dark crimson
+───────────────────────────────────────────────────────────────────────────── */
 
 [data-theme="pink"] {
 
   /* ── Toggle button ─────────────────────────────────────────────────────── */
   .theme-toggle {
     border-color: rgba(194,24,91,0.2);
-    background: rgba(253,242,248,0.95);
-    color: #2d1a24;
-    box-shadow: 0 2px 12px rgba(194,24,91,0.12);
+    background: rgba(255,255,255,0.95);
+    color: #1a0d13;
+    box-shadow: 0 2px 12px rgba(194,24,91,0.1);
   }
   .theme-toggle:hover { background: #fce4ef; }
 
-  /* ── Page & layout ─────────────────────────────────────────────────────── */
+  /* ── Page & layout — WHITE, not pink ──────────────────────────────────── */
   .page,
-  .exam-page { background: #fdf2f8; color: #2d1a24; }
+  .exam-page { background: #ffffff; color: #1a0d13; }
 
-  body { background: #fdf2f8; }
+  body { background: #f9f9f9; }
+
+  .home-wrap,
+  .inner-wrap { background: transparent; }
 
   /* ── DENR stripe ───────────────────────────────────────────────────────── */
   .denr-stripe { background: linear-gradient(90deg, #c2185b, #f06292, #c2185b); }
 
   /* ── Header ────────────────────────────────────────────────────────────── */
-  .denr-logo    { box-shadow: 0 0 0 3px rgba(194,24,91,0.25), 0 0 24px rgba(194,24,91,0.15); }
+  .denr-logo    { box-shadow: 0 0 0 3px rgba(194,24,91,0.2), 0 0 20px rgba(194,24,91,0.1); }
   .denr-agency  { color: #c2185b; }
-  .denr-office  { color: #ad7090; }
-  .home-title   { color: #2d1a24; }
+  .denr-office  { color: #a07088; }
+  .home-title   { color: #1a0d13; }
   .home-sub     { color: #5c3548; }
   .stat-label   { color: #7a5568; }
   .stat-done    { color: #c2185b; font-weight: 700; }
@@ -891,199 +913,448 @@ body {
 
   /* ── Module cards ──────────────────────────────────────────────────────── */
   .mod-card {
-    background: #fff5fb;
+    background: #ffffff;
     border-color: #f0c8dc;
-    box-shadow: 0 1px 6px rgba(194,24,91,0.07);
+    box-shadow: 0 1px 6px rgba(194,24,91,0.06);
   }
   .mod-card:hover {
-    background: #fce4ef;
+    background: #fff0f6;
     border-color: #e091b8;
-    box-shadow: 0 4px 14px rgba(194,24,91,0.12);
+    box-shadow: 0 4px 14px rgba(194,24,91,0.1);
     transform: translateY(-2px);
   }
   .mod-num   { color: #8b6070; }
-  .mod-title { color: #2d1a24; }
+  .mod-title { color: #1a0d13; }
   .mod-sub   { color: #7a5568; }
 
   /* ── Module header (inner pages) ───────────────────────────────────────── */
   .mod-header {
-    background: #fff5fb;
+    background: #ffffff;
     border-color: #f0c8dc;
-    box-shadow: 0 1px 6px rgba(194,24,91,0.07);
+    box-shadow: 0 1px 6px rgba(194,24,91,0.06);
   }
-  .mod-header-title { color: #2d1a24; }
+  .mod-header-title { color: #1a0d13; }
   .mod-label        { color: #8b6070; }
   .mod-header-sub   { color: #7a5568; }
 
   /* ── Banners ───────────────────────────────────────────────────────────── */
   .flashcard-banner,
   .leaderboard-card {
-    background: #fff5fb;
+    background: #ffffff;
     border-color: #f0c8dc;
-    box-shadow: 0 1px 6px rgba(194,24,91,0.06);
+    box-shadow: 0 1px 6px rgba(194,24,91,0.05);
   }
   .flashcard-banner:hover,
   .leaderboard-card:hover {
-    background: #fce4ef;
-    box-shadow: 0 4px 14px rgba(194,24,91,0.1);
+    background: #fff0f6;
+    box-shadow: 0 4px 14px rgba(194,24,91,0.09);
   }
-  .fc-title { color: #2d1a24; }
+  .fc-title { color: #1a0d13; }
   .fc-sub   { color: #7a5568; }
-  .fc-icon  { background: rgba(194,24,91,0.1); color: #c2185b; }
-  .fc-arrow { color: #d4508a; opacity: 0.75; }
+  .fc-icon  { background: rgba(194,24,91,0.08); color: #c2185b; }
+  .fc-arrow { color: #d4508a; opacity: 0.7; }
 
   /* ── Final card ────────────────────────────────────────────────────────── */
   .final-card {
-    background: #fff5fb;
+    background: #ffffff;
     border-color: #f0c8dc;
-    box-shadow: 0 1px 6px rgba(194,24,91,0.06);
+    box-shadow: 0 1px 6px rgba(194,24,91,0.05);
   }
-  .final-card:hover { background: #fce4ef; }
+  .final-card:hover { background: #fff0f6; }
   .final-title      { color: #c2185b; }
   .final-sub        { color: #7a5568; }
-  .final-score-line { color: #5a7a42; }
+  .final-score-line { color: #2e7d32; }
 
   /* ── Buttons ───────────────────────────────────────────────────────────── */
   .btn {
     border-color: #f0c8dc;
-    color: #4a2d3a;
-    background: #fce4ef;
+    color: #3d2535;
+    background: #fff0f6;
   }
-  .btn:hover { background: #f8d0e4; }
+  .btn:hover { background: #fce4ef; }
 
   .btn.ghost {
     color: #7a5568;
     border-color: #f0c8dc;
     background: transparent;
   }
-  .btn.ghost:hover { background: #fce4ef; color: #4a2d3a; }
+  .btn.ghost:hover { background: #fff0f6; color: #3d2535; }
 
   /* ── Back button ───────────────────────────────────────────────────────── */
   .back-btn       { color: #8b6070; }
-  .back-btn:hover { color: #2d1a24; background: #fce4ef; }
+  .back-btn:hover { color: #1a0d13; background: #fff0f6; }
 
   /* ── Done box ──────────────────────────────────────────────────────────── */
   .done-box {
-    background: #fff5fb;
+    background: #ffffff;
     border-color: #f0c8dc;
-    box-shadow: 0 2px 12px rgba(194,24,91,0.08);
+    box-shadow: 0 2px 12px rgba(194,24,91,0.07);
   }
-  .done-title { color: #2d1a24; }
+  .done-title { color: #1a0d13; }
   .done-sub   { color: #7a5568; }
 
   /* ── Content card ──────────────────────────────────────────────────────── */
   .content-card {
-    background: #fff5fb;
+    background: #ffffff;
     border-color: #f0c8dc;
-    box-shadow: 0 1px 8px rgba(194,24,91,0.07);
+    box-shadow: 0 1px 8px rgba(194,24,91,0.06);
   }
-  .content-title { color: #2d1a24; }
+  .content-title { color: #1a0d13; }
 
   /* ── Tabs ──────────────────────────────────────────────────────────────── */
   .tab {
-    background: #fce4ef;
+    background: #fff0f6;
     color: #8b6070;
     border-color: #f0c8dc;
   }
-  .tab:hover,
-  .tab.active {
-    background: color-mix(in srgb, var(--c, #c2185b) 10%, #fdf2f8);
+  .tab:hover, .tab.active {
+    background: color-mix(in srgb, var(--c, #c2185b) 8%, #ffffff);
     color: var(--c, #c2185b);
     border-color: var(--c, #c2185b);
   }
 
   /* ── Quiz box ──────────────────────────────────────────────────────────── */
   .quiz-box {
-    background: #fff5fb;
+    background: #ffffff;
     border-color: #f0c8dc;
-    box-shadow: 0 1px 8px rgba(194,24,91,0.07);
+    box-shadow: 0 1px 8px rgba(194,24,91,0.06);
   }
-  .quiz-q { color: #2d1a24; }
+  .quiz-q { color: #1a0d13; }
 
   /* ── Options ───────────────────────────────────────────────────────────── */
   .opt {
-    background: #fdf2f8;
+    background: #ffffff;
     border-color: #f0c8dc;
-    color: #4a2d3a;
+    color: #3d2535;
   }
   .opt:hover {
-    background: #fce4ef;
+    background: #fff0f6;
     border-color: #e091b8;
   }
   .opt.selected {
-    background: color-mix(in srgb, var(--c, #c2185b) 10%, #fdf2f8);
+    background: color-mix(in srgb, var(--c, #c2185b) 8%, #ffffff);
     border-color: var(--c, #c2185b);
     color: var(--c, #c2185b);
   }
-  /* correct/wrong keep universally understood green/red — just darkened */
-  .opt.correct { color: #2d5a1e !important; }
-  .opt.wrong   { color: #7a1a1a !important; }
+  .opt.correct { color: #1b5e20 !important; }
+  .opt.wrong   { color: #7f0000 !important; }
 
   .opt-letter {
-    background: rgba(194,24,91,0.1);
+    background: rgba(194,24,91,0.08);
     color: #c2185b;
   }
   .opt.selected .opt-letter {
-    background: color-mix(in srgb, var(--c, #c2185b) 18%, transparent);
+    background: color-mix(in srgb, var(--c, #c2185b) 15%, transparent);
     color: var(--c, #c2185b);
   }
 
   /* ── Feedback ──────────────────────────────────────────────────────────── */
-  .feedback.correct { color: #2d5a1e; background: rgba(52,211,153,0.1);  border-color: rgba(52,211,153,0.3); }
-  .feedback.wrong   { color: #7a1a1a; background: rgba(183,28,60,0.08);  border-color: rgba(183,28,60,0.2); }
+  .feedback.correct { color: #1b5e20; background: rgba(52,211,153,0.08); border-color: rgba(52,211,153,0.25); }
+  .feedback.wrong   { color: #7f0000; background: rgba(183,28,60,0.06);  border-color: rgba(183,28,60,0.2); }
 
   /* ── Name input ────────────────────────────────────────────────────────── */
   .name-input {
-    background: #fdf2f8;
+    background: #ffffff;
     border-color: #e8b4cc;
-    color: #2d1a24;
+    color: #1a0d13;
   }
   .name-input::placeholder { color: #b08898; }
-  .name-input:focus        { border-color: #c2185b; background: #fff5fb; }
+  .name-input:focus        { border-color: #c2185b; background: #ffffff; }
 
   /* ── Exam intro card ───────────────────────────────────────────────────── */
   .exam-intro-card {
-    background: #fff5fb;
+    background: #ffffff;
     border-color: #f0c8dc;
-    box-shadow: 0 4px 24px rgba(194,24,91,0.1);
-    color: #2d1a24;
+    box-shadow: 0 4px 24px rgba(194,24,91,0.08);
+    color: #1a0d13;
   }
-  .exam-rules      { background: #fdf2f8; border-color: #f0c8dc; }
-  .exam-rule       { color: #5c3548; border-color: #fce4ef; }
+  .exam-rules  { background: #fff0f6; border-color: #f0c8dc; }
+  .exam-rule   { color: #3d2535; border-color: #fce4ef; }
 
   /* ── Exam lockout banner ───────────────────────────────────────────────── */
   .exam-lockout-title { color: #b71c3c; }
   .exam-lockout-text  { color: #7a5568; }
 
   /* ── Module lockout overlay ────────────────────────────────────────────── */
-  .module-lockout-overlay { background: rgba(253,242,248,0.88); }
+  .module-lockout-overlay { background: rgba(255,255,255,0.9); }
   .module-lockout-label   { color: #b71c3c; }
 
   /* ── Answer review banner ──────────────────────────────────────────────── */
-  .answer-review-banner { background: rgba(194,24,91,0.05) !important; border-color: rgba(194,24,91,0.2) !important; }
-  .answer-review-icon   { background: rgba(194,24,91,0.1) !important; color: #c2185b !important; }
+  .answer-review-banner { background: rgba(194,24,91,0.04) !important; border-color: rgba(194,24,91,0.18) !important; }
+  .answer-review-icon   { background: rgba(194,24,91,0.08) !important; color: #c2185b !important; }
   .answer-review-title  { color: #c2185b !important; }
   .answer-review-arrow  { color: #c2185b !important; }
 
   /* ── Leaderboard accents ───────────────────────────────────────────────── */
-  .leaderboard-icon  { background: rgba(194,24,91,0.1) !important; color: #c2185b !important; }
+  .leaderboard-icon  { background: rgba(194,24,91,0.08) !important; color: #c2185b !important; }
   .leaderboard-title { color: #c2185b !important; }
   .leaderboard-arrow { color: #d4508a !important; }
 
   /* ── Legal refs banner ─────────────────────────────────────────────────── */
-  .refs-banner        { background: rgba(194,24,91,0.04) !important; border-color: rgba(194,24,91,0.18) !important; }
-  .refs-icon          { background: rgba(194,24,91,0.1) !important; color: #c2185b !important; }
+  .refs-banner        { background: rgba(194,24,91,0.03) !important; border-color: rgba(194,24,91,0.15) !important; }
+  .refs-icon          { background: rgba(194,24,91,0.08) !important; color: #c2185b !important; }
   .refs-title         { color: #c2185b !important; }
   .refs-arrow         { color: #d4508a !important; }
-  .refs-banner--locked { background: rgba(183,28,60,0.05) !important; border-color: rgba(183,28,60,0.2) !important; }
-  .refs-icon--locked   { background: rgba(183,28,60,0.1) !important; color: #b71c3c !important; }
+  .refs-banner--locked { background: rgba(183,28,60,0.03) !important; border-color: rgba(183,28,60,0.15) !important; }
+  .refs-icon--locked   { background: rgba(183,28,60,0.08) !important; color: #b71c3c !important; }
   .refs-title--locked  { color: #b71c3c !important; }
   .refs-arrow--locked  { color: #b71c3c !important; }
 
   /* ── Scrollbar ─────────────────────────────────────────────────────────── */
-  ::-webkit-scrollbar-track { background: #fce4ef; }
-  ::-webkit-scrollbar-thumb { background: #e091b8; }
+  ::-webkit-scrollbar-track { background: #fff0f6; }
+  ::-webkit-scrollbar-thumb { background: #e8b4cc; }
   ::-webkit-scrollbar-thumb:hover { background: #c2185b; }
+}
+
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   MINT THEME  [data-theme="mint"]
+   White background, mint/teal used only on text / borders / buttons / highlights.
+   Fresh and clean — backgrounds stay white.
+─────────────────────────────────────────────────────────────────────────────
+
+   Palette
+   ───────
+   Page bg        #ffffff   pure white
+   Card bg        #ffffff   pure white
+   Border         #b2dfdb   soft teal
+   Text primary   #0d1f1e   very dark teal-black
+   Text body      #1e3a38   dark teal
+   Text muted     #4e7c78   muted teal
+   Text subtle    #7aaba7   light muted teal
+   Accent         #00897b   strong teal (readable)
+   Accent light   #26a69a   brighter hover
+   Danger         #b71c1c   kept red — universal
+───────────────────────────────────────────────────────────────────────────── */
+
+[data-theme="mint"] {
+
+  /* ── Toggle button ─────────────────────────────────────────────────────── */
+  .theme-toggle {
+    border-color: rgba(0,137,123,0.2);
+    background: rgba(255,255,255,0.95);
+    color: #0d1f1e;
+    box-shadow: 0 2px 12px rgba(0,137,123,0.1);
+  }
+  .theme-toggle:hover { background: #e0f2f1; }
+
+  /* ── Page & layout — WHITE ─────────────────────────────────────────────── */
+  .page,
+  .exam-page { background: #ffffff; color: #0d1f1e; }
+
+  body { background: #f5f5f5; }
+
+  .home-wrap,
+  .inner-wrap { background: transparent; }
+
+  /* ── DENR stripe ───────────────────────────────────────────────────────── */
+  .denr-stripe { background: linear-gradient(90deg, #00897b, #4db6ac, #00897b); }
+
+  /* ── Header ────────────────────────────────────────────────────────────── */
+  .denr-logo    { box-shadow: 0 0 0 3px rgba(0,137,123,0.2), 0 0 20px rgba(0,137,123,0.1); }
+  .denr-agency  { color: #00897b; }
+  .denr-office  { color: #4e7c78; }
+  .home-title   { color: #0d1f1e; }
+  .home-sub     { color: #1e3a38; }
+  .stat-label   { color: #4e7c78; }
+  .stat-done    { color: #00897b; font-weight: 700; }
+  .stat-passed  { color: #26a69a; font-weight: 700; }
+  .divider      { background: #b2dfdb; }
+  .section-label { color: #00796b; }
+
+  /* ── Module cards ──────────────────────────────────────────────────────── */
+  .mod-card {
+    background: #ffffff;
+    border-color: #b2dfdb;
+    box-shadow: 0 1px 6px rgba(0,137,123,0.06);
+  }
+  .mod-card:hover {
+    background: #f0faf9;
+    border-color: #4db6ac;
+    box-shadow: 0 4px 14px rgba(0,137,123,0.1);
+    transform: translateY(-2px);
+  }
+  .mod-num   { color: #4e7c78; }
+  .mod-title { color: #0d1f1e; }
+  .mod-sub   { color: #4e7c78; }
+
+  /* ── Module header (inner pages) ───────────────────────────────────────── */
+  .mod-header {
+    background: #ffffff;
+    border-color: #b2dfdb;
+    box-shadow: 0 1px 6px rgba(0,137,123,0.06);
+  }
+  .mod-header-title { color: #0d1f1e; }
+  .mod-label        { color: #4e7c78; }
+  .mod-header-sub   { color: #4e7c78; }
+
+  /* ── Banners ───────────────────────────────────────────────────────────── */
+  .flashcard-banner,
+  .leaderboard-card {
+    background: #ffffff;
+    border-color: #b2dfdb;
+    box-shadow: 0 1px 6px rgba(0,137,123,0.05);
+  }
+  .flashcard-banner:hover,
+  .leaderboard-card:hover {
+    background: #f0faf9;
+    box-shadow: 0 4px 14px rgba(0,137,123,0.09);
+  }
+  .fc-title { color: #0d1f1e; }
+  .fc-sub   { color: #4e7c78; }
+  .fc-icon  { background: rgba(0,137,123,0.08); color: #00897b; }
+  .fc-arrow { color: #26a69a; opacity: 0.8; }
+
+  /* ── Final card ────────────────────────────────────────────────────────── */
+  .final-card {
+    background: #ffffff;
+    border-color: #b2dfdb;
+    box-shadow: 0 1px 6px rgba(0,137,123,0.05);
+  }
+  .final-card:hover { background: #f0faf9; }
+  .final-title      { color: #00897b; }
+  .final-sub        { color: #4e7c78; }
+  .final-score-line { color: #00897b; }
+
+  /* ── Buttons ───────────────────────────────────────────────────────────── */
+  .btn {
+    border-color: #b2dfdb;
+    color: #1e3a38;
+    background: #f0faf9;
+  }
+  .btn:hover { background: #e0f2f1; }
+
+  .btn.ghost {
+    color: #4e7c78;
+    border-color: #b2dfdb;
+    background: transparent;
+  }
+  .btn.ghost:hover { background: #f0faf9; color: #1e3a38; }
+
+  /* ── Back button ───────────────────────────────────────────────────────── */
+  .back-btn       { color: #4e7c78; }
+  .back-btn:hover { color: #0d1f1e; background: #f0faf9; }
+
+  /* ── Done box ──────────────────────────────────────────────────────────── */
+  .done-box {
+    background: #ffffff;
+    border-color: #b2dfdb;
+    box-shadow: 0 2px 12px rgba(0,137,123,0.07);
+  }
+  .done-title { color: #0d1f1e; }
+  .done-sub   { color: #4e7c78; }
+
+  /* ── Content card ──────────────────────────────────────────────────────── */
+  .content-card {
+    background: #ffffff;
+    border-color: #b2dfdb;
+    box-shadow: 0 1px 8px rgba(0,137,123,0.06);
+  }
+  .content-title { color: #0d1f1e; }
+
+  /* ── Tabs ──────────────────────────────────────────────────────────────── */
+  .tab {
+    background: #f0faf9;
+    color: #4e7c78;
+    border-color: #b2dfdb;
+  }
+  .tab:hover, .tab.active {
+    background: color-mix(in srgb, var(--c, #00897b) 8%, #ffffff);
+    color: var(--c, #00897b);
+    border-color: var(--c, #00897b);
+  }
+
+  /* ── Quiz box ──────────────────────────────────────────────────────────── */
+  .quiz-box {
+    background: #ffffff;
+    border-color: #b2dfdb;
+    box-shadow: 0 1px 8px rgba(0,137,123,0.06);
+  }
+  .quiz-q { color: #0d1f1e; }
+
+  /* ── Options ───────────────────────────────────────────────────────────── */
+  .opt {
+    background: #ffffff;
+    border-color: #b2dfdb;
+    color: #1e3a38;
+  }
+  .opt:hover {
+    background: #f0faf9;
+    border-color: #4db6ac;
+  }
+  .opt.selected {
+    background: color-mix(in srgb, var(--c, #00897b) 8%, #ffffff);
+    border-color: var(--c, #00897b);
+    color: var(--c, #00897b);
+  }
+  .opt.correct { color: #1b5e20 !important; }
+  .opt.wrong   { color: #7f0000 !important; }
+
+  .opt-letter {
+    background: rgba(0,137,123,0.08);
+    color: #00897b;
+  }
+  .opt.selected .opt-letter {
+    background: color-mix(in srgb, var(--c, #00897b) 15%, transparent);
+    color: var(--c, #00897b);
+  }
+
+  /* ── Feedback ──────────────────────────────────────────────────────────── */
+  .feedback.correct { color: #1b5e20; background: rgba(52,211,153,0.08); border-color: rgba(52,211,153,0.25); }
+  .feedback.wrong   { color: #7f0000; background: rgba(183,28,28,0.06);  border-color: rgba(183,28,28,0.2); }
+
+  /* ── Name input ────────────────────────────────────────────────────────── */
+  .name-input {
+    background: #ffffff;
+    border-color: #b2dfdb;
+    color: #0d1f1e;
+  }
+  .name-input::placeholder { color: #7aaba7; }
+  .name-input:focus        { border-color: #00897b; background: #ffffff; }
+
+  /* ── Exam intro card ───────────────────────────────────────────────────── */
+  .exam-intro-card {
+    background: #ffffff;
+    border-color: #b2dfdb;
+    box-shadow: 0 4px 24px rgba(0,137,123,0.08);
+    color: #0d1f1e;
+  }
+  .exam-rules  { background: #f0faf9; border-color: #b2dfdb; }
+  .exam-rule   { color: #1e3a38; border-color: #e0f2f1; }
+
+  /* ── Exam lockout banner ───────────────────────────────────────────────── */
+  .exam-lockout-title { color: #b71c1c; }
+  .exam-lockout-text  { color: #4e7c78; }
+
+  /* ── Module lockout overlay ────────────────────────────────────────────── */
+  .module-lockout-overlay { background: rgba(255,255,255,0.9); }
+  .module-lockout-label   { color: #b71c1c; }
+
+  /* ── Answer review banner ──────────────────────────────────────────────── */
+  .answer-review-banner { background: rgba(0,137,123,0.04) !important; border-color: rgba(0,137,123,0.18) !important; }
+  .answer-review-icon   { background: rgba(0,137,123,0.08) !important; color: #00897b !important; }
+  .answer-review-title  { color: #00897b !important; }
+  .answer-review-arrow  { color: #00897b !important; }
+
+  /* ── Leaderboard accents ───────────────────────────────────────────────── */
+  .leaderboard-icon  { background: rgba(0,137,123,0.08) !important; color: #00897b !important; }
+  .leaderboard-title { color: #00897b !important; }
+  .leaderboard-arrow { color: #26a69a !important; }
+
+  /* ── Legal refs banner ─────────────────────────────────────────────────── */
+  .refs-banner        { background: rgba(0,137,123,0.03) !important; border-color: rgba(0,137,123,0.15) !important; }
+  .refs-icon          { background: rgba(0,137,123,0.08) !important; color: #00897b !important; }
+  .refs-title         { color: #00897b !important; }
+  .refs-arrow         { color: #26a69a !important; }
+  .refs-banner--locked { background: rgba(183,28,28,0.03) !important; border-color: rgba(183,28,28,0.15) !important; }
+  .refs-icon--locked   { background: rgba(183,28,28,0.08) !important; color: #b71c1c !important; }
+  .refs-title--locked  { color: #b71c1c !important; }
+  .refs-arrow--locked  { color: #b71c1c !important; }
+
+  /* ── Scrollbar ─────────────────────────────────────────────────────────── */
+  ::-webkit-scrollbar-track { background: #f0faf9; }
+  ::-webkit-scrollbar-thumb { background: #b2dfdb; }
+  ::-webkit-scrollbar-thumb:hover { background: #00897b; }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────

@@ -559,116 +559,233 @@
 [data-theme="sepia"] .fe-exam-header    { border-color: rgba(139,94,60,0.25) !important; }
 
 
+
 /* ═══════════════════════════════════════════════════════════════════════════
-   3. APPEND TO: final_exam.css
+   REPLACE IN: final_exam.css  — [data-theme="pink"] block
 ═══════════════════════════════════════════════════════════════════════════ */
 [data-theme="pink"] {
-  --fe-page-bg:           #fdf2f8;
-  --fe-card-bg:           #fff5fb;
+  --fe-page-bg:           #ffffff;
+  --fe-card-bg:           #ffffff;
   --fe-card-border:       #f0c8dc;
-  --fe-card-shadow:       0 4px 24px rgba(194,24,91,0.1);
+  --fe-card-shadow:       0 4px 24px rgba(194,24,91,0.08);
 
-  --fe-text-primary:      #2d1a24;
-  --fe-text-secondary:    #4a2d3a;
-  --fe-text-muted:        #8b6070;
-  --fe-text-subtle:       #7a5568;
+  --fe-text-primary:      #1a0d13;
+  --fe-text-secondary:    #3d2535;
+  --fe-text-muted:        #7a5568;
+  --fe-text-subtle:       #a07088;
   --fe-text-danger:       #b71c3c;
   --fe-text-warn:         #b05a00;
 
-  --fe-rule-bg:           #fdf2f8;
+  --fe-rule-bg:           #fff0f6;
   --fe-rule-border:       #f0c8dc;
-  --fe-rule-color:        #7a5568;
+  --fe-rule-color:        #3d2535;
 
-  --fe-quiz-bg:           #fff5fb;
+  --fe-quiz-bg:           #ffffff;
   --fe-quiz-border:       #f0c8dc;
-  --fe-quiz-shadow:       0 1px 8px rgba(194,24,91,0.07);
+  --fe-quiz-shadow:       0 1px 8px rgba(194,24,91,0.06);
 
-  --fe-opt-bg:            #fdf2f8;
+  --fe-opt-bg:            #ffffff;
   --fe-opt-border:        #f0c8dc;
-  --fe-opt-color:         #4a2d3a;
+  --fe-opt-color:         #3d2535;
   --fe-opt-hover-border:  #e091b8;
-  --fe-opt-letter-bg:     rgba(194,24,91,0.1);
+  --fe-opt-letter-bg:     rgba(194,24,91,0.08);
   --fe-opt-letter-color:  #c2185b;
 
-  --fe-input-bg:          #fdf2f8;
+  --fe-input-bg:          #ffffff;
   --fe-input-border:      #e8b4cc;
-  --fe-input-color:       #2d1a24;
+  --fe-input-color:       #1a0d13;
   --fe-input-placeholder: #b08898;
   --fe-input-focus:       #c2185b;
 
-  --fe-done-bg:           #fff5fb;
+  --fe-done-bg:           #ffffff;
   --fe-done-border:       #f0c8dc;
-  --fe-done-shadow:       0 2px 12px rgba(194,24,91,0.08);
+  --fe-done-shadow:       0 2px 12px rgba(194,24,91,0.07);
 
-  --fe-name-box-bg:       #fdf2f8;
+  --fe-name-box-bg:       #fff0f6;
   --fe-name-box-border:   #f0c8dc;
   --fe-name-label:        #7a5568;
 
-  --fe-review-label:      #8b6070;
-  --fe-lb-row-top-bg:     rgba(194,24,91,0.07);
-  --fe-lb-row-bg:         #fff5fb;
-  --fe-lb-row-top-border: rgba(194,24,91,0.25);
+  --fe-review-label:      #7a5568;
+  --fe-lb-row-top-bg:     rgba(194,24,91,0.05);
+  --fe-lb-row-bg:         #ffffff;
+  --fe-lb-row-top-border: rgba(194,24,91,0.2);
   --fe-lb-row-border:     #f0c8dc;
-  --fe-lb-name:           #2d1a24;
-  --fe-lb-sub:            #8b6070;
-  --fe-lb-rank:           #8b6070;
+  --fe-lb-name:           #1a0d13;
+  --fe-lb-sub:            #7a5568;
+  --fe-lb-rank:           #7a5568;
 
   --fe-year-pill-border:     #f0c8dc;
-  --fe-year-pill-bg:         #fdf2f8;
+  --fe-year-pill-bg:         #ffffff;
   --fe-year-pill-color:      #7a5568;
   --fe-year-active-border:   #c2185b;
-  --fe-year-active-bg:       rgba(194,24,91,0.08);
+  --fe-year-active-bg:       rgba(194,24,91,0.06);
   --fe-year-active-color:    #7a0038;
 
-  --fe-progress-track:       #fce4ef;
+  --fe-progress-track:       #f0c8dc;
 }
-
 [data-theme="pink"] .fe-official-label  { color: #b71c3c; }
 [data-theme="pink"] .fe-danger          { color: #b71c3c; }
-[data-theme="pink"] .fe-strong          { color: #2d1a24; }
-[data-theme="pink"] .fe-confirm-box     { background: rgba(183,28,60,0.06); border-color: rgba(183,28,60,0.2); color: #b71c3c; }
-[data-theme="pink"] .fe-penalty-note    { background: rgba(183,28,60,0.06); border-color: rgba(183,28,60,0.2); color: #b71c3c; }
-[data-theme="pink"] .fe-resume-banner   { background: rgba(194,24,91,0.06); border-color: rgba(194,24,91,0.25); }
+[data-theme="pink"] .fe-strong          { color: #1a0d13; }
+[data-theme="pink"] .fe-confirm-box     { background: rgba(183,28,60,0.04); border-color: rgba(183,28,60,0.18); color: #b71c3c; }
+[data-theme="pink"] .fe-penalty-note    { background: rgba(183,28,60,0.04); border-color: rgba(183,28,60,0.18); color: #b71c3c; }
+[data-theme="pink"] .fe-resume-banner   { background: rgba(194,24,91,0.04); border-color: rgba(194,24,91,0.2); }
 [data-theme="pink"] .fe-resume-title    { color: #c2185b; }
-[data-theme="pink"] .fe-resume-body     { color: #5c3548; }
-[data-theme="pink"] .fe-resume-strong   { color: #2d1a24; }
+[data-theme="pink"] .fe-resume-body     { color: #3d2535; }
+[data-theme="pink"] .fe-resume-strong   { color: #1a0d13; }
 [data-theme="pink"] .fe-timer           { color: #c2185b; }
-[data-theme="pink"] .fe-exam-icon       { background: rgba(194,24,91,0.12) !important; color: #c2185b !important; }
+[data-theme="pink"] .fe-exam-icon       { background: rgba(194,24,91,0.08) !important; color: #c2185b !important; }
 [data-theme="pink"] .fe-exam-label      { color: #c2185b !important; }
-[data-theme="pink"] .fe-exam-header     { border-color: rgba(194,24,91,0.2) !important; }
+[data-theme="pink"] .fe-exam-header     { border-color: rgba(194,24,91,0.18) !important; }
 [data-theme="pink"] .fe-quiz-type-label { color: #c2185b; }
 [data-theme="pink"] .fe-opt             { --c: #c2185b; }
-[data-theme="pink"] .opt-letter--checked { background: rgba(194,24,91,0.15) !important; }
-[data-theme="pink"] .fe-next-btn        { background: #c2185b; color: #fff5fb; }
-[data-theme="pink"] .fe-next-btn--disabled { background: #fce4ef !important; color: #b08898 !important; }
-[data-theme="pink"] .opt.selected       { background: color-mix(in srgb, var(--c, #c2185b) 10%, #fdf2f8); }
-[data-theme="pink"] .opt.correct        { color: #2d5a1e !important; }
-[data-theme="pink"] .opt.wrong          { color: #7a1a1a !important; }
-[data-theme="pink"] .feedback.correct   { color: #2d5a1e; background: rgba(52,211,153,0.1); }
-[data-theme="pink"] .feedback.wrong     { color: #7a1a1a; background: rgba(183,28,60,0.08); }
+[data-theme="pink"] .opt-letter--checked { background: rgba(194,24,91,0.12) !important; }
+[data-theme="pink"] .fe-next-btn        { background: #c2185b; color: #ffffff; }
+[data-theme="pink"] .fe-next-btn--disabled { background: #fff0f6 !important; color: #b08898 !important; }
+[data-theme="pink"] .opt.selected       { background: color-mix(in srgb, var(--c, #c2185b) 8%, #ffffff); }
+[data-theme="pink"] .opt.correct        { color: #1b5e20 !important; }
+[data-theme="pink"] .opt.wrong          { color: #7f0000 !important; }
+[data-theme="pink"] .feedback.correct   { color: #1b5e20; }
+[data-theme="pink"] .feedback.wrong     { color: #7f0000; }
 [data-theme="pink"] .fe-name-warn       { color: #b71c3c; }
 [data-theme="pink"] .fe-save-error      { color: #b71c3c; }
 [data-theme="pink"] .fe-saved-msg       { color: #2e7d32; }
-[data-theme="pink"] .fe-review-item.correct { background: rgba(52,211,153,0.06); border-color: rgba(52,211,153,0.2); }
-[data-theme="pink"] .fe-review-item.wrong   { background: rgba(183,28,60,0.06); border-color: rgba(183,28,60,0.2); }
-[data-theme="pink"] .fe-review-cell.correct { background: rgba(52,211,153,0.1); }
-[data-theme="pink"] .fe-review-cell.wrong   { background: rgba(183,28,60,0.08); }
+[data-theme="pink"] .fe-review-item.correct { background: rgba(52,211,153,0.05); border-color: rgba(52,211,153,0.2); }
+[data-theme="pink"] .fe-review-item.wrong   { background: rgba(183,28,60,0.04); border-color: rgba(183,28,60,0.18); }
+[data-theme="pink"] .fe-review-cell.correct { background: rgba(52,211,153,0.08); }
+[data-theme="pink"] .fe-review-cell.wrong   { background: rgba(183,28,60,0.06); }
 [data-theme="pink"] .fe-review-cell.correct .fe-review-cell-label,
-[data-theme="pink"] .fe-review-cell.correct .fe-review-cell-value { color: #2d5a1e; }
+[data-theme="pink"] .fe-review-cell.correct .fe-review-cell-value { color: #1b5e20; }
 [data-theme="pink"] .fe-review-cell.wrong .fe-review-cell-label,
-[data-theme="pink"] .fe-review-cell.wrong .fe-review-cell-value   { color: #7a1a1a; }
-[data-theme="pink"] .fe-review-toggle  { color: #c2185b; border-color: rgba(194,24,91,0.25); background: rgba(194,24,91,0.05); }
-[data-theme="pink"] .fe-home-btn       { background: #c2185b; color: #fff5fb; }
-[data-theme="pink"] .fe-resume-btn     { background: #c2185b; color: #fff5fb; }
-[data-theme="pink"] .fe-begin-btn      { background: #b71c3c; color: #fff5fb; }
-[data-theme="pink"] .fe-lb-header      { border-color: rgba(194,24,91,0.25) !important; }
-[data-theme="pink"] .fe-lb-icon        { background: rgba(194,24,91,0.12) !important; color: #c2185b !important; }
+[data-theme="pink"] .fe-review-cell.wrong .fe-review-cell-value   { color: #7f0000; }
+[data-theme="pink"] .fe-review-toggle  { color: #c2185b; border-color: rgba(194,24,91,0.2); background: rgba(194,24,91,0.04); }
+[data-theme="pink"] .fe-home-btn       { background: #c2185b; color: #ffffff; }
+[data-theme="pink"] .fe-resume-btn     { background: #c2185b; color: #ffffff; }
+[data-theme="pink"] .fe-begin-btn      { background: #b71c3c; color: #ffffff; }
+[data-theme="pink"] .fe-lb-header      { border-color: rgba(194,24,91,0.2) !important; }
+[data-theme="pink"] .fe-lb-icon        { background: rgba(194,24,91,0.08) !important; color: #c2185b !important; }
 [data-theme="pink"] .fe-lb-label       { color: #c2185b !important; }
-[data-theme="pink"] .fe-submit-btn        { background: #fce4ef; color: #7a5568; }
-[data-theme="pink"] .fe-submit-btn--active { background: #2e7d32 !important; color: #fff !important; }
-[data-theme="pink"] .fe-penalty-toast  { background: #3d0a1a; border-color: #c2185b; color: #f8bbd0; }
+[data-theme="pink"] .fe-submit-btn        { background: #fff0f6; color: #7a5568; }
+[data-theme="pink"] .fe-submit-btn--active { background: #2e7d32 !important; color: #ffffff !important; }
+[data-theme="pink"] .fe-penalty-toast  { background: #fff0f6; border-color: #e8b4cc; color: #b71c3c; box-shadow: 0 4px 20px rgba(194,24,91,0.15); }
 [data-theme="pink"] .fe-error-msg      { color: #b71c3c; }
-[data-theme="pink"] .fe-lb-row.top .fe-lb-rank { font-size: 22px; }
+[data-theme="pink"] .fe-penalty-counter { color: #b71c3c; }
+[data-theme="pink"] .fe-result-penalty  { background: rgba(183,28,60,0.04); border-color: rgba(183,28,60,0.18); color: #b71c3c; }
+[data-theme="pink"] .fe-result-penalty strong { color: #b71c3c; }
+[data-theme="pink"] .fe-lb-penalty.flagged    { color: #b71c3c; }
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   APPEND TO: final_exam.css  — [data-theme="mint"] block (NEW)
+═══════════════════════════════════════════════════════════════════════════ */
+[data-theme="mint"] {
+  --fe-page-bg:           #ffffff;
+  --fe-card-bg:           #ffffff;
+  --fe-card-border:       #b2dfdb;
+  --fe-card-shadow:       0 4px 24px rgba(0,137,123,0.08);
+
+  --fe-text-primary:      #0d1f1e;
+  --fe-text-secondary:    #1e3a38;
+  --fe-text-muted:        #4e7c78;
+  --fe-text-subtle:       #7aaba7;
+  --fe-text-danger:       #b71c1c;
+  --fe-text-warn:         #e65100;
+
+  --fe-rule-bg:           #f0faf9;
+  --fe-rule-border:       #b2dfdb;
+  --fe-rule-color:        #1e3a38;
+
+  --fe-quiz-bg:           #ffffff;
+  --fe-quiz-border:       #b2dfdb;
+  --fe-quiz-shadow:       0 1px 8px rgba(0,137,123,0.06);
+
+  --fe-opt-bg:            #ffffff;
+  --fe-opt-border:        #b2dfdb;
+  --fe-opt-color:         #1e3a38;
+  --fe-opt-hover-border:  #4db6ac;
+  --fe-opt-letter-bg:     rgba(0,137,123,0.08);
+  --fe-opt-letter-color:  #00897b;
+
+  --fe-input-bg:          #ffffff;
+  --fe-input-border:      #b2dfdb;
+  --fe-input-color:       #0d1f1e;
+  --fe-input-placeholder: #7aaba7;
+  --fe-input-focus:       #00897b;
+
+  --fe-done-bg:           #ffffff;
+  --fe-done-border:       #b2dfdb;
+  --fe-done-shadow:       0 2px 12px rgba(0,137,123,0.07);
+
+  --fe-name-box-bg:       #f0faf9;
+  --fe-name-box-border:   #b2dfdb;
+  --fe-name-label:        #4e7c78;
+
+  --fe-review-label:      #4e7c78;
+  --fe-lb-row-top-bg:     rgba(0,137,123,0.05);
+  --fe-lb-row-bg:         #ffffff;
+  --fe-lb-row-top-border: rgba(0,137,123,0.2);
+  --fe-lb-row-border:     #b2dfdb;
+  --fe-lb-name:           #0d1f1e;
+  --fe-lb-sub:            #4e7c78;
+  --fe-lb-rank:           #4e7c78;
+
+  --fe-year-pill-border:     #b2dfdb;
+  --fe-year-pill-bg:         #ffffff;
+  --fe-year-pill-color:      #4e7c78;
+  --fe-year-active-border:   #00897b;
+  --fe-year-active-bg:       rgba(0,137,123,0.06);
+  --fe-year-active-color:    #004d40;
+
+  --fe-progress-track:       #b2dfdb;
+}
+[data-theme="mint"] .fe-official-label  { color: #b71c1c; }
+[data-theme="mint"] .fe-danger          { color: #b71c1c; }
+[data-theme="mint"] .fe-strong          { color: #0d1f1e; }
+[data-theme="mint"] .fe-confirm-box     { background: rgba(183,28,28,0.04); border-color: rgba(183,28,28,0.18); color: #b71c1c; }
+[data-theme="mint"] .fe-penalty-note    { background: rgba(183,28,28,0.04); border-color: rgba(183,28,28,0.18); color: #b71c1c; }
+[data-theme="mint"] .fe-resume-banner   { background: rgba(0,137,123,0.04); border-color: rgba(0,137,123,0.2); }
+[data-theme="mint"] .fe-resume-title    { color: #00897b; }
+[data-theme="mint"] .fe-resume-body     { color: #1e3a38; }
+[data-theme="mint"] .fe-resume-strong   { color: #0d1f1e; }
+[data-theme="mint"] .fe-timer           { color: #00897b; }
+[data-theme="mint"] .fe-exam-icon       { background: rgba(0,137,123,0.08) !important; color: #00897b !important; }
+[data-theme="mint"] .fe-exam-label      { color: #00897b !important; }
+[data-theme="mint"] .fe-exam-header     { border-color: rgba(0,137,123,0.18) !important; }
+[data-theme="mint"] .fe-quiz-type-label { color: #00897b; }
+[data-theme="mint"] .fe-opt             { --c: #00897b; }
+[data-theme="mint"] .opt-letter--checked { background: rgba(0,137,123,0.12) !important; }
+[data-theme="mint"] .fe-next-btn        { background: #00897b; color: #ffffff; }
+[data-theme="mint"] .fe-next-btn--disabled { background: #f0faf9 !important; color: #7aaba7 !important; }
+[data-theme="mint"] .opt.selected       { background: color-mix(in srgb, var(--c, #00897b) 8%, #ffffff); }
+[data-theme="mint"] .opt.correct        { color: #1b5e20 !important; }
+[data-theme="mint"] .opt.wrong          { color: #7f0000 !important; }
+[data-theme="mint"] .feedback.correct   { color: #1b5e20; }
+[data-theme="mint"] .feedback.wrong     { color: #7f0000; }
+[data-theme="mint"] .fe-name-warn       { color: #b71c1c; }
+[data-theme="mint"] .fe-save-error      { color: #b71c1c; }
+[data-theme="mint"] .fe-saved-msg       { color: #00897b; }
+[data-theme="mint"] .fe-review-item.correct { background: rgba(52,211,153,0.05); border-color: rgba(52,211,153,0.2); }
+[data-theme="mint"] .fe-review-item.wrong   { background: rgba(183,28,28,0.04); border-color: rgba(183,28,28,0.18); }
+[data-theme="mint"] .fe-review-cell.correct { background: rgba(52,211,153,0.08); }
+[data-theme="mint"] .fe-review-cell.wrong   { background: rgba(183,28,28,0.06); }
+[data-theme="mint"] .fe-review-cell.correct .fe-review-cell-label,
+[data-theme="mint"] .fe-review-cell.correct .fe-review-cell-value { color: #1b5e20; }
+[data-theme="mint"] .fe-review-cell.wrong .fe-review-cell-label,
+[data-theme="mint"] .fe-review-cell.wrong .fe-review-cell-value   { color: #7f0000; }
+[data-theme="mint"] .fe-review-toggle  { color: #00897b; border-color: rgba(0,137,123,0.2); background: rgba(0,137,123,0.04); }
+[data-theme="mint"] .fe-home-btn       { background: #00897b; color: #ffffff; }
+[data-theme="mint"] .fe-resume-btn     { background: #00897b; color: #ffffff; }
+[data-theme="mint"] .fe-begin-btn      { background: #00695c; color: #ffffff; }
+[data-theme="mint"] .fe-lb-header      { border-color: rgba(0,137,123,0.2) !important; }
+[data-theme="mint"] .fe-lb-icon        { background: rgba(0,137,123,0.08) !important; color: #00897b !important; }
+[data-theme="mint"] .fe-lb-label       { color: #00897b !important; }
+[data-theme="mint"] .fe-submit-btn        { background: #f0faf9; color: #4e7c78; }
+[data-theme="mint"] .fe-submit-btn--active { background: #00897b !important; color: #ffffff !important; }
+[data-theme="mint"] .fe-penalty-toast  { background: #f0faf9; border-color: #b2dfdb; color: #b71c1c; box-shadow: 0 4px 20px rgba(0,137,123,0.12); }
+[data-theme="mint"] .fe-error-msg      { color: #b71c1c; }
+[data-theme="mint"] .fe-penalty-counter { color: #b71c1c; }
+[data-theme="mint"] .fe-result-penalty  { background: rgba(183,28,28,0.04); border-color: rgba(183,28,28,0.18); color: #b71c1c; }
+[data-theme="mint"] .fe-result-penalty strong { color: #b71c1c; }
+[data-theme="mint"] .fe-lb-penalty.flagged    { color: #b71c1c; }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    APPEND TO: final_exam.css

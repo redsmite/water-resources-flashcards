@@ -259,48 +259,94 @@
 
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   2. APPEND TO: chapter.css
+   REPLACE IN: chapter.css  — [data-theme="pink"] block
 ═══════════════════════════════════════════════════════════════════════════ */
 [data-theme="pink"] {
-  --ch-text-primary:     #2d1a24;
-  --ch-text-secondary:   #4a2d3a;
-  --ch-text-muted:       #8b6070;
-  --ch-text-subtle:      #7a5568;
-  --ch-text-know:        #1565c0;   /* kept readable blue for "did you know" */
-  --ch-text-fact:        #b05a00;   /* warm amber, readable on blush */
-  --ch-text-legal:       #6a1b9a;   /* kept purple for legal — distinct */
-  --ch-text-tip:         #2e7d32;   /* kept green for tips — universal */
-  --ch-text-bullet:      #8b6070;
+  --ch-text-primary:     #1a0d13;
+  --ch-text-secondary:   #3d2535;
+  --ch-text-muted:       #7a5568;
+  --ch-text-subtle:      #a07088;
+  --ch-text-know:        #1565c0;
+  --ch-text-fact:        #b05a00;
+  --ch-text-legal:       #6a1b9a;
+  --ch-text-tip:         #2e7d32;
+  --ch-text-bullet:      #7a5568;
 
-  --ch-card-bg:          #fff5fb;
+  --ch-card-bg:          #ffffff;
   --ch-card-border:      #f0c8dc;
-  --ch-card-shadow:      0 1px 8px rgba(194,24,91,0.07);
+  --ch-card-shadow:      0 1px 8px rgba(194,24,91,0.06);
 
-  --ch-tab-bg:           #fce4ef;
+  --ch-tab-bg:           #fff0f6;
   --ch-tab-color:        #8b6070;
   --ch-tab-border:       #f0c8dc;
 
-  --ch-opt-bg:           #fdf2f8;
+  --ch-opt-bg:           #ffffff;
   --ch-opt-border:       #f0c8dc;
-  --ch-opt-color:        #4a2d3a;
-  --ch-opt-hover-bg:     #fce4ef;
+  --ch-opt-color:        #3d2535;
+  --ch-opt-hover-bg:     #fff0f6;
   --ch-opt-hover-border: #e091b8;
-  --ch-opt-letter-bg:    rgba(194,24,91,0.1);
+  --ch-opt-letter-bg:    rgba(194,24,91,0.08);
   --ch-opt-letter-color: #c2185b;
 
-  --ch-done-bg:          #fff5fb;
+  --ch-done-bg:          #ffffff;
   --ch-done-border:      #f0c8dc;
-  --ch-done-shadow:      0 2px 12px rgba(194,24,91,0.08);
+  --ch-done-shadow:      0 2px 12px rgba(194,24,91,0.07);
 
-  --ch-quiz-bg:          #fff5fb;
+  --ch-quiz-bg:          #ffffff;
   --ch-quiz-border:      #f0c8dc;
-  --ch-quiz-shadow:      0 1px 8px rgba(194,24,91,0.07);
+  --ch-quiz-shadow:      0 1px 8px rgba(194,24,91,0.06);
 
-  --ch-progress-track:   #fce4ef;
+  --ch-progress-track:   #f0c8dc;
 }
+[data-theme="pink"] .opt.selected  { background: color-mix(in srgb, var(--c, #c2185b) 8%, #ffffff); }
+[data-theme="pink"] .opt.correct   { color: #1b5e20 !important; }
+[data-theme="pink"] .opt.wrong     { color: #7f0000 !important; }
+[data-theme="pink"] .feedback.correct { color: #1b5e20; }
+[data-theme="pink"] .feedback.wrong   { color: #7f0000; }
 
-[data-theme="pink"] .opt.selected  { background: color-mix(in srgb, var(--c, #c2185b) 10%, #fdf2f8); }
-[data-theme="pink"] .opt.correct   { color: #2d5a1e !important; }
-[data-theme="pink"] .opt.wrong     { color: #7a1a1a !important; }
-[data-theme="pink"] .feedback.correct { color: #2d5a1e; }
-[data-theme="pink"] .feedback.wrong   { color: #7a1a1a; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   APPEND TO: chapter.css  — [data-theme="mint"] block (NEW)
+═══════════════════════════════════════════════════════════════════════════ */
+[data-theme="mint"] {
+  --ch-text-primary:     #0d1f1e;
+  --ch-text-secondary:   #1e3a38;
+  --ch-text-muted:       #4e7c78;
+  --ch-text-subtle:      #7aaba7;
+  --ch-text-know:        #0277bd;
+  --ch-text-fact:        #e65100;
+  --ch-text-legal:       #4527a0;
+  --ch-text-tip:         #2e7d32;
+  --ch-text-bullet:      #4e7c78;
+
+  --ch-card-bg:          #ffffff;
+  --ch-card-border:      #b2dfdb;
+  --ch-card-shadow:      0 1px 8px rgba(0,137,123,0.06);
+
+  --ch-tab-bg:           #f0faf9;
+  --ch-tab-color:        #4e7c78;
+  --ch-tab-border:       #b2dfdb;
+
+  --ch-opt-bg:           #ffffff;
+  --ch-opt-border:       #b2dfdb;
+  --ch-opt-color:        #1e3a38;
+  --ch-opt-hover-bg:     #f0faf9;
+  --ch-opt-hover-border: #4db6ac;
+  --ch-opt-letter-bg:    rgba(0,137,123,0.08);
+  --ch-opt-letter-color: #00897b;
+
+  --ch-done-bg:          #ffffff;
+  --ch-done-border:      #b2dfdb;
+  --ch-done-shadow:      0 2px 12px rgba(0,137,123,0.07);
+
+  --ch-quiz-bg:          #ffffff;
+  --ch-quiz-border:      #b2dfdb;
+  --ch-quiz-shadow:      0 1px 8px rgba(0,137,123,0.06);
+
+  --ch-progress-track:   #b2dfdb;
+}
+[data-theme="mint"] .opt.selected  { background: color-mix(in srgb, var(--c, #00897b) 8%, #ffffff); }
+[data-theme="mint"] .opt.correct   { color: #1b5e20 !important; }
+[data-theme="mint"] .opt.wrong     { color: #7f0000 !important; }
+[data-theme="mint"] .feedback.correct { color: #1b5e20; }
+[data-theme="mint"] .feedback.wrong   { color: #7f0000; }

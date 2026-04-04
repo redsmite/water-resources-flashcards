@@ -38,7 +38,7 @@ function loadP() {
 }
 function saveP(p) { try { localStorage.setItem(KEY, JSON.stringify(p)); } catch {} }
 
-const VALID_THEMES = ["light", "dark", "sepia", "pink"];
+const VALID_THEMES = ["light", "dark", "sepia", "pink", "mint"];
 function loadTheme() {
   try {
     const t = localStorage.getItem(THEME_KEY);
@@ -64,7 +64,8 @@ const THEME_CYCLE = {
   light: { next: "dark",  icon: "🌙", label: "Dark"  },
   dark:  { next: "sepia", icon: "📜", label: "Sepia" },
   sepia: { next: "pink",  icon: "🌸", label: "Pink"  },
-  pink:  { next: "light", icon: "☀️", label: "Light" },
+  pink:  { next: "mint",  icon: "🌿", label: "Mint"  },
+  mint:  { next: "light", icon: "☀️", label: "Light" },
 };
 
 function ThemeToggle({ theme, onToggle }) {

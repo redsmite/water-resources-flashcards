@@ -147,17 +147,17 @@
 
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   4. APPEND TO: flashcard.css
+   REPLACE IN: flashcard.css  — [data-theme="pink"] block
 ═══════════════════════════════════════════════════════════════════════════ */
 [data-theme="pink"] {
-  --fc-progress-track:   #fce4ef;
-  --fc-progress-label:   #8b6070;
+  --fc-progress-track:   #f0c8dc;
+  --fc-progress-label:   #7a5568;
   --fc-progress-known:   #2e7d32;
 
-  --fc-front-bg:         linear-gradient(145deg, #fce4ef, #fff5fb);
+  --fc-front-bg:         linear-gradient(145deg, #fff0f6, #ffffff);
   --fc-front-border:     #e8b4cc;
   --fc-front-label:      #c2185b;
-  --fc-front-text:       #2d1a24;
+  --fc-front-text:       #1a0d13;
   --fc-front-hint:       #c2185b;
 
   --fc-back-bg:          linear-gradient(145deg, #e8f5e9, #f1f8f1);
@@ -165,78 +165,54 @@
   --fc-back-label:       #2e7d32;
   --fc-back-text:        #1b3a1e;
 
-  --fc-done-bg:          #fff5fb;
+  --fc-done-bg:          #ffffff;
   --fc-done-border:      #f0c8dc;
-  --fc-done-shadow:      0 2px 12px rgba(194,24,91,0.08);
-  --fc-done-title:       #2d1a24;
-  --fc-done-stat-label:  #8b6070;
+  --fc-done-shadow:      0 2px 12px rgba(194,24,91,0.07);
+  --fc-done-title:       #1a0d13;
+  --fc-done-stat-label:  #7a5568;
 }
+[data-theme="pink"] .fc-header       { border-color: rgba(194,24,91,0.18) !important; }
+[data-theme="pink"] .fc-header-icon  { background: rgba(194,24,91,0.08) !important; color: #c2185b !important; }
+[data-theme="pink"] .fc-header-label { color: #c2185b !important; }
+[data-theme="pink"] .fc-stat-known   { color: #2e7d32; }
+[data-theme="pink"] .fc-stat-learning { color: #b71c3c; }
+[data-theme="pink"] .fc-stat-score   { color: #c2185b; }
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   APPEND TO: flashcard.css
-   New classes replacing all inline styles removed from Flashcard.jsx
-───────────────────────────────────────────────────────────────────────────── */
 
-/* ── Flashcard header band ───────────────────────────────────────────────── */
-.fc-header       { border-color: #a78bfa33 !important; }
-.fc-header-icon  { background: #a78bfa22 !important; color: #a78bfa !important; }
-.fc-header-label { color: #a78bfa !important; }
+/* ═══════════════════════════════════════════════════════════════════════════
+   APPEND TO: flashcard.css  — [data-theme="mint"] block (NEW)
+═══════════════════════════════════════════════════════════════════════════ */
+[data-theme="mint"] {
+  --fc-progress-track:   #b2dfdb;
+  --fc-progress-label:   #4e7c78;
+  --fc-progress-known:   #00897b;
 
-/* ── Action row (below card) ─────────────────────────────────────────────── */
-.fc-actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 16px;
+  --fc-front-bg:         linear-gradient(145deg, #f0faf9, #ffffff);
+  --fc-front-border:     #b2dfdb;
+  --fc-front-label:      #00897b;
+  --fc-front-text:       #0d1f1e;
+  --fc-front-hint:       #00897b;
+
+  --fc-back-bg:          linear-gradient(145deg, #e8f5e9, #f1f8f1);
+  --fc-back-border:      #a5d6a7;
+  --fc-back-label:       #2e7d32;
+  --fc-back-text:        #1b3a1e;
+
+  --fc-done-bg:          #ffffff;
+  --fc-done-border:      #b2dfdb;
+  --fc-done-shadow:      0 2px 12px rgba(0,137,123,0.07);
+  --fc-done-title:       #0d1f1e;
+  --fc-done-stat-label:  #4e7c78;
 }
+[data-theme="mint"] .fc-header       { border-color: rgba(0,137,123,0.18) !important; }
+[data-theme="mint"] .fc-header-icon  { background: rgba(0,137,123,0.08) !important; color: #00897b !important; }
+[data-theme="mint"] .fc-header-label { color: #00897b !important; }
+[data-theme="mint"] .fc-stat-known   { color: #2e7d32; }
+[data-theme="mint"] .fc-stat-learning { color: #b71c1c; }
+[data-theme="mint"] .fc-stat-score   { color: #00897b; }
+[data-theme="mint"] .fc-btn-flip     { color: #00897b !important; border-color: rgba(0,137,123,0.25) !important; }
+[data-theme="mint"] .fc-btn-restart  { color: #00897b !important; border-color: rgba(0,137,123,0.25) !important; }
 
-/* Still Learning button — red tint */
-.fc-btn-learning {
-  flex: 1;
-  color: #f87171 !important;
-  border-color: rgba(248,113,113,0.3) !important;
-  background: rgba(248,113,113,0.08) !important;
-}
-/* Got It button — green tint */
-.fc-btn-got {
-  flex: 1;
-  color: #34d399 !important;
-  border-color: rgba(52,211,153,0.3) !important;
-  background: rgba(52,211,153,0.08) !important;
-}
-/* Flip Card button — purple tint */
-.fc-btn-flip {
-  flex: 1;
-  color: #818cf8 !important;
-  border-color: rgba(129,140,248,0.3) !important;
-}
-
-/* ── Done screen ─────────────────────────────────────────────────────────── */
-.fc-done-emoji { font-size: 44px; margin-bottom: 12px; }
-
-/* Stat numbers */
-.fc-stat-num      { font-size: 28px; font-weight: 800; }
-.fc-stat-known    { color: #34d399; }
-.fc-stat-learning { color: #f87171; }
-.fc-stat-score    { color: #a78bfa; }
-
-/* Done action buttons column */
-.fc-done-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-/* Review Missed button — amber tint */
-.fc-btn-missed {
-  color: #fbbf24 !important;
-  border-color: rgba(251,191,36,0.3) !important;
-  background: rgba(251,191,36,0.08) !important;
-}
-/* Restart All button — purple tint */
-.fc-btn-restart {
-  color: #a78bfa !important;
-  border-color: rgba(167,139,250,0.3) !important;
-}
 
 /* ── Sepia overrides ─────────────────────────────────────────────────────── */
 [data-theme="sepia"] .fc-header       { border-color: rgba(139,94,60,0.2) !important; }
