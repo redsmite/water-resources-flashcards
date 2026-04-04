@@ -1,8 +1,11 @@
 // ── flashcard/Flashcard.jsx ───────────────────────────────────────────────────
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { FLASHCARDS } from "../data.js";
 import "../global.css";
 import "./flashcard.css";
+import { scrollToTop } from "../scrollToTop.js";
+
+const FC_KEY = "wrm_flashcard_progress";
 
 function shuffle(arr) {
   const a = [...arr];
@@ -10,48 +13,101 @@ function shuffle(arr) {
   return a;
 }
 
-export function FlashcardsView({ onBack }) {
-  const [deck, setDeck]       = useState(() => shuffle(FLASHCARDS));
-  const [index, setIndex]     = useState(0);
-  const [flipped, setFlipped] = useState(false);
-  const [known, setKnown]     = useState(new Set());
-  const [unknown, setUnknown] = useState(new Set());
-  const [done, setDone]       = useState(false);
-  const [noAnim, setNoAnim] = useState(false);
+// ── Persist helpers ───────────────────────────────────────────────────────────
+function saveProgress(deck, index, known, unknown, done) {
+  try {
+    localStorage.setItem(FC_KEY, JSON.stringify({
+      deck,
+      index,
+      known:   [...known],
+      unknown: [...unknown],
+      done,
+    }));
+  } catch {}
+}
 
-  const card     = deck[index];
+function loadProgress() {
+  try {
+    const raw = localStorage.getItem(FC_KEY);
+    if (!raw) return null;
+    const p = JSON.parse(raw);
+    if (!Array.isArray(p.deck) || p.deck.length === 0) return null;
+    // Guard against stale data if FLASHCARDS content changes
+    const validQs = new Set(FLASHCARDS.map(c => c.q));
+    if (!p.deck.every(c => validQs.has(c.q))) return null;
+    return p;
+  } catch {
+    return null;
+  }
+}
+
+function clearProgress() {
+  try { localStorage.removeItem(FC_KEY); } catch {}
+}
+
+// ── Component ─────────────────────────────────────────────────────────────────
+export function FlashcardsView({ onBack }) {
+  // Initialise all state from localStorage if available
+  const [deck, setDeck]       = useState(() => { const p = loadProgress(); return p ? p.deck    : shuffle(FLASHCARDS); });
+  const [index, setIndex]     = useState(() => { const p = loadProgress(); return p ? p.index   : 0; });
+  const [flipped, setFlipped] = useState(false);
+  const [known, setKnown]     = useState(() => { const p = loadProgress(); return p ? new Set(p.known)   : new Set(); });
+  const [unknown, setUnknown] = useState(() => { const p = loadProgress(); return p ? new Set(p.unknown) : new Set(); });
+  const [done, setDone]       = useState(() => { const p = loadProgress(); return p ? p.done    : false; });
+
+  // Show "Resumed" nudge only when we actually restored mid-session progress
+  const [resumed, setResumed] = useState(() => {
+    const p = loadProgress();
+    return !!(p && !p.done && p.index > 0);
+  });
+
+  const card     = deck[index] ?? deck[0];
   const total    = deck.length;
   const progress = (index / total) * 100;
 
+  // ── Save on every change ──────────────────────────────────────────────────
+  useEffect(() => {
+    saveProgress(deck, index, known, unknown, done);
+  }, [deck, index, known, unknown, done]);
+
+  // ── Navigation ────────────────────────────────────────────────────────────
   const goNext = useCallback((mark) => {
-    // mark current card
-    if (mark === "know") {
-      setKnown(s => new Set([...s, deck[index].q]));
-    }
-    if (mark === "review") {
-      setUnknown(s => new Set([...s, deck[index].q]));
-    }
-
-    // flip card back first
+    scrollToTop();
     setFlipped(false);
+    setResumed(false);
 
-    // wait for flip animation to finish before switching card
-    setTimeout(() => {
-      if (index + 1 >= total) {
-        setDone(true);
-      } else {
-        setIndex(i => i + 1);
-      }
-    }, 420); // same as CSS transition
-  }, [deck, index, total]);
+    const newKnown   = mark === "know"   ? new Set([...known,   deck[index].q]) : known;
+    const newUnknown = mark === "review" ? new Set([...unknown, deck[index].q]) : unknown;
+
+    if (mark === "know")   setKnown(newKnown);
+    if (mark === "review") setUnknown(newUnknown);
+
+    if (index + 1 >= total) {
+      setDone(true);
+    } else {
+      setIndex(i => i + 1);
+    }
+  }, [deck, index, total, known, unknown]);
 
   const restart = (onlyUnknown = false) => {
-    const newDeck = onlyUnknown ? shuffle(FLASHCARDS.filter(c => unknown.has(c.q))) : shuffle(FLASHCARDS);
-    setDeck(newDeck.length ? newDeck : shuffle(FLASHCARDS));
-    setIndex(0); setFlipped(false); setKnown(new Set()); setUnknown(new Set()); setDone(false);
+    scrollToTop();
+    clearProgress();
+    const base    = onlyUnknown ? FLASHCARDS.filter(c => unknown.has(c.q)) : FLASHCARDS;
+    const newDeck = shuffle(base.length ? base : FLASHCARDS);
+    setDeck(newDeck);
+    setIndex(0);
+    setFlipped(false);
+    setKnown(new Set());
+    setUnknown(new Set());
+    setDone(false);
+    setResumed(false);
   };
 
-  const handleBack = () => { onBack(); };
+  const handleBack = () => {
+    // Progress already saved via useEffect — just go back
+    scrollToTop();
+    onBack();
+  };
 
   return (
     <div className="page">
@@ -67,6 +123,14 @@ export function FlashcardsView({ onBack }) {
           </div>
         </div>
 
+        {/* ── Resumed badge ── */}
+        {resumed && !done && (
+          <div className="fc-resume-badge">
+            ↩ Resumed from card {index + 1} of {total}
+            <button className="fc-resume-clear" onClick={() => restart(false)}>Start over</button>
+          </div>
+        )}
+
         {!done ? (
           <>
             <div className="fc-progress-wrap">
@@ -80,7 +144,7 @@ export function FlashcardsView({ onBack }) {
             </div>
 
             <div className="fc-card-wrap" onClick={() => setFlipped(f => !f)}>
-              <div className={`fc-inner ${flipped ? "flipped" : ""} ${noAnim ? "no-anim" : ""}`}>
+              <div className={`fc-inner ${flipped?"flipped":""}`}>
                 <div className="fc-face fc-front">
                   <div className="fc-label-q">Question</div>
                   <p className="fc-question-text">{card.q}</p>
@@ -123,7 +187,7 @@ export function FlashcardsView({ onBack }) {
               </div>
             </div>
             <div className="fc-done-actions">
-              {unknown.size>0 && (
+              {unknown.size > 0 && (
                 <button className="btn ghost fc-action fc-btn-missed" onClick={() => restart(true)}>
                   ↺ Review Missed ({unknown.size})
                 </button>
