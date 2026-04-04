@@ -72,21 +72,28 @@ export function FlashcardsView({ onBack }) {
 
   // ── Navigation ────────────────────────────────────────────────────────────
   const goNext = useCallback((mark) => {
-    scrollToTop();
-    setFlipped(false);
-    setResumed(false);
+    const current = deck[index];
 
-    const newKnown   = mark === "know"   ? new Set([...known,   deck[index].q]) : known;
-    const newUnknown = mark === "review" ? new Set([...unknown, deck[index].q]) : unknown;
-
-    if (mark === "know")   setKnown(newKnown);
-    if (mark === "review") setUnknown(newUnknown);
-
-    if (index + 1 >= total) {
-      setDone(true);
-    } else {
-      setIndex(i => i + 1);
+    if (mark === "know") {
+      setKnown(s => new Set([...s, current.q]));
     }
+
+    if (mark === "review") {
+      setUnknown(s => new Set([...s, current.q]));
+    }
+
+    // flip card to front first
+    setFlipped(false);
+
+    // wait for flip animation to finish
+    setTimeout(() => {
+      if (index + 1 >= total) {
+        setDone(true);
+      } else {
+        setIndex(i => i + 1);
+      }
+    }, 500); // match your CSS flip animation speed
+
   }, [deck, index, total, known, unknown]);
 
   const restart = (onlyUnknown = false) => {
