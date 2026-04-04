@@ -1366,3 +1366,58 @@ body {
 html {
   scroll-behavior: auto !important;
 }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   APPEND TO: global.css
+   Light theme accent fixes — sky blue replaces the plain grey neutrals
+   so the light theme has a consistent color identity like the others.
+───────────────────────────────────────────────────────────────────────────── */
+
+[data-theme="light"] {
+
+  /* ── DENR stripe — sky blue to match the accent ──────────────────────── */
+  .denr-stripe {
+    background: linear-gradient(90deg, #0284c7, #38bdf8, #0284c7);
+  }
+
+  /* ── Section labels — sky blue, not dark grey ────────────────────────── */
+  .section-label { color: #0284c7; }
+
+  /* ── Stat numbers ────────────────────────────────────────────────────── */
+  .stat-done   { color: #0284c7; }
+  .stat-passed { color: #0ea5e9; }
+
+  /* ── DENR agency/office — readable teal-blue ─────────────────────────── */
+  .denr-agency { color: #0284c7; }
+  .denr-office { color: #0ea5e9; }
+
+  /* ── Logo glow ───────────────────────────────────────────────────────── */
+  .denr-logo { box-shadow: 0 0 0 3px rgba(2,132,199,0.2), 0 0 20px rgba(2,132,199,0.1); }
+
+  /* ── Back button hover ───────────────────────────────────────────────── */
+  .back-btn:hover { color: #0284c7; background: #f0f9ff; }
+
+  /* ── Final card title ────────────────────────────────────────────────── */
+  .final-title { color: #0284c7; }
+
+  /* ── Answer review banner — keep purple, it's distinct ──────────────── */
+
+  /* ── Leaderboard accent — use blue in light theme ────────────────────── */
+  .leaderboard-icon  { background: rgba(2,132,199,0.1) !important; color: #0284c7 !important; }
+  .leaderboard-title { color: #0284c7 !important; }
+  .leaderboard-arrow { color: #0ea5e9 !important; }
+
+  /* ── Legal refs banner ───────────────────────────────────────────────── */
+  .refs-banner  { background: rgba(2,132,199,0.04) !important; border-color: rgba(2,132,199,0.18) !important; }
+  .refs-icon    { background: rgba(2,132,199,0.08) !important; color: #0284c7 !important; }
+  .refs-title   { color: #0284c7 !important; }
+  .refs-arrow   { color: #0ea5e9 !important; }
+
+  /* ── Flashcard banner icon ───────────────────────────────────────────── */
+  .fc-icon  { background: rgba(2,132,199,0.08); color: #0284c7; }
+  .fc-arrow { color: #0ea5e9; }
+
+  /* ── Scrollbar ───────────────────────────────────────────────────────── */
+  ::-webkit-scrollbar-thumb       { background: #bae6fd; }
+  ::-webkit-scrollbar-thumb:hover { background: #0284c7; }
+}

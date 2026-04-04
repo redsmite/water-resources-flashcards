@@ -234,10 +234,8 @@ export function ModuleView({ mod, prog, update, onBack }) {
   const [score, setScore]         = useState(0);
   const [done, setDone]           = useState(false);
 
-  // ── All chapter/quiz navigation calls scrollToTop first ───────────────────
   const goToChapter = (i) => { scrollToTop(); setCh(i); };
-
-  const startQuiz = () => { scrollToTop(); setPhase("quiz"); };
+  const startQuiz   = ()  => { scrollToTop(); setPhase("quiz"); };
 
   const q = mod.quiz[qi];
 
@@ -248,7 +246,7 @@ export function ModuleView({ mod, prog, update, onBack }) {
   };
 
   const next = () => {
-    scrollToTop(); // ← scroll before switching question
+    scrollToTop();
     if (qi + 1 >= mod.quiz.length) {
       update({ ...prog, completed:{ ...prog.completed,[mod.id]:true }, scores:{ ...prog.scores,[mod.id]:score } });
       setDone(true);
@@ -279,10 +277,11 @@ export function ModuleView({ mod, prog, update, onBack }) {
       <div className="inner-wrap">
         <button className="back-btn" onClick={handleBack}>← Back to Modules</button>
 
-        <div className="mod-header" style={{ borderColor: mod.color + "33" }}>
-          <div className="mod-icon lg" style={{ background: mod.color + "22", color: mod.color }}>{mod.icon}</div>
+        {/* mod.color still used for the decorative icon tint — truly dynamic */}
+        <div className="mod-header ch-header">
+          <div className="mod-icon lg ch-header-icon" style={{ background: mod.color + "22", color: mod.color }}>{mod.icon}</div>
           <div>
-            <div className="mod-label" style={{ color: mod.color }}>Module {mod.id}</div>
+            <div className="mod-label ch-label">Module {mod.id}</div>
             <div className="mod-header-title">{mod.title}</div>
             <div className="mod-header-sub">{mod.subtitle}</div>
           </div>
@@ -292,7 +291,8 @@ export function ModuleView({ mod, prog, update, onBack }) {
           <>
             <div className="tabs">
               {mod.chapters.map((c, i) => (
-                <button key={i} className={`tab ${ch===i?"active":""}`} style={{ "--c": mod.color }} onClick={() => goToChapter(i)}>
+                // --c drives .tab.active color — use theme accent, not mod.color
+                <button key={i} className={`tab ${ch===i?"active":""}`} onClick={() => goToChapter(i)}>
                   {i+1}. {c.title}
                 </button>
               ))}
@@ -311,13 +311,9 @@ export function ModuleView({ mod, prog, update, onBack }) {
                 <button className="btn ghost" onClick={() => goToChapter(ch-1)}>← Previous</button>
               )}
               {ch < mod.chapters.length - 1 ? (
-                <button className="btn" style={{ "--c":mod.color, background:mod.color+"22", color:mod.color, borderColor:mod.color+"55" }} onClick={() => goToChapter(ch+1)}>
-                  Next →
-                </button>
+                <button className="btn ch-btn-next" onClick={() => goToChapter(ch+1)}>Next →</button>
               ) : (
-                <button className="btn primary" style={{ background:mod.color, color:"#0f172a" }} onClick={startQuiz}>
-                  Take Mini Quiz →
-                </button>
+                <button className="btn ch-btn-quiz" onClick={startQuiz}>Take Mini Quiz →</button>
               )}
             </div>
           </>
@@ -325,16 +321,16 @@ export function ModuleView({ mod, prog, update, onBack }) {
 
         {phase === "quiz" && !done && (
           <div className="quiz-box">
-            <div className="quiz-label" style={{ color: mod.color }}>Mini Quiz — {qi+1} of {mod.quiz.length}</div>
+            <div className="quiz-label ch-quiz-label">Mini Quiz — {qi+1} of {mod.quiz.length}</div>
             <div className="quiz-q">{q.q}</div>
 
             <div className="options">
               {q.options.map((opt, i) => {
-                let cls = "opt";
+                let cls = "opt ch-opt";
                 if (confirmed) { if (i===q.answer) cls+=" correct"; else if (i===sel) cls+=" wrong"; }
                 else if (sel===i) cls+=" selected";
                 return (
-                  <button key={i} className={cls} style={{ "--c": mod.color }} onClick={() => !confirmed && setSel(i)}>
+                  <button key={i} className={cls} onClick={() => !confirmed && setSel(i)}>
                     <span className="opt-letter">{["A","B","C","D"][i]}</span>{opt}
                   </button>
                 );
@@ -348,11 +344,11 @@ export function ModuleView({ mod, prog, update, onBack }) {
             )}
 
             {!confirmed ? (
-              <button className="btn primary"
-                style={{ background:sel!==null?mod.color:"rgba(255,255,255,0.05)", color:sel!==null?"#0f172a":"#475569" }}
-                onClick={confirm}>Check Answer</button>
+              <button className={`btn ch-btn-check${sel!==null?" active":""}`} onClick={confirm}>
+                Check Answer
+              </button>
             ) : (
-              <button className="btn primary" style={{ background:mod.color, color:"#0f172a" }} onClick={next}>
+              <button className="btn ch-btn-quiz" onClick={next}>
                 {qi+1<mod.quiz.length?"Next Question →":"Finish →"}
               </button>
             )}
@@ -361,11 +357,11 @@ export function ModuleView({ mod, prog, update, onBack }) {
 
         {done && (
           <div className="done-box">
-            <div style={{ fontSize:44, marginBottom:12 }}>{prog.scores[mod.id]===mod.quiz.length?"🌊":"💧"}</div>
+            <div className="ch-done-emoji">{prog.scores[mod.id]===mod.quiz.length?"🌊":"💧"}</div>
             <div className="done-title">Module Complete!</div>
-            <div className="done-score" style={{ color: mod.color }}>{prog.scores[mod.id]}/{mod.quiz.length}</div>
+            <div className="done-score ch-done-score">{prog.scores[mod.id]}/{mod.quiz.length}</div>
             <div className="done-sub">Quiz Score</div>
-            <button className="btn primary" style={{ background:mod.color, color:"#0f172a", marginTop:24 }} onClick={handleBack}>← Back to Modules</button>
+            <button className="btn ch-btn-quiz ch-btn-back-home" onClick={handleBack}>← Back to Modules</button>
           </div>
         )}
       </div>

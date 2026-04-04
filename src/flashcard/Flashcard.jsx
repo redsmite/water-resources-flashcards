@@ -17,17 +17,32 @@ export function FlashcardsView({ onBack }) {
   const [known, setKnown]     = useState(new Set());
   const [unknown, setUnknown] = useState(new Set());
   const [done, setDone]       = useState(false);
+  const [noAnim, setNoAnim] = useState(false);
 
   const card     = deck[index];
   const total    = deck.length;
   const progress = (index / total) * 100;
 
   const goNext = useCallback((mark) => {
+    // mark current card
+    if (mark === "know") {
+      setKnown(s => new Set([...s, deck[index].q]));
+    }
+    if (mark === "review") {
+      setUnknown(s => new Set([...s, deck[index].q]));
+    }
+
+    // flip card back first
     setFlipped(false);
-    if (mark==="know")   setKnown(s => new Set([...s, deck[index].q]));
-    if (mark==="review") setUnknown(s => new Set([...s, deck[index].q]));
-    if (index+1 >= total) { setDone(true); }
-    else { setIndex(i => i+1); }
+
+    // wait for flip animation to finish before switching card
+    setTimeout(() => {
+      if (index + 1 >= total) {
+        setDone(true);
+      } else {
+        setIndex(i => i + 1);
+      }
+    }, 420); // same as CSS transition
   }, [deck, index, total]);
 
   const restart = (onlyUnknown = false) => {
@@ -65,7 +80,7 @@ export function FlashcardsView({ onBack }) {
             </div>
 
             <div className="fc-card-wrap" onClick={() => setFlipped(f => !f)}>
-              <div className={`fc-inner ${flipped?"flipped":""}`}>
+              <div className={`fc-inner ${flipped ? "flipped" : ""} ${noAnim ? "no-anim" : ""}`}>
                 <div className="fc-face fc-front">
                   <div className="fc-label-q">Question</div>
                   <p className="fc-question-text">{card.q}</p>

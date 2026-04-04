@@ -350,3 +350,120 @@
 [data-theme="mint"] .opt.wrong     { color: #7f0000 !important; }
 [data-theme="mint"] .feedback.correct { color: #1b5e20; }
 [data-theme="mint"] .feedback.wrong   { color: #7f0000; }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   APPEND TO: chapter.css
+   Theme-aware accent system for chapters.
+   --ch-accent replaces all mod.color usages on interactive UI elements.
+   The module icon still uses mod.color (genuinely dynamic per-module).
+───────────────────────────────────────────────────────────────────────────── */
+
+/* ── Default (dark) ──────────────────────────────────────────────────────── */
+:root {
+  --ch-accent:          #4ade80;   /* green — matches dark theme */
+  --ch-accent-bg:       rgba(74,222,128,0.12);
+  --ch-accent-text:     #0f172a;   /* text on solid accent button */
+  --ch-btn-inactive-bg: rgba(255,255,255,0.05);
+  --ch-btn-inactive-fg: #475569;
+}
+
+[data-theme="light"] {
+  --ch-accent:          #0284c7;   /* sky blue — fresh, readable on white */
+  --ch-accent-bg:       rgba(2,132,199,0.1);
+  --ch-accent-text:     #ffffff;
+  --ch-btn-inactive-bg: #f1f5f9;
+  --ch-btn-inactive-fg: #94a3b8;
+}
+
+[data-theme="sepia"] {
+  --ch-accent:          #8b5e3c;   /* amber-brown */
+  --ch-accent-bg:       rgba(139,94,60,0.12);
+  --ch-accent-text:     #faf6ee;
+  --ch-btn-inactive-bg: #e4d9c8;
+  --ch-btn-inactive-fg: #a89080;
+}
+
+[data-theme="pink"] {
+  --ch-accent:          #c2185b;   /* deep rose */
+  --ch-accent-bg:       rgba(194,24,91,0.08);
+  --ch-accent-text:     #ffffff;
+  --ch-btn-inactive-bg: #fff0f6;
+  --ch-btn-inactive-fg: #b08898;
+}
+
+[data-theme="mint"] {
+  --ch-accent:          #00897b;   /* teal */
+  --ch-accent-bg:       rgba(0,137,123,0.08);
+  --ch-accent-text:     #ffffff;
+  --ch-btn-inactive-bg: #f0faf9;
+  --ch-btn-inactive-fg: #7aaba7;
+}
+
+/* ── Chapter header — accent border ─────────────────────────────────────── */
+.ch-header      { border-color: color-mix(in srgb, var(--ch-accent) 20%, transparent) !important; }
+.ch-label       { color: var(--ch-accent) !important; }
+
+/* ── Tabs — use accent instead of mod.color ──────────────────────────────── */
+/* Remove --c dependency; tabs now follow --ch-accent */
+.tab.active,
+.tab:hover {
+  border-color: var(--ch-accent) !important;
+  color:        var(--ch-accent) !important;
+  background:   var(--ch-accent-bg) !important;
+}
+
+/* ── Quiz label ──────────────────────────────────────────────────────────── */
+.ch-quiz-label { color: var(--ch-accent) !important; }
+
+/* ── Options — use accent for selected state ─────────────────────────────── */
+.ch-opt.selected {
+  background:   var(--ch-accent-bg) !important;
+  border-color: var(--ch-accent) !important;
+  color:        var(--ch-accent) !important;
+}
+.ch-opt.selected .opt-letter {
+  background: color-mix(in srgb, var(--ch-accent) 20%, transparent) !important;
+  color:      var(--ch-accent) !important;
+}
+
+/* ── Next chapter button ─────────────────────────────────────────────────── */
+.ch-btn-next {
+  background:   var(--ch-accent-bg);
+  color:        var(--ch-accent);
+  border-color: color-mix(in srgb, var(--ch-accent) 35%, transparent);
+  font-weight:  600;
+}
+.ch-btn-next:hover {
+  background: color-mix(in srgb, var(--ch-accent) 18%, transparent);
+}
+
+/* ── Quiz / Finish / Back to Modules primary button ─────────────────────── */
+.ch-btn-quiz {
+  background:   var(--ch-accent);
+  color:        var(--ch-accent-text);
+  border:       none;
+  font-weight:  700;
+}
+.ch-btn-quiz:hover { opacity: 0.88; }
+
+/* ── Check Answer button (two states) ───────────────────────────────────── */
+.ch-btn-check {
+  background:   var(--ch-btn-inactive-bg);
+  color:        var(--ch-btn-inactive-fg);
+  border-color: transparent;
+  font-weight:  600;
+  width:        100%;
+}
+.ch-btn-check.active {
+  background:   var(--ch-accent);
+  color:        var(--ch-accent-text);
+  border:       none;
+}
+.ch-btn-check.active:hover { opacity: 0.88; }
+
+/* ── Back to Modules spacing ─────────────────────────────────────────────── */
+.ch-btn-back-home { margin-top: 24px; }
+
+/* ── Done screen ─────────────────────────────────────────────────────────── */
+.ch-done-emoji { font-size: 44px; margin-bottom: 12px; }
+.ch-done-score { color: var(--ch-accent); }

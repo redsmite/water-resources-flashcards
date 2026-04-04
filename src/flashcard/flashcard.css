@@ -231,3 +231,8 @@
 [data-theme="light"] .fc-stat-known   { color: #16a34a; }
 [data-theme="light"] .fc-stat-learning { color: #dc2626; }
 [data-theme="light"] .fc-stat-score   { color: #7c3aed; }
+
+/* Disable flip animation when changing cards */
+.fc-inner.no-anim {
+  transition: none !important;
+}
