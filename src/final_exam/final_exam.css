@@ -862,3 +862,191 @@
 [data-theme="pink"] .fe-result-penalty strong { color: #b71c3c; }
 [data-theme="pink"] .fe-penalty-counter       { color: #b71c3c; }
 [data-theme="pink"] .fe-lb-penalty.flagged    { color: #b71c3c; }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   APPEND TO: final_exam.css
+   Congratulations modal + confetti overlay
+───────────────────────────────────────────────────────────────────────────── */
+
+/* ── Overlay ─────────────────────────────────────────────────────────────── */
+.congrats-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+
+/* ── Confetti canvas (behind modal) ─────────────────────────────────────── */
+.congrats-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 8999;
+}
+
+/* ── Modal card — base (dark theme) ─────────────────────────────────────── */
+.congrats-modal {
+  position: relative;
+  z-index: 9001;
+  background: #0f1f14;
+  border: 1px solid rgba(74,222,128,0.2);
+  border-radius: 20px;
+  padding: 40px 32px 32px;
+  max-width: 460px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.7);
+  animation: congrats-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes congrats-pop {
+  from { opacity: 0; transform: scale(0.85) translateY(20px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ── Theme variants ──────────────────────────────────────────────────────── */
+.congrats-modal--light {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.18);
+}
+
+.congrats-modal--sepia {
+  background: #faf6ee;
+  border-color: #d4c5a9;
+  box-shadow: 0 24px 80px rgba(100, 60, 20, 0.25);
+}
+
+.congrats-modal--pink {
+  background: #ffffff;
+  border-color: #f0c8dc;
+  box-shadow: 0 24px 80px rgba(194, 24, 91, 0.15);
+}
+
+.congrats-modal--mint {
+  background: #ffffff;
+  border-color: #b2dfdb;
+  box-shadow: 0 24px 80px rgba(0, 137, 123, 0.15);
+}
+
+/* ── Emoji bounce ────────────────────────────────────────────────────────── */
+.congrats-emoji {
+  font-size: 56px;
+  margin-bottom: 12px;
+  display: block;
+  animation: congrats-bounce 0.6s ease 0.2s both;
+}
+
+@keyframes congrats-bounce {
+  0%   { transform: scale(0); }
+  60%  { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+/* ── Title ───────────────────────────────────────────────────────────────── */
+.congrats-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: #f0fdf4;
+  margin-bottom: 6px;
+  letter-spacing: -0.5px;
+}
+.congrats-modal--light .congrats-title,
+.congrats-modal--pink  .congrats-title,
+.congrats-modal--mint  .congrats-title  { color: #0f172a; }
+.congrats-modal--sepia .congrats-title  { color: #2c1a0e; }
+
+/* ── Student name ────────────────────────────────────────────────────────── */
+.congrats-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: #4ade80;
+  margin-bottom: 14px;
+  word-break: break-word;
+}
+.congrats-modal--light .congrats-name  { color: #0284c7; }
+.congrats-modal--sepia .congrats-name  { color: #8b5e3c; }
+.congrats-modal--pink  .congrats-name  { color: #c2185b; }
+.congrats-modal--mint  .congrats-name  { color: #00897b; }
+
+/* ── Body text ───────────────────────────────────────────────────────────── */
+.congrats-body {
+  font-size: 14px;
+  color: #94a3b8;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+.congrats-modal--light .congrats-body,
+.congrats-modal--pink  .congrats-body,
+.congrats-modal--mint  .congrats-body  { color: #475569; }
+.congrats-modal--sepia .congrats-body  { color: #5c3d2e; }
+
+.congrats-body strong { font-weight: 700; }
+.congrats-modal--dark  .congrats-body strong  { color: #f0fdf4; }
+.congrats-modal--light .congrats-body strong,
+.congrats-modal--pink  .congrats-body strong,
+.congrats-modal--mint  .congrats-body strong  { color: #0f172a; }
+.congrats-modal--sepia .congrats-body strong  { color: #2c1a0e; }
+
+/* ── Score badge ─────────────────────────────────────────────────────────── */
+.congrats-score {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(74,222,128,0.1);
+  border: 1px solid rgba(74,222,128,0.25);
+  border-radius: 40px;
+  padding: 10px 22px;
+  margin-bottom: 24px;
+}
+.congrats-modal--light .congrats-score { background: #f0f9ff; border-color: #bae6fd; }
+.congrats-modal--sepia .congrats-score { background: rgba(139,94,60,0.08); border-color: rgba(139,94,60,0.25); }
+.congrats-modal--pink  .congrats-score { background: #fff0f6; border-color: #f0c8dc; }
+.congrats-modal--mint  .congrats-score { background: #f0faf9; border-color: #b2dfdb; }
+
+.congrats-score-num {
+  font-size: 22px;
+  font-weight: 900;
+  color: #4ade80;
+}
+.congrats-modal--light .congrats-score-num { color: #0284c7; }
+.congrats-modal--sepia .congrats-score-num { color: #5a7a42; }
+.congrats-modal--pink  .congrats-score-num { color: #c2185b; }
+.congrats-modal--mint  .congrats-score-num { color: #00897b; }
+
+.congrats-score-pct {
+  font-size: 13px;
+  font-weight: 600;
+  color: #86efac;
+}
+.congrats-modal--light .congrats-score-pct { color: #0ea5e9; }
+.congrats-modal--sepia .congrats-score-pct { color: #4a3728; }
+.congrats-modal--pink  .congrats-score-pct { color: #7a5568; }
+.congrats-modal--mint  .congrats-score-pct { color: #4e7c78; }
+
+/* ── Close button ────────────────────────────────────────────────────────── */
+.congrats-close-btn {
+  width: 100%;
+  color: #64748b;
+  border-color: rgba(255,255,255,0.1);
+  font-size: 14px;
+}
+.congrats-modal--light .congrats-close-btn,
+.congrats-modal--pink  .congrats-close-btn,
+.congrats-modal--mint  .congrats-close-btn { border-color: #e2e8f0; color: #64748b; }
+.congrats-modal--sepia .congrats-close-btn { border-color: #d4c5a9; color: #7a6248; }
+
+/* ── Mobile ──────────────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .congrats-modal { padding: 28px 20px 24px; }
+  .congrats-title { font-size: 22px; }
+  .congrats-emoji { font-size: 44px; }
+}

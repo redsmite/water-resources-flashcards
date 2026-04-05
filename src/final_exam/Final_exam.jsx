@@ -6,6 +6,7 @@ import "../global.css";
 import "./final_exam.css";
 import { scrollToTop } from "../scrollToTop.js";
 
+
 const PROGRESS_KEY    = "wrm_exam_progress";
 const PENDING_KEY     = "wrm_pending_save";
 const PENALTY_SECONDS = 5 * 60;
@@ -178,9 +179,12 @@ export function FinalQuizView({ prog, update, onBack, db }) {
       scrollToTop(); // ← snap to top before result screen
       setDone(true);
     } else {
+      scrollToTop(); // ← snap to top before next question
       setAnswers(newAnswers); setAnsweredUpTo(newUpTo); setQi(i=>i+1); setFitbVal("");
     }
   };
+
+  const [showCongrats, setShowCongrats] = useState(false);
 
   const handleSaveName = async () => {
     if (!name.trim() || nameLocked) return;
@@ -198,6 +202,7 @@ export function FinalQuizView({ prog, update, onBack, db }) {
       });
       clearPending();
       setNameLocked(true);
+      setShowCongrats(true); // ← trigger congratulations modal
     } catch { setSaveError("Failed to save. Please try again."); }
     setSaving(false);
   };
@@ -215,6 +220,7 @@ export function FinalQuizView({ prog, update, onBack, db }) {
         name={name} setName={setName} nameLocked={nameLocked}
         saving={saving} saveError={saveError} handleSaveName={handleSaveName}
         onBack={handleBack} reviewData={reviewData}
+        showCongrats={showCongrats} setShowCongrats={setShowCongrats}
       />
     );
   }
@@ -283,6 +289,8 @@ export function FinalQuizView({ prog, update, onBack, db }) {
     <div className="page">
       <div className="inner-wrap">
         <div className="denr-stripe" />
+        <button className="back-btn" onClick={handleBack}>← Back to Home</button>
+
         {penaltyFlash && (
           <div className="fe-penalty-toast">
             ⚠️ +5 min penalty — look-away #{penaltyCount} recorded
@@ -368,7 +376,7 @@ export function FinalQuizView({ prog, update, onBack, db }) {
 }
 
 // ── FinalResultScreen ─────────────────────────────────────────────────────────
-function FinalResultScreen({ pct, finalScore, elapsed, penaltyCount, name, setName, nameLocked, saving, saveError, handleSaveName, onBack, reviewData }) {
+function FinalResultScreen({ pct, finalScore, elapsed, penaltyCount, name, setName, nameLocked, saving, saveError, handleSaveName, onBack, reviewData, showCongrats, setShowCongrats }) {
   const [showReview, setShowReview] = useState(false);
   const typeLabel = { mc:"MC", tf:"T/F", fitb:"Fill in Blank", multi:"Multi-select" };
 
@@ -433,7 +441,7 @@ function FinalResultScreen({ pct, finalScore, elapsed, penaltyCount, name, setNa
           </div>
 
           {reviewData && (
-            <button className="btn ghost fe-review-toggle" onClick={() => setShowReview(r=>!r)}>
+            <button className="btn ghost fe-review-toggle" onClick={() => { setShowCongrats(false); setShowReview(r=>!r); }}>
               {showReview?"▲ Hide Answer Review":"▼ Review My Answers"}
             </button>
           )}
@@ -472,6 +480,96 @@ function FinalResultScreen({ pct, finalScore, elapsed, penaltyCount, name, setNa
             })}
           </div>
         )}
+
+        {showCongrats && (
+          <CongratsModal
+            name={name}
+            score={finalScore}
+            total={TOTAL_ITEMS}
+            onClose={() => setShowCongrats(false)}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
+
+// ── Congratulations Modal ─────────────────────────────────────────────────────
+function CongratsModal({ name, score, total, onClose }) {
+  const pct = Math.round((score / total) * 100);
+
+  // Read current theme so the modal card matches it
+  const theme = document.documentElement.getAttribute("data-theme") || "dark";
+
+  // Canvas-based confetti
+  useEffect(() => {
+    const canvas = document.getElementById("congrats-confetti");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    canvas.width  = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+
+    const colors = ["#c2185b","#fbbf24","#00897b","#818cf8","#34d399","#f472b6","#fb923c"];
+    const pieces = Array.from({length: 120}, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * -canvas.height,
+      r: 4 + Math.random() * 6,
+      d: 2 + Math.random() * 3,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      tiltAngle: 0,
+      tiltSpeed: 0.1 + Math.random() * 0.3,
+      shape: Math.random() > 0.5 ? "rect" : "circle",
+      w: 6 + Math.random() * 8,
+      h: 3 + Math.random() * 5,
+    }));
+
+    let raf;
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      pieces.forEach(p => {
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.tiltAngle);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = 0.85;
+        if (p.shape === "rect") {
+          ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+        } else {
+          ctx.beginPath();
+          ctx.arc(0, 0, p.r/2, 0, Math.PI*2);
+          ctx.fill();
+        }
+        ctx.restore();
+        p.y += p.d;
+        p.tiltAngle += p.tiltSpeed;
+        if (p.y > canvas.height) { p.y = -10; p.x = Math.random() * canvas.width; }
+      });
+      raf = requestAnimationFrame(draw);
+    };
+    draw();
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  return (
+    <div className="congrats-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
+      <canvas id="congrats-confetti" className="congrats-canvas" />
+      <div className={`congrats-modal congrats-modal--${theme}`}>
+        <div className="congrats-emoji">🎉</div>
+        <h2 className="congrats-title">Congratulations!</h2>
+        <p className="congrats-name">{name}</p>
+        <p className="congrats-body">
+          Your score has been saved to the database.<br />
+          You have successfully completed the<br />
+          <strong>ENRA 2026 Basic Course on Water Resources Management</strong>
+        </p>
+        <div className="congrats-score">
+          <span className="congrats-score-num">{score}/{total}</span>
+          <span className="congrats-score-pct">{pct}% Final Score</span>
+        </div>
+        <button className="btn ghost congrats-close-btn" onClick={onClose}>
+          Close
+        </button>
       </div>
     </div>
   );
