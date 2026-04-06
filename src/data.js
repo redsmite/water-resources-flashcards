@@ -38,7 +38,7 @@ Under Economic Regulation, the NWRB sets water tariffs for private water provide
         content: `The NWRB is governed by a multi-agency Board that ensures coordinated national oversight:
 
 • Chairperson: Secretary of the Department of Environment and Natural Resources (DENR)
-• Vice-Chairperson: Director-General of the National Economic and Development Authority (NEDA)
+• Vice-Chairperson: Secretary of Department of Economy, Planning and Development (DEPDev)
 • Member: Secretary of the Department of Science and Technology (DOST)
 
 ⚖️ According to the Water Code, the two entities currently deputized as agents of the NWRB are:
@@ -407,7 +407,7 @@ const FINAL_QUIZ = [
     type: "mc",
     q: "Who serves as the Chair of the NWRB Board?",
     options: [
-      "Director-General of NEDA",
+      "Secretary of DEPDev",
       "Secretary of DOST",
       "Secretary of the DENR",
       "Executive Director of UP-NHRC",
@@ -575,7 +575,7 @@ const FLASHCARDS = [
   { q: "Under Executive Order No. 123 (2002), the NWRB was transferred to which executive department?", a: "Department of Environment and Natural Resources (DENR)." },
   { q: "True or False: The NWRB is the same entity as Maynilad or Manila Water.", a: "False — the NWRB is a regulatory/coordinating body, not a water service provider." },
   { q: "Who serves as the Chair of the NWRB Board?", a: "The Secretary of the Department of Environment and Natural Resources (DENR)." },
-  { q: "Which official serves as the Vice Chair of the NWRB Board?", a: "The Director-General of the National Economic and Development Authority (NEDA)." },
+  { q: "Which official serves as the Vice Chair of the NWRB Board?", a: "The Secretary of Department of Economy, Planning, and Development (DEPDev)." },
   { q: "In the NWRB Board, which agency head represents science and technology?", a: "Secretary of the Department of Science and Technology (DOST)." },
   { q: "According to the Water Code, which two entities are currently deputized agents of the NWRB?", a: "The DPWH (Department of Public Works and Highways) and the NIA (National Irrigation Administration)." },
   { q: "Complete the vision: The NWRB's vision is 'Sustainable Water for a _____ Nation.'", a: "Healthy." },
