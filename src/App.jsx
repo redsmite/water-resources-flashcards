@@ -11,6 +11,10 @@ import { ModuleView }      from "./chapter/Chapter.jsx";
 import { FlashcardsView }  from "./flashcard/Flashcard.jsx";
 import { FinalQuizView, LeaderboardView } from "./final_exam/Final_exam.jsx";
 import { ResourcesView, VideoSection }    from "./resources/Resources.jsx";
+import WaterResourcesPresentation from "./WaterResourcesPresentation.jsx";
+
+// ── TTS ───────────────────────────────────────────────────────────────────────
+import { TTSButton, TTSToolbar } from "./TextToSpeech.jsx";
 
 // ── Firebase ──────────────────────────────────────────────────────────────────
 const firebaseConfig = {
@@ -78,6 +82,18 @@ function ThemeToggle({ theme, onToggle }) {
   );
 }
 
+// ── Home TTS summary text ─────────────────────────────────────────────────────
+// Generates a spoken overview of the app + all module titles for the TTS toolbar.
+function buildHomeTTSText(modules, completedCount) {
+  const names = modules.map((m, i) => `Module ${m.id}: ${m.title}.`).join(" ");
+  return (
+    `Welcome to the Water Resources Management learning platform. ` +
+    `You have completed ${completedCount} out of ${modules.length} modules. ` +
+    `The available modules are: ${names} ` +
+    `Complete all modules to unlock the final assessment.`
+  );
+}
+
 // ── App ───────────────────────────────────────────────────────────────────────
 export default function App() {
   const [prog, setProg]     = useState(loadP);
@@ -89,7 +105,6 @@ export default function App() {
     document.documentElement.setAttribute("data-theme", theme);
     saveTheme(theme);
   }, [theme]);
-
 
   const toggleTheme = () => setTheme(t => THEME_CYCLE[t]?.next ?? "light");
   const update      = (p) => { setProg(p); saveP(p); };
@@ -110,8 +125,10 @@ export default function App() {
   if (view === "resources")   return <>{toggle}<ResourcesView   onBack={() => goTo("home")} /></>;
   if (view === "final")       return <>{toggle}<FinalQuizView   prog={prog} update={update} onBack={() => goTo("home")} db={db} /></>;
   if (view === "leaderboard") return <>{toggle}<LeaderboardView onBack={() => goTo("home")} db={db} /></>;
+  if (view === "presentation") return <>{toggle}<WaterResourcesPresentation onBack={() => goTo("home")} /></>;
 
   // ── Home screen ───────────────────────────────────────────────────────────
+  const homeTTSText = buildHomeTTSText(MODULES, completedCount);
   return (
     <div className="page">
       {toggle}
@@ -148,7 +165,30 @@ export default function App() {
             <span className="stat-passed">{Object.keys(prog.scores).length}</span>
             <span className="stat-label"> Quizzes Passed</span>
           </div>
+
+          {/* ── TTS Toolbar — reads a spoken overview of the home screen ── */}
+          <TTSToolbar text={homeTTSText} label="Read Overview" />
         </header>
+
+        {/* NEW PRESENTATION BUTTON */}
+        <div className="section-label">📊 Multimedia</div>
+        <button 
+          className={`flashcard-banner presentation-banner ${examOngoing ? "flashcard-banner--locked" : ""}`}
+          onClick={() => !examOngoing && goTo("presentation")}
+          disabled={examOngoing}
+          style={{ marginBottom: '20px', borderLeft: '4px solid #3b82f6' }}
+        >
+          <div className="fc-left">
+            <div className="fc-icon">🖼️</div>
+            <div>
+              <div className="fc-title">Interactive Presentation</div>
+              <div className="fc-sub">
+                {examOngoing ? "Locked during exam" : "View the Water Resources overview deck"}
+              </div>
+            </div>
+          </div>
+          <div className="fc-arrow">→</div>
+        </button>
 
         <div className="section-label">📚 Learning Modules</div>
         <div className={`module-grid${examOngoing ? " module-grid--locked" : ""}`}>
@@ -161,6 +201,13 @@ export default function App() {
           {MODULES.map((mod, i) => {
             const done  = !!prog.completed[mod.id];
             const score = prog.scores[mod.id];
+
+            // Build a short spoken summary for each module card
+            const cardTTSText =
+              `Module ${mod.id}: ${mod.title}. ${mod.subtitle}. ` +
+              (done ? `You have completed this module. ` : `Not yet completed. `) +
+              (score !== undefined ? `Quiz score: ${score} out of ${mod.quiz?.length ?? "?"}.` : "");
+
             return (
               <button
                 key={mod.id}
@@ -172,6 +219,15 @@ export default function App() {
                 <div className="card-top">
                   <div className="mod-icon" style={{ background: mod.color + "22", color: mod.color }}>{mod.icon}</div>
                   {done && <div className="done-badge" style={{ background: mod.color + "22", color: mod.color }}>✓ Done</div>}
+                  {/* ── Inline TTS button per module card ── */}
+                  {!examOngoing && (
+                    <span
+                      onClick={e => e.stopPropagation()} // prevent card navigation on TTS click
+                      style={{ marginLeft: "auto" }}
+                    >
+                      <TTSButton text={cardTTSText} size={16} />
+                    </span>
+                  )}
                 </div>
                 <div className="mod-num">Module {mod.id}</div>
                 <div className="mod-title">{mod.title}</div>
