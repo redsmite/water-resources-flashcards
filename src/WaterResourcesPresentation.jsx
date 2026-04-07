@@ -88,10 +88,10 @@ const SLIDES = [
       headers: ["Role", "Position"],
       rows: [
         ["Chair", "Secretary, Department of Environment and Natural Resources."],
-        ["Vice Chair", "Director-General, National Economic and Development Authority."],
+        ["Vice Chair", "Secretary, Department of Economy, Planning, and Development."],
         ["Member", "Secretary, Department of Justice."],
         ["Member", "Secretary, Department of Science and Technology."],
-        ["Member", "Executive Director, UP – National Hydraulics Research Center."],
+        ["Member", "Executive Director, U.P. – National Hydraulics Research Center."],
       ],
     },
     content: "Supported by NWRB Staff, Deputized Agents, and NWRB Employees.",
@@ -99,7 +99,7 @@ const SLIDES = [
   },
   {
     id: 9, section: "Deputation",
-    title: "NWRB Resolution No. 15-1116",
+    title: "NWRB Resolution No. 15 - 1116",
     subtitle: "Deputation of DENR Regional Offices on Certain Functions of Water Use Regulation",
     content: "The NWRB under Article 80 of the Water Code (P.D. 1067) is empowered to deputize any official or agency of the government to perform any of its specific functions or activities. The DENR Regional Offices (WRUS, LPDD) shall:",
     bullets: [
