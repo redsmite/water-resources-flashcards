@@ -13,7 +13,7 @@ const SLIDES = [
   {
     id: 1, section: "Introduction",
     title: "Water Resources Management Services",
-    content: `By: LMO IV Carmen Hizelle M. Garcia-Velasco\nChief, Water Resources Utilization Section, LPDD\nDENR – National Capital Region\n\nSpecialized Learning Event for Technical Services Personnel\n20 April 2026 | Sotogrande Neopolitan Hotel, Quezon City`,
+    content: `By: LMO IV Carmen Hizelle M. Garcia-Velasco\nChief, Water Resources Utilization Section, LPDD\nDENR – National Capital Region\n\nENRA Basic Course 2026\n20 April 2026 | Sotogrande Neopolitan Hotel, Quezon City`,
     type: "cover",
   },
   {
