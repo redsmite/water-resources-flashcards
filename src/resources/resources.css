@@ -250,3 +250,97 @@
 [data-theme="light"] .res-header       { border-color: rgba(251,191,36,0.2) !important; }
 [data-theme="light"] .res-header-icon  { background: rgba(251,191,36,0.1) !important; color: #b45309 !important; }
 [data-theme="light"] .res-header-label { color: #b45309 !important; }
+
+/* ── Glossary ────────────────────────────────────────────────────────────── */
+.res-glossary-list {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--res-card-border);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: var(--res-card-shadow);
+}
+
+.res-glossary-item {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--res-card-border);
+}
+
+.res-glossary-item:last-child {
+  border-bottom: none;
+}
+
+.res-glossary-item:nth-child(even) {
+  background: var(--res-card-bg);
+}
+
+.res-glossary-term {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--res-title);
+  margin-bottom: 3px;
+}
+
+.res-glossary-def {
+  font-size: 12px;
+  color: var(--res-desc);
+  line-height: 1.5;
+}
+
+/* ── Section spacer ──────────────────────────────────────────────────────── */
+.res-section-gap {
+  margin-top: 2.5rem;
+}
+
+/* ── Glossary theme overrides ────────────────────────────────────────────── */
+[data-theme="light"] .res-glossary-item:nth-child(odd) {
+  background: #ffffff;
+}
+[data-theme="light"] .res-glossary-item:nth-child(even) {
+  background: #eff6ff;
+}
+[data-theme="light"] .res-glossary-list {
+  border-color: #bfdbfe;
+}
+[data-theme="light"] .res-glossary-item {
+  border-bottom-color: #bfdbfe;
+}
+
+[data-theme="sepia"] .res-glossary-list {
+  border-color: #d4c5a9;
+}
+[data-theme="sepia"] .res-glossary-item {
+  border-bottom-color: #d4c5a9;
+}
+[data-theme="sepia"] .res-glossary-item:nth-child(odd) {
+  background: #faf6ee;
+}
+[data-theme="sepia"] .res-glossary-item:nth-child(even) {
+  background: #f0e8d8;
+}
+
+[data-theme="pink"] .res-glossary-list {
+  border-color: #f0c8dc;
+}
+[data-theme="pink"] .res-glossary-item {
+  border-bottom-color: #f0c8dc;
+}
+[data-theme="pink"] .res-glossary-item:nth-child(odd) {
+  background: #ffffff;
+}
+[data-theme="pink"] .res-glossary-item:nth-child(even) {
+  background: #fff0f6;
+}
+
+[data-theme="mint"] .res-glossary-list {
+  border-color: #b2dfdb;
+}
+[data-theme="mint"] .res-glossary-item {
+  border-bottom-color: #b2dfdb;
+}
+[data-theme="mint"] .res-glossary-item:nth-child(odd) {
+  background: #ffffff;
+}
+[data-theme="mint"] .res-glossary-item:nth-child(even) {
+  background: #f0faf9;
+}

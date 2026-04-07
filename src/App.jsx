@@ -107,9 +107,9 @@ export default function App() {
   // ── Sub-page routing ──────────────────────────────────────────────────────
   if (view === "module")      return <>{toggle}<ModuleView      mod={MODULES[modIdx]} prog={prog} update={update} onBack={() => goTo("home")} /></>;
   if (view === "flashcards")  return <>{toggle}<FlashcardsView  onBack={() => goTo("home")} /></>;
+  if (view === "resources")   return <>{toggle}<ResourcesView   onBack={() => goTo("home")} /></>;
   if (view === "final")       return <>{toggle}<FinalQuizView   prog={prog} update={update} onBack={() => goTo("home")} db={db} /></>;
   if (view === "leaderboard") return <>{toggle}<LeaderboardView onBack={() => goTo("home")} db={db} /></>;
-  if (view === "resources")   return <>{toggle}<ResourcesView   onBack={() => goTo("home")} /></>;
 
   // ── Home screen ───────────────────────────────────────────────────────────
   return (
@@ -203,6 +203,28 @@ export default function App() {
           <div className="fc-arrow">→</div>
         </button>
 
+        <div className="section-label">📖 Glossary & References</div>
+        <button
+          className={`flashcard-banner refs-banner${examOngoing ? " refs-banner--locked" : ""}`}
+          onClick={() => !examOngoing && goTo("resources")}
+          disabled={examOngoing}
+        >
+          <div className="fc-left">
+            <div className={`fc-icon refs-icon${examOngoing ? " refs-icon--locked" : ""}`}>
+              {examOngoing ? "🔒" : "📖"}
+            </div>
+            <div>
+              <div className={`fc-title refs-title${examOngoing ? " refs-title--locked" : ""}`}>
+                Glossary and Legal References
+              </div>
+              <div className="fc-sub">
+                {examOngoing ? "Locked during exam" : "PD 424, PD 1067, PD 1206, EO 124-A, EO 123, EO 860, EO 22"}
+              </div>
+            </div>
+          </div>
+          <div className={`fc-arrow refs-arrow${examOngoing ? " refs-arrow--locked" : ""}`}>→</div>
+        </button>
+
         <div className="section-label section-label--mt">🏆 Assessment</div>
         <button
           className={`final-card${finalUnlocked ? "" : " final-card--locked"}`}
@@ -253,28 +275,6 @@ export default function App() {
 
         <div className="section-label section-label--mt">🎬 Video References</div>
         <VideoSection />
-
-        <div className="section-label">📖 References</div>
-        <button
-          className={`flashcard-banner refs-banner${examOngoing ? " refs-banner--locked" : ""}`}
-          onClick={() => !examOngoing && goTo("resources")}
-          disabled={examOngoing}
-        >
-          <div className="fc-left">
-            <div className={`fc-icon refs-icon${examOngoing ? " refs-icon--locked" : ""}`}>
-              {examOngoing ? "🔒" : "📖"}
-            </div>
-            <div>
-              <div className={`fc-title refs-title${examOngoing ? " refs-title--locked" : ""}`}>
-                Legal References
-              </div>
-              <div className="fc-sub">
-                {examOngoing ? "Locked during exam" : "PD 424, PD 1067, PD 1206, EO 124-A, EO 123, EO 860, EO 22"}
-              </div>
-            </div>
-          </div>
-          <div className={`fc-arrow refs-arrow${examOngoing ? " refs-arrow--locked" : ""}`}>→</div>
-        </button>
 
       </div>
     </div>
