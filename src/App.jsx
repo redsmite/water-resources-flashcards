@@ -11,7 +11,9 @@ import { ModuleView }      from "./chapter/Chapter.jsx";
 import { FlashcardsView }  from "./flashcard/Flashcard.jsx";
 import { FinalQuizView, LeaderboardView } from "./final_exam/Final_exam.jsx";
 import { ResourcesView, VideoSection }    from "./resources/Resources.jsx";
-import WaterResourcesPresentation from "./WaterResourcesPresentation.jsx";
+
+// ── Updated import: now lives in ./presentation/ subfolder ───────────────────
+import WaterResourcesPresentation from "./presentation/WaterResourcesPresentation.jsx";
 
 // ── TTS ───────────────────────────────────────────────────────────────────────
 import { TTSButton, TTSToolbar } from "./TextToSpeech.jsx";
@@ -83,9 +85,8 @@ function ThemeToggle({ theme, onToggle }) {
 }
 
 // ── Home TTS summary text ─────────────────────────────────────────────────────
-// Generates a spoken overview of the app + all module titles for the TTS toolbar.
 function buildHomeTTSText(modules, completedCount) {
-  const names = modules.map((m, i) => `Module ${m.id}: ${m.title}.`).join(" ");
+  const names = modules.map((m) => `Module ${m.id}: ${m.title}.`).join(" ");
   return (
     `Welcome to the Water Resources Management learning platform. ` +
     `You have completed ${completedCount} out of ${modules.length} modules. ` +
@@ -114,7 +115,6 @@ export default function App() {
   const examOngoing    = examIsOngoing();
   const finalUnlocked  = allDone && !prog.finalDone;
 
-  // goTo: scroll first, then change view
   const goTo = (v) => { scrollToTop(); setView(v); };
 
   const toggle = <ThemeToggle theme={theme} onToggle={toggleTheme} />;
@@ -125,7 +125,17 @@ export default function App() {
   if (view === "resources")   return <>{toggle}<ResourcesView   onBack={() => goTo("home")} /></>;
   if (view === "final")       return <>{toggle}<FinalQuizView   prog={prog} update={update} onBack={() => goTo("home")} db={db} /></>;
   if (view === "leaderboard") return <>{toggle}<LeaderboardView onBack={() => goTo("home")} db={db} /></>;
-  if (view === "presentation") return <>{toggle}<WaterResourcesPresentation onBack={() => goTo("home")} /></>;
+
+  // Pass the current app theme so the presentation syncs automatically
+  if (view === "presentation") return (
+    <>
+      {toggle}
+      <WaterResourcesPresentation
+        onBack={() => goTo("home")}
+        externalTheme={theme}
+      />
+    </>
+  );
 
   // ── Home screen ───────────────────────────────────────────────────────────
   const homeTTSText = buildHomeTTSText(MODULES, completedCount);
@@ -166,13 +176,12 @@ export default function App() {
             <span className="stat-label"> Quizzes Passed</span>
           </div>
 
-          {/* ── TTS Toolbar — reads a spoken overview of the home screen ── */}
           <TTSToolbar text={homeTTSText} label="Read Overview" />
         </header>
 
-        {/* NEW PRESENTATION BUTTON */}
-        <div className="section-label">📊 Multimedia</div>
-        <button 
+        {/* ── Powerpoint ── */}
+        <div className="section-label">📊 Interactive Slide Presentation</div>
+        <button
           className={`flashcard-banner presentation-banner ${examOngoing ? "flashcard-banner--locked" : ""}`}
           onClick={() => !examOngoing && goTo("presentation")}
           disabled={examOngoing}
@@ -190,6 +199,7 @@ export default function App() {
           <div className="fc-arrow">→</div>
         </button>
 
+        {/* ── Learning Modules ── */}
         <div className="section-label">📚 Learning Modules</div>
         <div className={`module-grid${examOngoing ? " module-grid--locked" : ""}`}>
           {examOngoing && (
@@ -202,7 +212,6 @@ export default function App() {
             const done  = !!prog.completed[mod.id];
             const score = prog.scores[mod.id];
 
-            // Build a short spoken summary for each module card
             const cardTTSText =
               `Module ${mod.id}: ${mod.title}. ${mod.subtitle}. ` +
               (done ? `You have completed this module. ` : `Not yet completed. `) +
@@ -219,12 +228,8 @@ export default function App() {
                 <div className="card-top">
                   <div className="mod-icon" style={{ background: mod.color + "22", color: mod.color }}>{mod.icon}</div>
                   {done && <div className="done-badge" style={{ background: mod.color + "22", color: mod.color }}>✓ Done</div>}
-                  {/* ── Inline TTS button per module card ── */}
                   {!examOngoing && (
-                    <span
-                      onClick={e => e.stopPropagation()} // prevent card navigation on TTS click
-                      style={{ marginLeft: "auto" }}
-                    >
+                    <span onClick={e => e.stopPropagation()} style={{ marginLeft: "auto" }}>
                       <TTSButton text={cardTTSText} size={16} />
                     </span>
                   )}
@@ -241,6 +246,7 @@ export default function App() {
           })}
         </div>
 
+        {/* ── Flashcards ── */}
         <div className="section-label section-label--mt">🃏 Flashcard Review</div>
         <button
           className={`flashcard-banner${examOngoing ? " flashcard-banner--locked" : ""}`}
@@ -259,6 +265,7 @@ export default function App() {
           <div className="fc-arrow">→</div>
         </button>
 
+        {/* ── References ── */}
         <div className="section-label">📖 Glossary & References</div>
         <button
           className={`flashcard-banner refs-banner${examOngoing ? " refs-banner--locked" : ""}`}
@@ -281,6 +288,7 @@ export default function App() {
           <div className={`fc-arrow refs-arrow${examOngoing ? " refs-arrow--locked" : ""}`}>→</div>
         </button>
 
+        {/* ── Assessment ── */}
         <div className="section-label section-label--mt">🏆 Assessment</div>
         <button
           className={`final-card${finalUnlocked ? "" : " final-card--locked"}`}
@@ -317,6 +325,7 @@ export default function App() {
           </>
         )}
 
+        {/* ── Leaderboard ── */}
         <div className="section-label section-label--mt">📊 Student Results</div>
         <button className="leaderboard-card" onClick={() => goTo("leaderboard")}>
           <div className="fc-left">
@@ -329,6 +338,7 @@ export default function App() {
           <div className="fc-arrow leaderboard-arrow">→</div>
         </button>
 
+        {/* ── Videos ── */}
         <div className="section-label section-label--mt">🎬 Video References</div>
         <VideoSection />
 
