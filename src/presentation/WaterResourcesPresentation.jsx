@@ -5,11 +5,42 @@
 // the app and the presentation simultaneously, persisted in localStorage.
 //
 // Theme cycle: (default) → light → dark → sepia → pink → mint → (repeat)
+//
+// ── New in this version ───────────────────────────────────────────────────────
+// • scrollToTop() — called on every slide navigation so long slides always
+//   start from the top without the user manually scrolling.
+// • Slide progress persisted in localStorage under "wrm_pres_slide" so users
+//   resume exactly where they left off after navigating away and back.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useState, useEffect, useCallback } from "react";
 import { TTSButton, TTSToolbar } from "../TextToSpeech.jsx";
 import "./WaterResourcesPresentation.css";
+
+// ── scrollToTop — inlined from scrollToTop.js ─────────────────────────────────
+// Covers window, html, and body — all three, because browsers differ on
+// which one is actually the scroll container for a given app.
+function scrollToTop() {
+  window.scrollTo(0, 0);
+  document.documentElement.scrollTop = 0;
+  document.body.scrollTop = 0;
+}
+
+// ── Slide progress persistence ────────────────────────────────────────────────
+const SLIDE_KEY = "wrm_pres_slide";
+
+function loadSlide() {
+  try {
+    const v = parseInt(localStorage.getItem(SLIDE_KEY), 10);
+    return Number.isFinite(v) && v >= 0 && v < SLIDES_LENGTH_PLACEHOLDER
+      ? v
+      : 0;
+  } catch { return 0; }
+}
+
+function saveSlide(idx) {
+  try { localStorage.setItem(SLIDE_KEY, String(idx)); } catch {}
+}
 
 // ── Theme cycle — mirrors App.jsx exactly ─────────────────────────────────────
 const THEME_CYCLE = {
@@ -32,7 +63,6 @@ function readTheme() {
 
 function writeTheme(t) {
   try { localStorage.setItem(THEME_KEY, t); } catch {}
-  // Also update the <html> attribute so global.css picks it up
   document.documentElement.setAttribute("data-theme", t);
 }
 
@@ -348,112 +378,22 @@ const SLIDES = [
     type: "bullets",
   },
   { id: 30, section: "Water Code", title: "PD 1067 – The Water Code of the Philippines", content: "Presidential Decree 1067, signed December 31, 1976, is the foundational law governing all water resources in the Philippines.", type: "section-intro" },
-  {
-    id: 31, section: "Water Code",
-    title: "Objectives of the Water Code",
-    bullets: [
-      "a. To establish the basic principles and framework relating to the appropriation, control and conservation of water resources.",
-      "b. To define the extent of the rights and obligation of water users and owners.",
-      "c. To adopt a basic law governing the ownership, appropriation, utilization, exploitation, development, conservation and protection of water resources.",
-      "d. To identify the administrative agencies which will enforce this Code.",
-    ],
-    type: "bullets",
-  },
-  {
-    id: 32, section: "Water Code",
-    title: "Salient Features of the Water Code (P.D. 1067)",
-    bullets: [
-      "Who is tasked to implement", "Waters as used in the Code", "Underlying Principles.",
-      "Appropriation of Waters", "Uses of Water", "Measure and Limit of Appropriation.",
-      "Instances where permit/authority must be secured from the NWRB.",
-      "Revocation, Modification, Cancellation of Water Permit.",
-      "Transfer of Water Permit", "Conflict Resolution", "Penal Provisions.",
-    ],
-    type: "bullets",
-  },
-  {
-    id: 33, section: "Water Code",
-    title: "Appropriation of Waters — Definition",
-    content: "As used in the Water Code, is the acquisition of rights over the use of waters or the taking or diverting of waters from a natural source in the manner and for any purpose allowed by law.",
-    type: "definition",
-  },
-  {
-    id: 34, section: "Water Code",
-    title: "Waters — Definition",
-    content: "As used in the Water Code, refers to water under the ground, water above the ground, water in the atmosphere and the waters of the sea within the territorial jurisdiction of the Philippines.",
-    type: "definition",
-  },
-  {
-    id: 35, section: "Water Code",
-    title: "Ownership of Waters — Part 1",
-    content: "The following waters belong to the State:",
-    bullets: [
-      "a. Rivers and their natural beds.",
-      "b. Continuous or intermittent waters of springs and brooks running in their natural beds.",
-      "c. Natural lakes and lagoons.",
-      "d. All other categories of surface waters (water flowing over lands, rainfall, agricultural runoff, seepage and drainage).",
-      "e. Atmospheric water.",
-      "f. Subterranean or ground water.",
-      "g. Seawater.",
-    ],
-    type: "bullets",
-  },
-  {
-    id: 36, section: "Water Code",
-    title: "Ownership of Waters — Part 2",
-    content: "The following waters found on private lands also belong to the State:",
-    bullets: [
-      "a. Continuous or intermittent waters rising on such lands.",
-      "b. Lakes and lagoons naturally formed on such lands.",
-      "c. Rain water falling on such lands.",
-      "d. Subterranean or groundwaters.",
-      "e. Waters in swamps and marshes.",
-    ],
-    highlight: '"All waters belong to the State."',
-    type: "bullets",
-  },
-  {
-    id: 37, section: "Water Code",
-    title: "Underlying Principles (Article 3)",
-    bullets: [
-      "a. All waters belong to the State.",
-      "b. All waters that belong to the state cannot be the subject to acquisitive prescription.",
-      "c. The state may allow the use or development of waters by administrative concession.",
-      "d. Utilization, exploitation, development, conservation and protection of water resources shall be subject to the control and regulation of the government through the NWRB.",
-      "e. Preference in the use and development of waters shall consider current usages and most responsive to the changing needs of the country.",
-    ],
-    type: "bullets",
-  },
+  { id: 31, section: "Water Code", title: "Objectives of the Water Code", bullets: ["a. To establish the basic principles and framework relating to the appropriation, control and conservation of water resources.","b. To define the extent of the rights and obligation of water users and owners.","c. To adopt a basic law governing the ownership, appropriation, utilization, exploitation, development, conservation and protection of water resources.","d. To identify the administrative agencies which will enforce this Code."], type: "bullets" },
+  { id: 32, section: "Water Code", title: "Salient Features of the Water Code (P.D. 1067)", bullets: ["Who is tasked to implement","Waters as used in the Code","Underlying Principles.","Appropriation of Waters","Uses of Water","Measure and Limit of Appropriation.","Instances where permit/authority must be secured from the NWRB.","Revocation, Modification, Cancellation of Water Permit.","Transfer of Water Permit","Conflict Resolution","Penal Provisions."], type: "bullets" },
+  { id: 33, section: "Water Code", title: "Appropriation of Waters — Definition", content: "As used in the Water Code, is the acquisition of rights over the use of waters or the taking or diverting of waters from a natural source in the manner and for any purpose allowed by law.", type: "definition" },
+  { id: 34, section: "Water Code", title: "Waters — Definition", content: "As used in the Water Code, refers to water under the ground, water above the ground, water in the atmosphere and the waters of the sea within the territorial jurisdiction of the Philippines.", type: "definition" },
+  { id: 35, section: "Water Code", title: "Ownership of Waters — Part 1", content: "The following waters belong to the State:", bullets: ["a. Rivers and their natural beds.","b. Continuous or intermittent waters of springs and brooks running in their natural beds.","c. Natural lakes and lagoons.","d. All other categories of surface waters (water flowing over lands, rainfall, agricultural runoff, seepage and drainage).","e. Atmospheric water.","f. Subterranean or ground water.","g. Seawater."], type: "bullets" },
+  { id: 36, section: "Water Code", title: "Ownership of Waters — Part 2", content: "The following waters found on private lands also belong to the State:", bullets: ["a. Continuous or intermittent waters rising on such lands.","b. Lakes and lagoons naturally formed on such lands.","c. Rain water falling on such lands.","d. Subterranean or groundwaters.","e. Waters in swamps and marshes."], highlight: '"All waters belong to the State."', type: "bullets" },
+  { id: 37, section: "Water Code", title: "Underlying Principles (Article 3)", bullets: ["a. All waters belong to the State.","b. All waters that belong to the state cannot be the subject to acquisitive prescription.","c. The state may allow the use or development of waters by administrative concession.","d. Utilization, exploitation, development, conservation and protection of water resources shall be subject to the control and regulation of the government through the NWRB.","e. Preference in the use and development of waters shall consider current usages and most responsive to the changing needs of the country."], type: "bullets" },
   { id: 38, section: "Water Code", title: "Article 6 — Domestic Use Without Permit", content: "The owner of the land where the water is found may use the same for domestic purposes without securing a permit, provided that such use shall be registered, when required by the National Water Resources Council.\n\nThe Council, however, may regulate such use when there is (1) wastage, or (2) in times of emergency.", type: "article", articleNo: "Art. 6" },
   { id: 39, section: "Water Code", title: "Article 7 — Cisterns, Tanks or Pools", content: "Subject to the provisions of the Water Code, any person who captures or collects water by means of cisterns, tanks or pools shall have exclusive control over such water and the right to dispose of the same.", type: "article", articleNo: "Art. 7" },
   { id: 40, section: "Water Code", title: "Appropriation of Waters", content: "As used in the Water Code, is the acquisition of rights over the use of waters or the taking or diverting of waters from a natural source in the manner and for any purpose allowed by law.", type: "definition" },
   { id: 41, section: "Water Code", title: "Appropriation of Waters — Uses (I)",   bullets: ["a. Domestic.", "b. Municipal.", "c. Irrigation."], type: "bullets" },
   { id: 42, section: "Water Code", title: "Appropriation of Waters — Uses (II)",  bullets: ["d. Power Generation.", "e. Fisheries.", "f. Livestock Raising."], type: "bullets" },
   { id: 43, section: "Water Code", title: "Appropriation of Waters — Uses (III)", bullets: ["g. Industrial.", "h. Recreational.", "i. Other purposes."], type: "bullets" },
-  {
-    id: 44, section: "Water Code",
-    title: "Regalian Doctrine",
-    content: "The doctrine recognized in our constitution whereby ownership of minerals and all forces of potential energy and other natural resources are reserved for the State.\n\n(See Article XII, Section 2, 1987 Constitution).",
-    type: "definition",
-  },
-  {
-    id: 45, section: "Water Code",
-    title: "Water Right & Water Permit",
-    cards: [
-      { label: "Water Right.",  text: "The privilege granted by the government to appropriate and use water." },
-      { label: "Water Permit.", text: "The document evidencing the water right." },
-    ],
-    type: "cards",
-  },
-  {
-    id: 46, section: "Water Code",
-    title: "General Rule & Exception on Water Permits",
-    cards: [
-      { label: "General Rule.", text: "No person, including government instrumentalities or government-owned corporations, shall appropriate water without a water right, which shall be evidenced by a document known as a water permit." },
-      { label: "Exception.",    text: "Any person may appropriate or use natural bodies of water without securing a water permit for: (1) Appropriation of water by means of hand-carried receptacles; and (2) Bathing or washing, watering or dipping of domestic or farm animals, and navigation of watercrafts or transportation of logs and other objects by floatation." },
-    ],
-    type: "cards",
-  },
+  { id: 44, section: "Water Code", title: "Regalian Doctrine", content: "The doctrine recognized in our constitution whereby ownership of minerals and all forces of potential energy and other natural resources are reserved for the State.\n\n(See Article XII, Section 2, 1987 Constitution).", type: "definition" },
+  { id: 45, section: "Water Code", title: "Water Right & Water Permit", cards: [{ label: "Water Right.", text: "The privilege granted by the government to appropriate and use water." },{ label: "Water Permit.", text: "The document evidencing the water right." }], type: "cards" },
+  { id: 46, section: "Water Code", title: "General Rule & Exception on Water Permits", cards: [{ label: "General Rule.", text: "No person, including government instrumentalities or government-owned corporations, shall appropriate water without a water right, which shall be evidenced by a document known as a water permit." },{ label: "Exception.", text: "Any person may appropriate or use natural bodies of water without securing a water permit for: (1) Appropriation of water by means of hand-carried receptacles; and (2) Bathing or washing, watering or dipping of domestic or farm animals, and navigation of watercrafts or transportation of logs and other objects by floatation." }], type: "cards" },
   { id: 47, section: "Water Code", title: "Utilization of Waters — Part 1", bullets: ["Development of water resources shall consider security of the State, multiple use, beneficial effects, adverse effects and cost of development.","The utilization of subterranean or ground water shall be coordinated with that of surface waters so that a superior right in one is not adversely affected by an inferior right in the other.","Water contained in open canals, aqueducts or reservoirs of private persons may be used by any person for domestic purpose or for watering plants.","Works for the storage, diversion, distribution and utilization of water resources shall contain adequate provision for the prevention and control of diseases."], type: "bullets" },
   { id: 48, section: "Water Code", title: "Utilization of Waters — Part 2", bullets: ["When the reuse of waste water is feasible, it shall be limited as much as possible to uses other than direct human consumption.","Drainage systems shall be so constructed that their outlets are rivers, lakes, the sea, natural bodies of water, or other water courses as may be approved by the proper government agency.","Lower estates are obliged to receive the waters which naturally and without the intervention of man flow from the higher estates.","The banks of rivers and streams and shores of seas and lakes, within a zone of 3 meters in urban areas, 20 meters in agricultural areas, and 40 meters in forest areas are subject to the easement of public use."], type: "bullets" },
   { id: 49, section: "Water Code", title: "Control of Waters", bullets: ["To promote the best interest and coordinated protection of flood plain lands.","The government may construct necessary flood control structures in declared flood control areas.","River beds, sand bars and tidal flats may not be cultivated except upon prior permission.","The impounding of water in ponds or reservoirs may be prohibited by the Council upon consultation with the Department of Health if it is dangerous to public health."], type: "bullets" },
@@ -575,14 +515,18 @@ const SLIDES = [
   { id: 152, section: "Tipid Tubig", title: "Tip 2", content: "Wash dishes right away. Food waste is easier to remove before it dries out. If not, soak plates prior to washing. Savings: 500 to 1,000 Liters every month.", type: "trivia-intro" },
   { id: 153, section: "Tipid Tubig", title: "Tip 3", content: "Take out frozen food in advance to avoid using running water to thaw them.", type: "trivia-intro" },
   { id: 154, section: "Tipid Tubig", title: "Tip 4", content: "Water plants only when necessary. If needed, do this early in the morning or in the late afternoon to reduce evaporation.", type: "trivia-intro" },
-  { id: 155, section: "Closing",    title: "Tip 5", content: "As much as possible, always run the washing machine at full load. Savings: 5-10 Liters every load. Use the proper amount of detergent when washing clothes. Less water for rinsing will be used.", type: "trivia-intro" },
-  { id: 156, section: "Closing",    title: "Tip 6", content: "Take shorter shower. Shortening your shower time by a minute or two will save up to 568 liters per month", type: "trivia-intro" },
-  { id: 157, section: "Closing",    title: "Tip 7", content: "Dispose of tissue paper in the trash and not in the toilet bowl. Flushing it consumes 6 Liters of water.", type: "trivia-intro" },
-  { id: 158, section: "Closing",    title: "Tip 8", content: "Share your water conservation hacks, practices, and tips to others.", type: "trivia-intro" },
-  { id: 159, section: "Closing",    title: "Play your part, be water smart!", content: "Wise Water Use.", type: "trivia-intro" },
-  { id: 160, section: "Closing",    title: "Water Management is a Shared Responsibility", content: "Water management is a shared responsibility that requires everyone to be \"water smart\" to ensure sustainable water for a healthy nation.", type: "closing" },
-  { id: 161, section: "Closing",    title: "Thank You!", content: "DENR – National Capital Region\nWater Resources Utilization Section, LPDD", type: "cover" },
+  { id: 155, section: "Closing", title: "Tip 5", content: "As much as possible, always run the washing machine at full load. Savings: 5-10 Liters every load. Use the proper amount of detergent when washing clothes. Less water for rinsing will be used.", type: "trivia-intro" },
+  { id: 156, section: "Closing", title: "Tip 6", content: "Take shorter shower. Shortening your shower time by a minute or two will save up to 568 liters per month", type: "trivia-intro" },
+  { id: 157, section: "Closing", title: "Tip 7", content: "Dispose of tissue paper in the trash and not in the toilet bowl. Flushing it consumes 6 Liters of water.", type: "trivia-intro" },
+  { id: 158, section: "Closing", title: "Tip 8", content: "Share your water conservation hacks, practices, and tips to others.", type: "trivia-intro" },
+  { id: 159, section: "Closing", title: "Play your part, be water smart!", content: "Wise Water Use.", type: "trivia-intro" },
+  { id: 160, section: "Closing", title: "Water Management is a Shared Responsibility", content: "Water management is a shared responsibility that requires everyone to be \"water smart\" to ensure sustainable water for a healthy nation.", type: "closing" },
+  { id: 161, section: "Closing", title: "Thank You!", content: "DENR – National Capital Region\nWater Resources Utilization Section, LPDD", type: "cover" },
 ];
+
+// ── Now that SLIDES is defined, patch loadSlide to use real length ─────────────
+// (The placeholder above was just to keep the function near its declaration;
+//  at runtime this function is only called inside useState() after SLIDES exists.)
 
 // ── Section accent colors ─────────────────────────────────────────────────────
 const SECTION_COLORS = {
@@ -610,6 +554,14 @@ const SECTION_COLORS = {
 
 const SECTIONS = [...new Set(SLIDES.map(s => s.section))];
 
+// ── Real loadSlide (uses SLIDES.length now that SLIDES is defined) ─────────────
+function loadSlideIdx() {
+  try {
+    const v = parseInt(localStorage.getItem(SLIDE_KEY), 10);
+    return Number.isFinite(v) && v >= 0 && v < SLIDES.length ? v : 0;
+  } catch { return 0; }
+}
+
 // ── Build TTS text ────────────────────────────────────────────────────────────
 function buildTTSText(slide) {
   const parts = [`Slide ${slide.id}. ${slide.title}.`];
@@ -636,9 +588,7 @@ function SlideContent({ slide }) {
         {slide.section}
       </div>
 
-      <h2 className="slide-title" style={{ borderLeftColor: color }}>
-        {slide.title}
-      </h2>
+      <h2 className="slide-title" style={{ borderLeftColor: color }}>{slide.title}</h2>
 
       {slide.subtitle && <p className="slide-subtitle">{slide.subtitle}</p>}
 
@@ -737,15 +687,17 @@ function SlideContent({ slide }) {
 
 // ── Main Component ─────────────────────────────────────────────────────────────
 export default function WaterResourcesPresentation({ onBack }) {
-  // Read theme from the global html attribute (set by App.jsx via localStorage)
   const [theme,    setTheme]    = useState(readTheme);
-  const [current,  setCurrent]  = useState(0);
+
+  // ── Slide index: restored from localStorage on first render ─────────────────
+  const [current,  setCurrent]  = useState(loadSlideIdx);
+
   const [navOpen,  setNavOpen]  = useState(false);
   const [search,   setSearch]   = useState("");
   const [filter,   setFilter]   = useState("All");
   const [slideKey, setSlideKey] = useState(0);
 
-  // Keep local state in sync whenever another tab / the app changes theme
+  // Keep local theme state in sync with the global html attribute
   useEffect(() => {
     const observer = new MutationObserver(() => {
       const t = document.documentElement.getAttribute("data-theme");
@@ -767,13 +719,21 @@ export default function WaterResourcesPresentation({ onBack }) {
   const slide   = SLIDES[current];
   const ttsText = buildTTSText(slide);
 
+  // ── go() — navigate to a slide, scroll to top, persist progress ─────────────
   const go = useCallback((idx) => {
     const next = Math.max(0, Math.min(SLIDES.length - 1, idx));
     setCurrent(next);
-    setSlideKey(k => k + 1);
+    setSlideKey(k => k + 1);  // re-triggers CSS animation
     setNavOpen(false);
+
+    // Scroll to the top of the page so long slides always start at the top
+    scrollToTop();
+
+    // Persist the current slide index so users resume here next visit
+    saveSlide(next);
   }, []);
 
+  // Keyboard navigation
   useEffect(() => {
     const onKey = (e) => {
       if (e.key === "ArrowRight" || e.key === "ArrowDown") go(current + 1);
@@ -784,6 +744,7 @@ export default function WaterResourcesPresentation({ onBack }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [current, go]);
 
+  // Filter slides for nav panel
   const filteredSlides = SLIDES.filter(s => {
     const matchSection = filter === "All" || s.section === filter;
     const matchSearch  = !search ||
@@ -811,7 +772,6 @@ export default function WaterResourcesPresentation({ onBack }) {
         </div>
 
         <div className="pres-header-right">
-          {/* Theme cycle button — same cycle as the app */}
           <button className="pres-theme-btn" onClick={cycleTheme} title="Switch theme">
             <span className="pres-theme-btn-icon">{themeMeta.icon}</span>
             <span>{themeMeta.label}</span>
