@@ -195,8 +195,14 @@ export const SLIDES = [
     id: 18, section: "NWRB",
     title: "2. Resource Regulation & 3. Economic Regulation",
     cards: [
-      { label: "Resource Regulation.", text: "Issues Water Permit • Resolves Water Use Conflicts • Monitors compliance of conditions of water permit/conditional water permit and other policies." },
-      { label: "Economic Regulation.", text: "Protects consumers and safeguards the economic viability of water utilities: LGU-run water utilities, Rural Waterworks Associations, Water Cooperatives, Private Water Utilities, Bulk Water Suppliers, Water Peddlers • Grants Certificate of Public Convenience (CPC) • Sets water tariffs of private water providers • Inspects and tests water meters." },
+      { 
+        label: "Resource Regulation.", 
+        text: "• Issues Water Permit\n• Resolves Water Use Conflicts\n• Monitors compliance of conditions" 
+      },
+      { 
+        label: "Economic Regulation.", 
+        text: "Protects consumers and safeguards water utilities:\n• LGU-run utilities\n• Rural Waterworks\n• Private Water Utilities\n• Bulk Water Suppliers\n\nTasks:\n• Grants CPC\n• Sets water tariffs\n• Inspects water meters" 
+      },
     ],
     type: "cards",
   },
@@ -357,7 +363,7 @@ export const SLIDES = [
   { id: 71, section: "Water Permit", title: "WPA Submission — 6 Copies",   content: "Water Permit Application forms must be submitted in 6 copies for certain permit types.", type: "statement" },
   { id: 72, section: "Water Permit", title: "WPA Submission — 11 Copies",  content: "Water Permit Application forms must be submitted in 11 copies for certain permit types.", type: "statement" },
   { id: 73, section: "Water Permit", title: "Conditional Water Permit (CWP)", content: "Upon approval of the Water Permit Application and compliance with requirements, a Conditional Water Permit (CWP) is issued pending full compliance with all conditions set by the NWRB.", type: "statement" },
-  { id: 74, section: "Water Permit", title: "WPA Processing Summary", cards: [{ label: "Acceptance.", text: "Only WPAs with basic requirements will be accepted: Proof of ownership, Vicinity map, Certificate of Registration." },{ label: "Fees.", text: "₱7,200.00 — All other purposes\n₱550.00 — Level 1 and 2 Irrigation (Communal)." },{ label: "Evaluation Factors.", text: "Prior permits granted • Availability of water • Water requirement • Protest filed, if any • Possible adverse effect." },{ label: "Process.", text: "15-day posting • 15-day waiting period • E-mail of notices • DPWH Report • Tracer Letter • NWRB Staff to conduct investigation • Submit compliance • Valid for 1 year (may be extended)." },{ label: "Final Steps.", text: "Conduct hearing and investigation → Resolution / decision." }], type: "cards" },
+  { id: 74, section: "Water Permit", title: "WPA Processing Summary", cards: [{ label: "Acceptance.", text: "Only WPAs with basic requirements will be accepted: Proof of ownership, Vicinity map, Certificate of Registration." },{ label: "Fees.", text: "₱7,200.00 — All other purposes\n₱550.00 — Level 1 and 2 Irrigation (Communal)." },{ label: "Evaluation Factors.", text: "Prior permits granted \n• Availability of water \n• Water requirement \n• Protest filed, if any \n• Possible adverse effect." },{ label: "Process.", text: "15-day posting \n• 15-day waiting period \n• E-mail of notices \n• DPWH Report \n• Tracer Letter \n• NWRB Staff to conduct investigation \n• Submit compliance \n• Valid for 1 year (may be extended)." },{ label: "Final Steps.", text: "Conduct hearing and investigation → Resolution / decision." }], type: "cards" },
   { id: 75, section: "Water Permit", title: "Fees and Charges — Part 1", content: "NWRB fees and charges schedule for Water Permit Applications and related services.", type: "statement" },
   { id: 76, section: "Water Permit", title: "Fees and Charges — Part 2", content: "Additional NWRB fees and charges for other water-related applications and services.", type: "statement" },
   { id: 77, section: "Water Permit", title: "Conditional Water Permit (CWP) — Conditions Part 1", bullets: ["Upon receipt of the CWP, the grantee shall manifest in writing his acceptance thereof with all its terms and conditions.","Within 1 year from the date of approval, the grantee shall submit a copy of the plans and specifications for the diversion works, pump structure, water measuring device and water distribution system.","File an application for a Certificate of Public Convenience (CPC), if applicable."], type: "bullets" },
