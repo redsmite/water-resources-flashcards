@@ -41,9 +41,13 @@ Under Economic Regulation, the NWRB sets water tariffs for private water provide
 • Vice-Chairperson: Secretary of Department of Economy, Planning and Development (DEPDev)
 • Member: Secretary of the Department of Science and Technology (DOST)
 
-⚖️ According to the Water Code, the two entities currently deputized as agents of the NWRB are:
+⚖️ These entities are currently deputized agents of the National Water Resources Board (NWRB):
 • DPWH (Department of Public Works and Highways)
 • NIA (National Irrigation Administration)
+• DENR Regional Offices (Department of Environment and Natural Resources)
+• some Local Government Units (LGUs)
+• select Water Districts (WDs)
+
 
 💡 The NWRB also approves monthly water releases from Angat Dam for Metro Manila's water supply and irrigation needs. This is one of its most operationally critical functions.`,
       },
@@ -577,7 +581,7 @@ const FLASHCARDS = [
   { q: "Who serves as the Chair of the NWRB Board?", a: "The Secretary of the Department of Environment and Natural Resources (DENR)." },
   { q: "Which official serves as the Vice Chair of the NWRB Board?", a: "The Secretary of Department of Economy, Planning, and Development (DEPDev)." },
   { q: "In the NWRB Board, which agency head represents science and technology?", a: "Secretary of the Department of Science and Technology (DOST)." },
-  { q: "According to the Water Code, which two entities are currently deputized agents of the NWRB?", a: "The DPWH (Department of Public Works and Highways) and the NIA (National Irrigation Administration)." },
+  { q: "Which entities are currently deputized agents of the National Water Resources Board (NWRB)?", a: "DPWH, NIA, DENR Regional Offices, some LGUs and select Water Districts." },
   { q: "Complete the vision: The NWRB's vision is 'Sustainable Water for a _____ Nation.'", a: "Healthy." },
   { q: "What are the three major functions of the NWRB?", a: "Policy Formulation and Coordination, Resource Regulation, and Economic Regulation." },
   { q: "In the context of the NWRB, what does 'IWRM' stand for?", a: "Integrated Water Resources Management." },
