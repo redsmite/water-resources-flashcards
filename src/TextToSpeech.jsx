@@ -334,6 +334,8 @@ const toolbarBtn = (bg) => ({
   cursor: "pointer",
   transition: "opacity .15s",
   opacity: 0.9,
+  zIndex: 999,
+  marginBottom: "15px",
 });
 
 const indicatorStyle = {

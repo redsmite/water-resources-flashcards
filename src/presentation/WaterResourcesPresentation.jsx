@@ -14,6 +14,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { TTSButton, TTSToolbar } from "../TextToSpeech.jsx";
 import { SLIDES, SECTION_COLORS, SECTIONS } from "./slidesData.js";
 import "./WaterResourcesPresentation.css";
+import { SLIDE_ILLUSTRATIONS } from "./slideIllustrations.jsx";
 
 // ── Utilities ─────────────────────────────────────────────────────────────────
 function scrollToTop() {
@@ -347,12 +348,95 @@ function buildTTSText(slide) {
   return parts.join(" ");
 }
 
+// ── PATCH: Add ENRABadge component + wire into SlideContent ──────────────────
+//
+// 1. Add this component ABOVE the SlideContent function definition:
+// ─────────────────────────────────────────────────────────────────────────────
+
+function ENRABadge() {
+  return (
+    <div className="slide-enra-badge" aria-hidden="true">
+      <span className="slide-enra-badge__text">ENR Academy</span>
+      {/* Gear + person icon — matches the PPT logo style */}
+      <svg
+        className="slide-enra-badge__icon"
+        viewBox="0 0 48 48"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        {/* Person / group silhouette */}
+        <circle cx="20" cy="16" r="6" fill="#1565C0" opacity="0.7"/>
+        <path d="M8 36 C8 28 14 24 20 24 C26 24 32 28 32 36" fill="#1565C0" opacity="0.65"/>
+        <circle cx="30" cy="14" r="4.5" fill="#2ECC40" opacity="0.7"/>
+        <path d="M22 34 C22 27.5 26.5 24 30 24 C37 24 40 27.5 40 34" fill="#2ECC40" opacity="0.6"/>
+
+        {/* Gear ring around group */}
+        <circle cx="24" cy="26" r="18" fill="none" stroke="#4A7C59" strokeWidth="2" opacity="0.4"/>
+        {/* Gear teeth — 8 spokes */}
+        {[0, 45, 90, 135, 180, 225, 270, 315].map((deg, i) => {
+          const r = (Math.PI * deg) / 180;
+          const x1 = 24 + Math.cos(r) * 17;
+          const y1 = 26 + Math.sin(r) * 17;
+          const x2 = 24 + Math.cos(r) * 21;
+          const y2 = 26 + Math.sin(r) * 21;
+          return (
+            <line
+              key={i}
+              x1={x1} y1={y1} x2={x2} y2={y2}
+              stroke="#4A7C59"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              opacity="0.45"
+            />
+          );
+        })}
+      </svg>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 2. Inside the SlideContent return, find the .slide-inner div and add
+//    <ENRABadge /> as its LAST child (before the closing </div> of slide-inner).
+//
+// FIND in WaterResourcesPresentation.jsx:
+// ─────────────────────────────────────────────────────────────────────────────
+
+/*
+        <div className="slide-inner">
+          <SlideContent slide={slide} entranceKey={slideKey} />
+          <div className="slide-tts-row">
+            <TTSToolbar text={ttsText} label="🔊 Read Slide" />
+          </div>
+        </div>
+*/
+
 // ── SlideContent ───────────────────────────────────────────────────────────────
 function SlideContent({ slide, entranceKey }) {
   const color = SECTION_COLORS[slide.section] || "#065A82";
 
+  // Resolve illustration component for this slide
+  const IllustrationComponent = SLIDE_ILLUSTRATIONS[slide.id] ?? null;
+
+  // Hero slides: cover (id=1) and closing (id=160,161) put illustration above title
+  const isHero = slide.type === "cover" || slide.type === "closing";
+
+  // Accent slides: little-text slides — illustration floats beside content
+  // (any slide that has no bullets, no cards, no stats, no table, no timeline)
+  const isAccent = !isHero && IllustrationComponent && (
+    !slide.bullets && !slide.cards && !slide.stats &&
+    !slide.table && !slide.timeline && !slide.subBullets
+  );
+
   return (
     <div className="slide-content" key={entranceKey}>
+
+      {/* ── HERO illustration (above title) ── */}
+      {IllustrationComponent && isHero && (
+        <div className="slide-illustration slide-illustration--hero">
+          <IllustrationComponent />
+        </div>
+      )}
 
       {/* Badge with shimmer sweep */}
       <div className="slide-section-badge" style={{ background: color + "22", color, borderColor: color + "44" }}>
@@ -364,6 +448,20 @@ function SlideContent({ slide, entranceKey }) {
       <h2 className="slide-title" style={{ borderLeftColor: color, "--tc": color }}>{slide.title}</h2>
 
       {slide.subtitle && <p className="slide-subtitle">{slide.subtitle}</p>}
+
+      {/* ── ACCENT illustration (floats right beside content on wide screens) ── */}
+      {IllustrationComponent && isAccent && (
+        <div className="slide-illustration slide-illustration--accent">
+          <IllustrationComponent />
+        </div>
+      )}
+
+      {/* ── STANDARD illustration (below title, above content) ── */}
+      {IllustrationComponent && !isHero && !isAccent && (
+        <div className="slide-illustration">
+          <IllustrationComponent />
+        </div>
+      )}
 
       {/* Highlight with typewriter */}
       {slide.highlight && (
@@ -428,7 +526,6 @@ function SlideContent({ slide, entranceKey }) {
     </div>
   );
 }
-
 // ── Main Component ─────────────────────────────────────────────────────────────
 export default function WaterResourcesPresentation({ onBack }) {
   const [theme,       setTheme]       = useState(readTheme);
@@ -519,12 +616,13 @@ export default function WaterResourcesPresentation({ onBack }) {
       <main className="pres-main">
         <div className="pres-slide" style={{ position:"relative" }} key={slideKey}>
           <ParticleOverlay theme={activeTheme} active={particles} onDone={() => setParticles(false)} />
-          <div className="slide-inner">
-            <SlideContent slide={slide} entranceKey={slideKey} />
-            <div className="slide-tts-row">
-              <TTSToolbar text={ttsText} label="🔊 Read Slide" />
+            <div className="slide-inner">
+              <SlideContent slide={slide} entranceKey={slideKey} />
+              <div className="slide-tts-row">
+                <TTSToolbar text={ttsText} label="🔊 Read Slide" />
+              </div>
+              <ENRABadge />
             </div>
-          </div>
         </div>
       </main>
 
