@@ -588,6 +588,14 @@ export default function WaterResourcesPresentation({ onBack }) {
 
   return (
     <div className="pres-root">
+      {/* Hide / remove theme-toggle icon on this particular page */}
+      <style>
+        {`
+          .theme-toggle { 
+            display: none !important; 
+          }
+        `}
+      </style>
 
       <header className="pres-header">
         <div className="pres-header-left">
