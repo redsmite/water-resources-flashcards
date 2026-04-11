@@ -3,7 +3,7 @@
 // Each theme has its own fully animated landscape:
 //   light  → ocean with ripple water effects
 //   dark   → galaxy with aurora borealis
-//   sepia  → wood & aged paper with dust motes
+//   sepia  → desert, sand dune and sun glaring 
 //   pink   → cherry blossom tree with falling petals
 //   mint   → lush forest with falling leaves
 //   default→ (same as light ocean)
@@ -526,116 +526,86 @@ function GalaxyLandscape() {
   );
 }
 
-// ── 3. SEPIA / WOOD & PAPER ───────────────────────────────────────────────────
+// ── 3. SEPIA / SAND DUNE THEME ────────────────────────────────────────────────
 function SepiаLandscape() {
-  const motes = Array.from({length:18},(_,i)=>({
-    cx: (i*53+20)%780 + 10,
-    cy: 80 + (i*31)%180,
-    delay: (i*0.55)%5,
-    dur: 5 + (i%4)*2,
+  const particles = Array.from({ length: 20 }, (_, i) => ({
+    cx: (i * 137) % 800,
+    cy: (i * 93) % 320,
+    r: 0.8 + (i % 2),
+    delay: (i * 0.5) % 5,
+    dur: 4 + (i % 4) * 2,
   }));
+
   return (
     <svg width="100%" viewBox="0 0 800 320" preserveAspectRatio="xMidYMid slice"
-         style={{ position:"absolute", inset:0, width:"100%", height:"100%", pointerEvents:"none" }}>
+         style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none" }}>
       <defs>
-        <linearGradient id="sp-bg" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%"   stopColor="#EFEBE9"/>
-          <stop offset="50%"  stopColor="#F5F0E8"/>
-          <stop offset="100%" stopColor="#E8D5B7"/>
+        {/* Softer Sky Gradient */}
+        <linearGradient id="desert-sky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#DBC1AD" />
+          <stop offset="100%" stopColor="#F5E6BE" />
         </linearGradient>
-        <linearGradient id="sp-table" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%"   stopColor="#6D4C41"/>
-          <stop offset="100%" stopColor="#4E342E"/>
+
+        {/* Soft Sun Aura Gradient */}
+        <radialGradient id="sun-aura" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#FFF9E1" stopOpacity="0.5" />
+          <stop offset="40%" stopColor="#F4D35E" stopOpacity="0.15" />
+          <stop offset="100%" stopColor="#F4D35E" stopOpacity="0" />
+        </radialGradient>
+
+        {/* Dune Gradient */}
+        <linearGradient id="dune-grad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="#C2B280" />
+          <stop offset="50%" stopColor="#D2B48C" />
+          <stop offset="100%" stopColor="#B69B73" />
         </linearGradient>
-        {/* Wood grain filter */}
-        <filter id="sp-grain">
-          <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" seed="2"/>
-          <feColorMatrix type="matrix" values="0 0 0 0 0.4  0 0 0 0 0.25  0 0 0 0 0.1  0 0 0 0.08 0"/>
+
+        {/* Fine Sand Filter */}
+        <filter id="sand-grain">
+          <feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="2" seed="10"/>
+          <feColorMatrix type="matrix" values="0 0 0 0 0.6  0 0 0 0 0.5  0 0 0 0 0.4  0 0 0 0.08 0"/>
         </filter>
       </defs>
 
-      {/* Aged paper background */}
-      <rect width="800" height="320" fill="url(#sp-bg)"/>
-      {/* Paper texture overlay */}
-      <rect width="800" height="320" filter="url(#sp-grain)" opacity="0.35"/>
+      {/* Background Sky */}
+      <rect width="800" height="320" fill="url(#desert-sky)" />
 
-      {/* Vignette corners */}
-      <radialGradient id="sp-vig" cx="0" cy="0" r="1">
-        <stop offset="0%"   stopColor="#8D6E63" stopOpacity="0"/>
-        <stop offset="100%" stopColor="#4E342E" stopOpacity="0.35"/>
-      </radialGradient>
-      <rect width="800" height="320" fill="url(#sp-vig)" opacity="0.40"/>
+      {/* The Subtle Sun & Aura */}
+      <g opacity="0.8">
+        {/* Large outer aura */}
+        <circle cx="400" cy="110" r="180" fill="url(#sun-aura)" />
+        {/* Secondary soft glow */}
+        <circle cx="400" cy="110" r="80" fill="#FFF9E1" opacity="0.2" />
+        {/* Muted sun core (No pure white) */}
+        <circle cx="400" cy="110" r="25" fill="#FEF9E7" opacity="0.6" />
+      </g>
+      
+      {/* Distant Dunes */}
+      <path d="M0 190 Q200 160 400 195 T800 170 L800 320 L0 320 Z" fill="#CBB48E" opacity="0.5" />
+      
+      {/* Midground Dunes */}
+      <path d="M-100 230 Q150 180 400 230 Q650 280 900 210 L900 320 L-100 320 Z" fill="url(#dune-grad)" />
 
-      {/* Wood table surface */}
-      <path d="M0 240 L800 240 L800 320 L0 320 Z" fill="url(#sp-table)"/>
-      {/* Wood grain lines */}
-      {[0,1,2,3,4,5].map(i=>(
-        <path key={i}
-          d={`M0 ${248+i*12} Q200 ${244+i*12} 400 ${250+i*12} Q600 ${256+i*12} 800 ${248+i*12}`}
-          fill="none" stroke="#5D4037" strokeWidth="1" opacity="0.22"/>
-      ))}
+      {/* Foreground Dune with subtle shadow curve */}
+      <path d="M0 270 Q300 240 600 290 Q750 315 900 260 L900 320 L0 320 Z" fill="#A89268" />
 
-      {/* Stack of old books */}
-      <rect x="60"  y="180" width="70" height="18" rx="2" fill="#8D6E63"/>
-      <rect x="55"  y="196" width="78" height="20" rx="2" fill="#6D4C41"/>
-      <rect x="58"  y="214" width="74" height="22" rx="2" fill="#795548"/>
-      {/* Book spines */}
-      <rect x="57"  y="180" width="6" height="58" rx="1" fill="#A1887F"/>
-      <rect x="55"  y="196" width="5" height="40" rx="1" fill="#8D6E63"/>
+      {/* Atmospheric Sand Grain */}
+      <rect width="800" height="320" filter="url(#sand-grain)" pointerEvents="none" />
 
-      {/* Open book / manuscript */}
-      <path d="M160 200 Q240 196 320 200 L320 238 Q240 234 160 238 Z" fill="#FDF6EC"/>
-      <path d="M320 200 Q400 204 480 200 L480 238 Q400 242 320 238 Z" fill="#F5EFE0"/>
-      <line x1="320" y1="200" x2="320" y2="238" stroke="#C8A87A" strokeWidth="1.5"/>
-      {/* Text lines on book */}
-      {[210,218,226,234].map(y=>(
-        <g key={y}>
-          <line x1={176} y1={y} x2={308} y2={y} stroke="#8D6E63" strokeWidth="0.8" opacity="0.45"/>
-          <line x1={336} y1={y} x2={464} y2={y} stroke="#8D6E63" strokeWidth="0.8" opacity="0.40"/>
-        </g>
-      ))}
-
-      {/* Quill pen */}
-      <path d="M500 155 Q540 130 570 108 Q580 100 590 96"
-            fill="none" stroke="#8D6E63" strokeWidth="2.5" strokeLinecap="round"/>
-      <path d="M590 96 Q600 88 596 100 Q592 112 580 116 Q568 120 560 110 Q572 106 580 98 Q586 92 590 96Z"
-            fill="#EFEBE9" stroke="#8D6E63" strokeWidth="1.5"/>
-      <path d="M500 155 Q498 165 494 180 L499 183 Q504 168 504 156 Z"
-            fill="#5D4037" opacity="0.60"/>
-
-      {/* Candle */}
-      <rect x="680" y="196" width="18" height="44" rx="3" fill="#FFF8E1" stroke="#F5DEB3" strokeWidth="1"/>
-      <ellipse cx="689" cy="197" rx="9" ry="5" fill="#FAFAFA"/>
-      <line x1="689" y1="197" x2="689" y2="186" stroke="#FFA000" strokeWidth="2"/>
-      <ellipse cx="689" cy="184" rx="5" ry="8" fill="#FFA000" opacity="0.55"
-               style={{animation:"shimmer-h 1.2s ease-in-out infinite"}}/>
-      <ellipse cx="689" cy="182" rx="3" ry="5" fill="#FFCC02" opacity="0.70"
-               style={{animation:"shimmer-h 0.8s ease-in-out infinite", animationDelay:"0.2s"}}/>
-      {/* Candlelight glow */}
-      <circle cx="689" cy="188" r="28" fill="#FFA000" opacity="0.08"
-              style={{animation:"shimmer-h 1.5s ease-in-out infinite"}}/>
-
-      {/* Horizon mountain sketch */}
-      <path d="M0 200 Q80 168 160 200 Q220 222 280 185 Q340 148 400 190 Q460 232 520 196 Q580 160 640 200 Q720 240 800 198 L800 240 L0 240 Z"
-            fill="#BCAAA4" opacity="0.32"/>
-
-      {/* Dust motes */}
-      {motes.map((m,i)=>(
-        <circle key={i} cx={m.cx} cy={m.cy} r="2.5"
-                fill="#8D6E63" opacity="0"
+      {/* Drifting Heat/Dust Particles */}
+      {particles.map((p, i) => (
+        <circle key={i} cx={p.cx} cy={p.cy} r={p.r}
+                fill="#E9C46A" 
+                opacity="0"
                 style={{
-                  animation:`mote-float ${m.dur}s ease-in-out infinite`,
-                  animationDelay:`${m.delay}s`
-                }}/>
+                  filter: "blur(1.5px)", // Softer edges
+                  animation: `mote-float ${p.dur}s ease-in-out infinite`,
+                  animationDelay: `${p.delay}s`
+                }} />
       ))}
 
-      {/* Page glow lines (manuscript decoration) */}
-      <path d="M150 175 Q400 168 650 175" fill="none" stroke="#C8A87A" strokeWidth="1"
-            opacity="0" style={{animation:"page-turn-glow 4s ease-in-out infinite"}}/>
-
-      {/* Distant birds soaring past the sepia horizon */}
-      <BirdFlock color="#6D4C41" yBase={62} cycleTime={22}/>
-      <BirdFlock color="#795548" yBase={44} cycleTime={30}/>
+      {/* Distant soaring birds */}
+      <BirdFlock color="#7E685A" yBase={70} cycleTime={32}/>
     </svg>
   );
 }
