@@ -20,48 +20,6 @@ const T_PURPLE = "#311b92";
 const T_ORANGE = "#bf360c";
 const T_RED    = "#b71c1c";
 
-// ── Slide 1 — Cover ───────────────────────────────────────────────────────────
-export function IllustrationCover() {
-  return (
-    <svg width="100%" viewBox="0 0 680 230" role="img">
-      <title>Water globe — cover illustration</title>
-      <desc>Stylised Earth globe with continents, droplets and ripple rings</desc>
-      <defs>
-        <clipPath id="sl1-gc"><circle cx="340" cy="115" r="90"/></clipPath>
-      </defs>
-      <circle cx="340" cy="115" r="108" fill="none" stroke="#1565C0" strokeWidth="1" opacity="0.18"/>
-      <circle cx="340" cy="115" r="90" fill="#1565C0" opacity="0.20"/>
-      <g clipPath="url(#sl1-gc)">
-        <ellipse cx="308" cy="82"  rx="40" ry="30" fill="#2E7D32" opacity="0.70"/>
-        <ellipse cx="276" cy="108" rx="20" ry="25" fill="#2E7D32" opacity="0.65"/>
-        <ellipse cx="378" cy="96"  rx="26" ry="20" fill="#2E7D32" opacity="0.60"/>
-        <ellipse cx="360" cy="148" rx="22" ry="14" fill="#2E7D32" opacity="0.55"/>
-        <ellipse cx="315" cy="148" rx="12" ry="8"  fill="#2E7D32" opacity="0.45"/>
-        <rect x="250" y="152" width="180" height="5" rx="2" fill="#4FC3F7" opacity="0.30"/>
-      </g>
-      <g clipPath="url(#sl1-gc)" opacity="0.14">
-        <ellipse cx="340" cy="115" rx="90" ry="32" fill="none" stroke="#fff" strokeWidth="1"/>
-        <ellipse cx="340" cy="78"  rx="76" ry="20" fill="none" stroke="#fff" strokeWidth="1"/>
-        <ellipse cx="340" cy="150" rx="76" ry="20" fill="none" stroke="#fff" strokeWidth="1"/>
-        <line x1="340" y1="25" x2="340" y2="205" stroke="#fff" strokeWidth="1"/>
-        <line x1="250" y1="115" x2="430" y2="115" stroke="#fff" strokeWidth="1"/>
-      </g>
-      <circle cx="340" cy="115" r="90" fill="none" stroke="#1565C0" strokeWidth="2" opacity="0.60"/>
-      <ellipse cx="196" cy="73"  rx="8" ry="11" fill="#1565C0" opacity="0.65"/>
-      <path d="M196 62 Q196 56 200 59 Q205 62 196 62Z" fill="#1565C0" opacity="0.70"/>
-      <ellipse cx="492" cy="82"  rx="8" ry="11" fill="#1565C0" opacity="0.65"/>
-      <path d="M492 71 Q492 65 496 68 Q501 71 492 71Z" fill="#1565C0" opacity="0.70"/>
-      <ellipse cx="155" cy="138" rx="6" ry="8"  fill="#1565C0" opacity="0.55"/>
-      <ellipse cx="524" cy="148" rx="6" ry="8"  fill="#1565C0" opacity="0.55"/>
-      <LabelBg x={340} y={216} w={244} h={20} rx={4}/>
-      <text x="340" y="215" textAnchor="middle" fontSize="11"
-            fontFamily="sans-serif" fontWeight="600" fill={T_TEAL}>
-        DENR – NCR · Water Resources Utilization Section
-      </text>
-    </svg>
-  );
-}
-
 // ── Slides 4 / 5 / 11 — NWRB seal ────────────────────────────────────────────
 export function IllustrationNWRB() {
   return (
@@ -559,53 +517,6 @@ export function IllustrationSharedResponsibility() {
           </g>
         );
       })}
-    </svg>
-  );
-}
-
-// ── Slide 161 — Closing ───────────────────────────────────────────────────────
-export function IllustrationClosing() {
-  const rays=[0,30,60,90,120,150,180,210,240,270,300,330];
-  return (
-    <svg width="100%" viewBox="0 0 680 216" role="img">
-      <title>Thank you — Sustainable water for a healthy nation</title>
-      <desc>Sunrise over ocean waves with DENR leaf motif</desc>
-      <circle cx="340" cy="95" r="60" fill="none" stroke="#065A82" strokeWidth="1" opacity="0.12"/>
-      <circle cx="340" cy="95" r="44" fill="#065A82" opacity="0.10"/>
-      <circle cx="340" cy="95" r="28" fill="#065A82" opacity="0.20"/>
-      <circle cx="340" cy="95" r="14" fill="#065A82" opacity="0.38"/>
-      <g stroke="#065A82" strokeWidth="1.5" strokeLinecap="round" opacity="0.28">
-        {rays.map((deg,i)=>{
-          const r=(Math.PI*deg)/180;
-          return <line key={i}
-                       x1={340+Math.cos(r)*64} y1={95+Math.sin(r)*64}
-                       x2={340+Math.cos(r)*75} y2={95+Math.sin(r)*75}/>;
-        })}
-      </g>
-      <path d="M340 83 Q360 72 370 90 Q360 104 340 108 Q330 103 332 88 Q336 74 340 83 Z"
-            fill="#1B9A6B" opacity="0.70"/>
-      <line x1="340" y1="83" x2="340" y2="108" stroke="#1B9A6B" strokeWidth="1"
-            strokeLinecap="round" opacity="0.55"/>
-      {/* Waves */}
-      <path d="M0 148 Q85 134 170 148 Q255 163 340 148 Q425 134 510 148 Q595 163 680 148 L680 216 L0 216 Z"
-            fill="#065A82" opacity="0.18"/>
-      <path d="M0 160 Q90 148 185 160 Q280 174 370 160 Q460 148 560 160 Q630 166 680 161 L680 216 L0 216 Z"
-            fill="#065A82" opacity="0.28"/>
-      <path d="M0 172 Q100 161 210 172 Q320 185 430 172 Q540 161 640 172 L680 176 L680 216 L0 216 Z"
-            fill="#065A82" opacity="0.42"/>
-      <path d="M0 146 Q85 135 170 146 Q255 158 340 146 Q425 135 510 146 Q595 158 680 146"
-            fill="none" stroke="#4ACBF0" strokeWidth="1.2" opacity="0.38"/>
-      {/* Droplets */}
-      <ellipse cx="114" cy="122" rx="7" ry="9"  fill="#4ACBF0" opacity="0.50"/>
-      <ellipse cx="204" cy="108" rx="5" ry="7"  fill="#4ACBF0" opacity="0.42"/>
-      <ellipse cx="470" cy="116" rx="7" ry="9"  fill="#4ACBF0" opacity="0.50"/>
-      <ellipse cx="566" cy="104" rx="5" ry="6.5" fill="#4ACBF0" opacity="0.42"/>
-      {/* Tagline */}
-      <rect x="150" y="200" width="380" height="20" rx="4" fill="rgba(255,255,255,0.85)"/>
-      <text x="340" y="215" textAnchor="middle" fontSize="12"
-            fontFamily="sans-serif" fontWeight="700" fill={T_TEAL} letterSpacing="0.5">
-        Sustainable Water for a Healthy Nation
-      </text>
     </svg>
   );
 }
@@ -2912,7 +2823,7 @@ export function IllustrationWaterSmart() {
 
 // ── Export map ────────────────────────────────────────────────────────────────
 export const SLIDE_ILLUSTRATIONS = {
-  1:   IllustrationCover,
+  1:   IllustrationCoverSlide,
   4:   IllustrationNWRB,
   5:   IllustrationNWRB,
   11:  IllustrationNWRB,
@@ -2931,166 +2842,168 @@ export const SLIDE_ILLUSTRATIONS = {
   134: IllustrationTrivia,
   135: IllustrationTrivia,
   160: IllustrationSharedResponsibility,
-  161: IllustrationClosing,
+  161: IllustrationClosingSlide,
 // Introduction
-2:   IllustrationOutline,
-// NWRB
-3:   IllustrationNotNWRB,
-6:   IllustrationNWRBFunctions,
-8:   IllustrationNWRBBoard,
-12:  IllustrationMajorFunctions,
-13:  IllustrationMajorFunctions,
-// Deputation
-9:   IllustrationDeputation,
-10:  IllustrationReporting,
-// Legal
-7:   IllustrationLegalTimeline,
-14:  IllustrationPolicyFormulation,
-15:  IllustrationFunctionPrograms,
-// Angat
-16:  IllustrationAngatDam,
-17:  IllustrationAngatDam,
-18:  IllustrationRegulations,
-// PH Water Resources
-19:  IllustrationPhilWater,
-20:  IllustrationPhilWater,
-21:  IllustrationPhilWater,
-22:  IllustrationWaterRegions,
-23:  IllustrationAdminVsWater,
-24:  IllustrationRiverBasins,
-25:  IllustrationWaterStressed,
-26:  IllustrationRiverBasins,
-27:  IllustrationRiverBasins,
-// Earth's Water
-29:  IllustrationEarthVolume,
-// Water Code
-30:  IllustrationWaterCode,
-31:  IllustrationWaterCode,
-32:  IllustrationWaterCode,
-33:  IllustrationAppropriation,
-38:  IllustrationDomesticUse,
-39:  IllustrationCisterns,
-40:  IllustrationAppropriation,
-41:  IllustrationUsesOfWater,
-42:  IllustrationUsesOfWater,
-43:  IllustrationUsesOfWater,
-44:  IllustrationRegalian, // already exists — reuse
-46:  IllustrationGeneralRuleException,
-47:  IllustrationUtilization,
-48:  IllustrationUtilization,
-49:  IllustrationControlWaters,
-50:  IllustrationOtherProvisions,
-51:  IllustrationBeneficialUse,
-52:  IllustrationArticles,
-53:  IllustrationArticles,
-54:  IllustrationArticles76_79,
-55:  IllustrationUsesOfWater,
-56:  IllustrationUsesOfWater,
-57:  IllustrationUsesOfWater,
-58:  IllustrationUsesOfWater,
-59:  IllustrationUsesOfWater,
-60:  IllustrationUsesOfWater,
-// Water Permit
-61:  IllustrationWPARequirements,
-62:  IllustrationWPARequirements,
-63:  IllustrationWPARequirements,
-64:  IllustrationWPARequirements,
-65:  IllustrationWPARequirements,
-66:  IllustrationWaterAllocation,
-67:  IllustrationWaterAllocation,
-68:  IllustrationWhenPermit,
-69:  IllustrationQualifications,
-70:  IllustrationWPARequirements,
-71:  IllustrationCWPProcess,
-72:  IllustrationCWPProcess,
-73:  IllustrationCWPProcess,
-74:  IllustrationCWPProcess,
-75:  IllustrationCWPProcess,
-76:  IllustrationCWPProcess,
-77:  IllustrationCWPConditions,
-78:  IllustrationCWPConditions,
-79:  IllustrationCWPConditions,
-// CPC
-81:  IllustrationCPCRequirements,
-82:  IllustrationCPCRequirements,
-83:  IllustrationCPCRequirements,
-84:  IllustrationCWPProcess,
-86:  IllustrationCPCPetitions,
-87:  IllustrationNWRBRules,
-88:  IllustrationRegularReporting,
-89:  IllustrationCPCAdvantages,
-// Water Issues
-90:  IllustrationWaterIssues,
-91:  IllustrationWaterIssues,
-92:  IllustrationClimateChange,
-93:  IllustrationClimateChange,
-// IWRM
-95:  IllustrationWaterManagement,
-96:  IllustrationWaterManagement,
-// Monitoring
-97:  IllustrationSurfaceWater,
-98:  IllustrationSurfaceWater,
-99:  IllustrationGroundwater,
-100: IllustrationGroundwater,
-101: IllustrationStreamFlow,
-102: IllustrationStreamFlow,
-103: IllustrationStreamFlow,
-104: IllustrationStreamFlow,
-105: IllustrationStreamFlow,
-106: IllustrationStreamFlow,
-107: IllustrationStreamFlow,
-108: IllustrationStreamFlow,
-109: IllustrationGroundwaterMonitoring,
-110: IllustrationGroundwaterMonitoring,
-111: IllustrationGroundwaterMonitoring,
-112: IllustrationGroundwaterMonitoring,
-113: IllustrationGroundwaterMonitoring,
-114: IllustrationGroundwaterMonitoring,
-115: IllustrationGroundwaterMonitoring,
-116: IllustrationNWRBForms,
-117: IllustrationInspection,
-118: IllustrationInspection,
-// Water Issues (pollution & climate)
-119: IllustrationPollution,
-120: IllustrationPollution,
-121: IllustrationPollution,
-122: IllustrationClimateChange,
-// SDG
-123: IllustrationSDGAgenda,
-124: IllustrationSDGAgenda,
-// DENR / WRMO / IWMP
-127: IllustrationDENR,
-128: IllustrationDENR,
-129: IllustrationWRMO,
-130: IllustrationWRMO,
-131: IllustrationWRMO,
-132: IllustrationIWMP,
-133: IllustrationIWMP,
-// Trivia
-136: IllustrationBodyWater,
-137: IllustrationAlamMoBa,
-138: IllustrationWaterFacts,
-139: IllustrationBodyWater,
-140: IllustrationWaterFacts,
-141: IllustrationBodyWater,
-// Tipid Tubig
-142: IllustrationTipidTubig,
-143: IllustrationTipidTubig,
-144: IllustrationTipidTubig,
-145: IllustrationTipidTubig,
-146: IllustrationTipidTubig,
-147: IllustrationTipidTubig,
-148: IllustrationTipidTubig,
-149: IllustrationTipidTubig,
-150: IllustrationTipidTubig,
-151: IllustrationWaterSmart,
-152: IllustrationWaterSmart,
-153: IllustrationWaterSmart,
-154: IllustrationWaterSmart,
-155: IllustrationWaterSmart,
-156: IllustrationWaterSmart,
-157: IllustrationWaterSmart,
-158: IllustrationWaterSmart,
-159: IllustrationWaterSmart,
+  2:   IllustrationOutline,
+  // NWRB
+  3:   IllustrationNotNWRB,
+  6:   IllustrationNWRBFunctions,
+  8:   IllustrationNWRBBoard,
+  12:  IllustrationMajorFunctions,
+  13:  IllustrationMajorFunctions,
+  // Deputation
+  9:   IllustrationDeputation,
+  10:  IllustrationReporting,
+  // Legal
+  7:   IllustrationLegalTimeline,
+  14:  IllustrationPolicyFormulation,
+  15:  IllustrationFunctionPrograms,
+  // Angat
+  16:  IllustrationAngatDam,
+  17:  IllustrationAngatDam,
+  18:  IllustrationRegulations,
+  // PH Water Resources
+  19:  IllustrationPhilWater,
+  20:  IllustrationPhilWater,
+  21:  IllustrationPhilWater,
+  22:  IllustrationWaterRegions,
+  23:  IllustrationAdminVsWater,
+  24:  IllustrationRiverBasins,
+  25:  IllustrationWaterStressed,
+  26:  IllustrationRiverBasins,
+  27:  IllustrationRiverBasins,
+  // Earth's Water
+  29:  IllustrationEarthVolume,
+  // Water Code
+  30:  IllustrationWaterCode,
+  31:  IllustrationWaterCode,
+  32:  IllustrationWaterCode,
+  33:  IllustrationAppropriation,
+  38:  IllustrationDomesticUse,
+  39:  IllustrationCisterns,
+  40:  IllustrationAppropriation,
+  41:  IllustrationUsesOfWater,
+  42:  IllustrationUsesOfWater,
+  43:  IllustrationUsesOfWater,
+  44:  IllustrationRegalian, // already exists — reuse
+  46:  IllustrationGeneralRuleException,
+  47:  IllustrationUtilization,
+  48:  IllustrationUtilization,
+  49:  IllustrationControlWaters,
+  50:  IllustrationOtherProvisions,
+  51:  IllustrationBeneficialUse,
+  52:  IllustrationArticles,
+  53:  IllustrationArticles,
+  54:  IllustrationArticles76_79,
+  55:  IllustrationUsesOfWater,
+  56:  IllustrationUsesOfWater,
+  57:  IllustrationUsesOfWater,
+  58:  IllustrationUsesOfWater,
+  59:  IllustrationUsesOfWater,
+  60:  IllustrationUsesOfWater,
+  // Water Permit
+  61:  IllustrationWPARequirements,
+  62:  IllustrationWPARequirements,
+  63:  IllustrationWPARequirements,
+  64:  IllustrationWPARequirements,
+  65:  IllustrationWPARequirements,
+  66:  IllustrationWaterAllocation,
+  67:  IllustrationWaterAllocation,
+  68:  IllustrationWhenPermit,
+  69:  IllustrationQualifications,
+  70:  IllustrationWPARequirements,
+  71:  IllustrationCWPProcess,
+  72:  IllustrationCWPProcess,
+  73:  IllustrationCWPProcess,
+  74:  IllustrationCWPProcess,
+  75:  IllustrationCWPProcess,
+  76:  IllustrationCWPProcess,
+  77:  IllustrationCWPConditions,
+  78:  IllustrationCWPConditions,
+  79:  IllustrationCWPConditions,
+  // CPC
+  81:  IllustrationCPCRequirements,
+  82:  IllustrationCPCRequirements,
+  83:  IllustrationCPCRequirements,
+  84:  IllustrationCWPProcess,
+  86:  IllustrationCPCPetitions,
+  87:  IllustrationNWRBRules,
+  88:  IllustrationRegularReporting,
+  89:  IllustrationCPCAdvantages,
+  // Water Issues
+  90:  IllustrationWaterIssues,
+  91:  IllustrationWaterIssues,
+  92:  IllustrationClimateChange,
+  93:  IllustrationClimateChange,
+  // IWRM
+  95:  IllustrationWaterManagement,
+  96:  IllustrationWaterManagement,
+  // Monitoring
+  97:  IllustrationSurfaceWater,
+  98:  IllustrationSurfaceWater,
+  99:  IllustrationGroundwater,
+  100: IllustrationGroundwater,
+  101: IllustrationStreamFlow,
+  102: IllustrationStreamFlow,
+  103: IllustrationStreamFlow,
+  104: IllustrationStreamFlow,
+  105: IllustrationStreamFlow,
+  106: IllustrationStreamFlow,
+  107: IllustrationStreamFlow,
+  108: IllustrationStreamFlow,
+  109: IllustrationGroundwaterMonitoring,
+  110: IllustrationGroundwaterMonitoring,
+  111: IllustrationGroundwaterMonitoring,
+  112: IllustrationGroundwaterMonitoring,
+  113: IllustrationGroundwaterMonitoring,
+  114: IllustrationGroundwaterMonitoring,
+  115: IllustrationGroundwaterMonitoring,
+  116: IllustrationNWRBForms,
+  117: IllustrationInspection,
+  118: IllustrationInspection,
+  // Water Issues (pollution & climate)
+  119: IllustrationPollution,
+  120: IllustrationPollution,
+  121: IllustrationPollution,
+  122: IllustrationClimateChange,
+  // SDG
+  123: IllustrationSDGAgenda,
+  124: IllustrationSDGAgenda,
+  // DENR / WRMO / IWMP
+  127: IllustrationDENR,
+  128: IllustrationDENR,
+  129: IllustrationWRMO,
+  130: IllustrationWRMO,
+  131: IllustrationWRMO,
+  132: IllustrationIWMP,
+  133: IllustrationIWMP,
+  // Trivia
+  136: IllustrationBodyWater,
+  137: IllustrationAlamMoBa,
+  138: IllustrationWaterFacts,
+  139: IllustrationBodyWater,
+  140: IllustrationWaterFacts,
+  141: IllustrationBodyWater,
+  // Tipid Tubig
+  142: IllustrationTipidTubig,
+  143: IllustrationTipidTubig,
+  144: IllustrationTipidTubig,
+  145: IllustrationTipidTubig,
+  146: IllustrationTipidTubig,
+  147: IllustrationTipidTubig,
+  148: IllustrationTipidTubig,
+  149: IllustrationTipidTubig,
+  150: IllustrationTipidTubig,
+  151: IllustrationWaterSmart,
+  152: IllustrationWaterSmart,
+  153: IllustrationWaterSmart,
+  154: IllustrationWaterSmart,
+  155: IllustrationWaterSmart,
+  156: IllustrationWaterSmart,
+  157: IllustrationWaterSmart,
+  158: IllustrationWaterSmart,
+  159: IllustrationWaterSmart,
 };
 
+import { IllustrationCoverSlide, IllustrationClosingSlide }
+  from "./CoverAndClosingIllustrations.jsx";

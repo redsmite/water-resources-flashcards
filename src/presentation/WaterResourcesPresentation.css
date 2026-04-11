@@ -1376,6 +1376,11 @@
   border-radius: 14px;
 }
 
+.slide-illustration--hero > div {
+  border-radius: 14px;
+  overflow: hidden;
+}
+
 /* Small accent variant — floats to the right on wide screens */
 .slide-illustration--accent {
   margin: 10px 0 14px;
