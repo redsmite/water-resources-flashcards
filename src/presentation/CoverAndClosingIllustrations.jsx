@@ -771,7 +771,7 @@ export function IllustrationCoverSlide() {
   const overlayStyles = {
     light: { bg:"rgba(1,87,155,0.72)", border:"rgba(79,195,247,0.55)", glow:"0 0 40px rgba(79,195,247,0.30)" },
     dark:  { bg:"rgba(2,8,24,0.80)",  border:"rgba(0,229,255,0.50)", glow:"0 0 40px rgba(0,229,255,0.25)" },
-    sepia: { bg:"rgba(62,39,35,0.75)", border:"rgba(200,168,122,0.55)", glow:"0 0 30px rgba(200,168,122,0.20)" },
+    sepia: { bg:"rgba(41, 41, 41, 0.75)", border:"rgba(200,168,122,0.55)", glow:"0 0 30px rgba(200,168,122,0.20)" },
     pink:  { bg:"rgba(136,14,79,0.65)", border:"rgba(255,143,177,0.60)", glow:"0 0 40px rgba(244,143,177,0.25)" },
     mint:  { bg:"rgba(10,35,32,0.75)", border:"rgba(52,211,153,0.55)", glow:"0 0 40px rgba(52,211,153,0.25)" },
   };
@@ -802,6 +802,8 @@ export function IllustrationCoverSlide() {
         borderRadius:"14px"
       }}/>
 
+
+
       {/* Content */}
       <div style={{
         position:"relative", zIndex:3,
@@ -809,9 +811,21 @@ export function IllustrationCoverSlide() {
         display:"flex", flexDirection:"column", alignItems:"center",
         minHeight:"340px", justifyContent:"space-between"
       }}>
+        {/* 1. Add the media query styles at the top of your component or CSS file */}
+        <style>
+          {`
+            @media (max-width: 768px) {
+              .logos-row-container {
+                display: none !important;
+              }
+            }
+          `}
+        </style>
 
         {/* ── TOP: Logos row ── */}
-        <div style={{
+        <div
+        className="logos-row-container"
+        style={{
           display:"flex", alignItems:"center", justifyContent:"space-between",
           width:"100%", gap:"16px"
         }}>
@@ -870,69 +884,6 @@ export function IllustrationCoverSlide() {
           </div>
         </div>
 
-        {/* ── CENTER: Main title card ── */}
-        <div style={{
-          background:ov.bg,
-          border:`1.5px solid ${ov.border}`,
-          borderRadius:"16px",
-          padding:"22px 32px",
-          backdropFilter:"blur(12px)",
-          boxShadow:ov.glow,
-          textAlign:"center",
-          maxWidth:"520px",
-          width:"100%",
-          animation:"title-slide-up 0.7s cubic-bezier(0.22,1,0.36,1) 0.2s both",
-        }}>
-          {/* Decorative top line */}
-          <div style={{
-            width:"48px", height:"2px", margin:"0 auto 14px",
-            background:`linear-gradient(90deg, transparent, ${ov.border}, transparent)`
-          }}/>
-
-          <div style={{
-            color:textColors[theme]||"#E1F5FE",
-            fontFamily:"'Playfair Display',serif",
-            fontSize:"clamp(16px, 3vw, 22px)",
-            fontWeight:"700",
-            lineHeight:"1.3",
-            letterSpacing:"-0.2px",
-            textShadow:"0 2px 12px rgba(0,0,0,0.50)",
-            marginBottom:"8px"
-          }}>
-            Water Resources Management Services
-          </div>
-
-          <div style={{
-            width:"32px", height:"1px", margin:"10px auto",
-            background:ov.border
-          }}/>
-
-          <div style={{
-            color:subTextColors[theme]||"#B3E5FC",
-            fontSize:"12px", fontFamily:"'DM Sans',sans-serif",
-            lineHeight:"1.7", textShadow:"0 1px 6px rgba(0,0,0,0.45)"
-          }}>
-            <span style={{fontWeight:"700"}}>LMO IV Carmen Hizelle M. Garcia-Velasco</span><br/>
-            Chief, Water Resources Utilization Section, LPDD<br/>
-            DENR – National Capital Region
-          </div>
-
-          <div style={{
-            marginTop:"12px", paddingTop:"12px",
-            borderTop:`1px solid ${ov.border}`,
-            color:"rgba(255,255,255,0.65)",
-            fontSize:"11px", fontFamily:"'DM Sans',sans-serif",
-            letterSpacing:"0.6px"
-          }}>
-            20 April 2026 · Sotogrande Neopolitan Hotel, Quezon City
-          </div>
-
-          {/* Decorative bottom line */}
-          <div style={{
-            width:"48px", height:"2px", margin:"14px auto 0",
-            background:`linear-gradient(90deg, transparent, ${ov.border}, transparent)`
-          }}/>
-        </div>
 
         {/* ── BOTTOM: Event badge ── */}
         <div style={{
