@@ -140,6 +140,32 @@ const ANIMATION_CSS = `
   50%      { box-shadow:0 0 18px 4px rgba(255,255,255,0.25); }
 }
 
+/* ── Birds ── */
+/* Each bird travels from right edge (x≈820) to left edge (x≈-60)
+   across the full 800-wide viewBox over ~14s, then hides for ~6s.
+   Total cycle = 20s  →  interval ≈ 5s between flock appearances.
+   translateX goes from 0 → -880 (820 start + 60 overshoot).
+   Opacity: hidden → visible at 2% → visible at 85% → hidden at 100%.  */
+@keyframes bird-fly {
+  0%    { transform:translateX(0);     opacity:0; }
+  2%    { opacity:1; }
+  85%   { opacity:0.75; }
+  90%   { transform:translateX(-880px); opacity:0; }
+  100%  { transform:translateX(-880px); opacity:0; }
+}
+/* Slight vertical bob for lead bird so flock looks alive */
+@keyframes bird-bob {
+  0%,100% { transform:translateY(0); }
+  50%      { transform:translateY(-4px); }
+}
+/* Wing-flap: the two arcs of each "M"-glyph bird rotate slightly */
+@keyframes wing-flap {
+  0%,100% { transform:scaleY(1);   }
+  25%      { transform:scaleY(0.5); }
+  50%      { transform:scaleY(1);   }
+  75%      { transform:scaleY(0.6); }
+}
+
 /* ── Closing slide ── */
 @keyframes closing-rise {
   from { opacity:0; transform:translateY(30px); }
@@ -196,6 +222,90 @@ function ENRAcademyLogo({ size = 64, opacity = 1 }) {
         flexShrink: 0,
       }}
     />
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SHARED — BIRD FLOCK
+// A small flock of 5 distant seagull/swallow silhouettes rendered as classic
+// "M"-curve glyphs.  They enter from the RIGHT edge and glide to the LEFT.
+// Each bird in the flock has a slightly different Y position, scale, speed, and
+// delay so they read as a natural loose formation.
+//
+// Props:
+//   color     — stroke colour  (default "#555")
+//   yBase     — vertical centre of the flock in the 800×320 viewBox
+//   cycleTime — full cycle duration in seconds (fly across + pause). Default 20s
+//               → first bird appears after ~0 s, next flock after ~20 s = ~5s
+//               perceived gap because stragglers trail up to 3s behind leader.
+// ═══════════════════════════════════════════════════════════════════════════════
+function BirdFlock({ color = "#4a4a4a", yBase = 55, cycleTime = 20 }) {
+  // Each bird: [xStart(0-based offset from right), yOffset, scale, delay, flapDur]
+  // xStart positions the bird relative to x=820 in the SVG.
+  // Since the g-group starts at x=820 and translates −880, we space birds with
+  // additional x offsets so they appear staggered across the flock width.
+  const birds = [
+    { xOff:  0,  yOff:  0,   s: 1.00, delay: 0.0,  flapDur: 0.55 }, // lead
+    { xOff: 34,  yOff: -9,   s: 0.78, delay: 0.4,  flapDur: 0.50 }, // upper-right
+    { xOff: 22,  yOff: 12,   s: 0.82, delay: 0.7,  flapDur: 0.60 }, // lower-right
+    { xOff: 58,  yOff: -4,   s: 0.68, delay: 1.1,  flapDur: 0.48 }, // far upper
+    { xOff: 48,  yOff: 18,   s: 0.72, delay: 1.5,  flapDur: 0.58 }, // far lower
+  ];
+
+  return (
+    <g>
+      {birds.map((b, i) => (
+        <g
+          key={i}
+          style={{
+            // Position each bird: translate to right-edge start + individual x offset
+            transform: `translate(${820 + b.xOff}px, ${yBase + b.yOff}px)`,
+          }}
+        >
+          {/* Fly-across wrapper — moves the whole bird left */}
+          <g
+            style={{
+              animation: `bird-fly ${cycleTime}s ease-in-out infinite`,
+              animationDelay: `${b.delay}s`,
+            }}
+          >
+            {/* Vertical bob on lead bird only */}
+            <g style={i === 0 ? { animation: `bird-bob 1.8s ease-in-out infinite` } : {}}>
+              {/* Wing-flap group — scales the M-glyph vertically */}
+              <g
+                style={{
+                  transformOrigin: "0px 0px",
+                  animation: `wing-flap ${b.flapDur}s ease-in-out infinite`,
+                  animationDelay: `${b.delay * 0.3}s`,
+                }}
+              >
+                {/*
+                  Classic distant-bird glyph:
+                    Left wing  — arc from (-W, 0) up to (0, -H) 
+                    Right wing — arc from (0, -H) down to (+W, 0)
+                  Rendered as a single open cubic path scaled by bird size.
+                */}
+                <path
+                  d={`M ${-11 * b.s} 0
+                      C ${-8 * b.s} ${-7 * b.s},
+                        ${-3 * b.s} ${-9 * b.s},
+                        0            ${-6 * b.s}
+                      C ${3  * b.s} ${-9 * b.s},
+                        ${8  * b.s} ${-7 * b.s},
+                        ${11 * b.s} 0`}
+                  fill="none"
+                  stroke={color}
+                  strokeWidth={1.4 * b.s}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  opacity="0.85"
+                />
+              </g>
+            </g>
+          </g>
+        </g>
+      ))}
+    </g>
   );
 }
 
@@ -303,6 +413,10 @@ function OceanLandscape() {
       <rect x="0" y="305" width="800" height="15" rx="0"
             fill="#4FC3F7" opacity="0.18"
             style={{animation:"shimmer-h 2s ease-in-out infinite"}}/>
+
+      {/* Distant birds — cross the sky every ~20s cycle (~5s perceived gap) */}
+      <BirdFlock color="#1565C0" yBase={48} cycleTime={20}/>
+      <BirdFlock color="#0d47a1" yBase={72} cycleTime={28} />
     </svg>
   );
 }
@@ -518,6 +632,10 @@ function SepiаLandscape() {
       {/* Page glow lines (manuscript decoration) */}
       <path d="M150 175 Q400 168 650 175" fill="none" stroke="#C8A87A" strokeWidth="1"
             opacity="0" style={{animation:"page-turn-glow 4s ease-in-out infinite"}}/>
+
+      {/* Distant birds soaring past the sepia horizon */}
+      <BirdFlock color="#6D4C41" yBase={62} cycleTime={22}/>
+      <BirdFlock color="#795548" yBase={44} cycleTime={30}/>
     </svg>
   );
 }
@@ -646,8 +764,78 @@ function CherryBlossomLandscape() {
         <PetalShape key={i} {...p}/>
       ))}
 
+      {/* ── CENTER BRANCH — arcs from bottom-center upward, heavy blossom load ── */}
+      {/* Main center trunk rising from bottom */}
+      <path d="M400 320 Q398 280 402 248 Q406 218 396 195"
+            fill="none" stroke="#5D4037" strokeWidth="11" strokeLinecap="round"/>
+      {/* Left sweeping branch */}
+      <path d="M400 230 Q370 195 340 172 Q312 150 290 138"
+            fill="none" stroke="#6D4C41" strokeWidth="6" strokeLinecap="round"
+            style={{animation:"blossom-sway 5s ease-in-out infinite"}}/>
+      {/* Right sweeping branch */}
+      <path d="M400 218 Q432 185 462 162 Q490 142 516 130"
+            fill="none" stroke="#6D4C41" strokeWidth="6" strokeLinecap="round"
+            style={{animation:"blossom-sway 4.2s ease-in-out infinite reverse"}}/>
+      {/* Left sub-branch A */}
+      <path d="M340 172 Q318 145 308 118 Q300 96 294 80"
+            fill="none" stroke="#795548" strokeWidth="4" strokeLinecap="round"
+            style={{animation:"blossom-sway 3.8s ease-in-out infinite"}}/>
+      {/* Left sub-branch B */}
+      <path d="M314 154 Q292 136 278 114"
+            fill="none" stroke="#8D6E63" strokeWidth="3" strokeLinecap="round"/>
+      {/* Right sub-branch A */}
+      <path d="M462 162 Q484 136 494 110 Q502 88 506 72"
+            fill="none" stroke="#795548" strokeWidth="4" strokeLinecap="round"
+            style={{animation:"blossom-sway 3.5s ease-in-out infinite reverse"}}/>
+      {/* Right sub-branch B */}
+      <path d="M488 148 Q510 124 524 104"
+            fill="none" stroke="#8D6E63" strokeWidth="3" strokeLinecap="round"/>
+      {/* Top center delicate sprigs */}
+      <path d="M396 196 Q382 168 372 148 Q364 132 358 118"
+            fill="none" stroke="#795548" strokeWidth="3.5" strokeLinecap="round"/>
+      <path d="M396 196 Q412 166 424 144 Q434 126 442 110"
+            fill="none" stroke="#795548" strokeWidth="3.5" strokeLinecap="round"/>
+
+      {/* Center branch blossom clusters — denser, more colorful */}
+      {[
+        [294,80],[278,114],[308,118],[358,118],[372,148],[382,168],
+        [396,195],[400,230],[412,166],[424,144],[442,110],[506,72],
+        [494,110],[484,136],[516,130],[462,162],[340,172],[290,138],
+        [302,100],[460,88],[330,150],[470,148],
+      ].map(([cx,cy],i)=>(
+        <g key={`cb${i}`} style={{
+          animation:`blossom-bloom ${0.4+i*0.12}s cubic-bezier(0.34,1.56,0.64,1) forwards`,
+          animationDelay:`${0.05+i*0.07}s`,
+          transformOrigin:`${cx}px ${cy}px`
+        }}>
+          {/* 5-petal flower */}
+          {[0,72,144,216,288].map(deg=>{
+            const r=Math.PI*deg/180;
+            const petalColors=["#F48FB1","#FCE4EC","#F8BBD9","#FF80AB","#FFCDD2"];
+            return <ellipse key={deg}
+                     cx={cx+Math.cos(r)*9} cy={cy+Math.sin(r)*9}
+                     rx="7" ry="4.5"
+                     fill={petalColors[i%5]}
+                     opacity="0.92"
+                     transform={`rotate(${deg} ${cx+Math.cos(r)*9} ${cy+Math.sin(r)*9})`}/>;
+          })}
+          <circle cx={cx} cy={cy} r="4" fill="#FFF9C4" opacity="0.95"/>
+          {/* Tiny stamens */}
+          {[0,120,240].map(deg=>{
+            const r=Math.PI*deg/180;
+            return <circle key={`s${deg}`}
+                     cx={cx+Math.cos(r)*2.5} cy={cy+Math.sin(r)*2.5}
+                     r="0.8" fill="#FFB300" opacity="0.80"/>;
+          })}
+        </g>
+      ))}
+
       {/* Soft mist at bottom */}
       <rect x="0" y="285" width="800" height="35" fill="white" opacity="0.20"/>
+
+      {/* Birds crossing the pink blossom sky */}
+      <BirdFlock color="#AD1457" yBase={30} cycleTime={21}/>
+      <BirdFlock color="#880E4F" yBase={14} cycleTime={26}/>
     </svg>
   );
 }
@@ -747,6 +935,10 @@ function MintLandscape() {
 
       {/* Forest floor ray of light */}
       <path d="M380 0 L340 320 L460 320 L420 0 Z" fill="#E8F5E9" opacity="0.06"/>
+
+      {/* Birds gliding above the forest canopy */}
+      <BirdFlock color="#1B5E20" yBase={38} cycleTime={19}/>
+      <BirdFlock color="#2E7D32" yBase={58} cycleTime={25}/>
     </svg>
   );
 }
@@ -771,17 +963,17 @@ export function IllustrationCoverSlide() {
   const overlayStyles = {
     light: { bg:"rgba(1,87,155,0.72)", border:"rgba(79,195,247,0.55)", glow:"0 0 40px rgba(79,195,247,0.30)" },
     dark:  { bg:"rgba(2,8,24,0.80)",  border:"rgba(0,229,255,0.50)", glow:"0 0 40px rgba(0,229,255,0.25)" },
-    sepia: { bg:"rgba(41, 41, 41, 0.75)", border:"rgba(200,168,122,0.55)", glow:"0 0 30px rgba(200,168,122,0.20)" },
-    pink:  { bg:"rgba(136,14,79,0.65)", border:"rgba(255,143,177,0.60)", glow:"0 0 40px rgba(244,143,177,0.25)" },
+    sepia: { bg:"rgba(62,39,35,0.75)", border:"rgba(200,168,122,0.55)", glow:"0 0 30px rgba(200,168,122,0.20)" },
+    pink:  { bg:"rgba(136,14,79,0.65)", border:"rgba(244,143,177,0.60)", glow:"0 0 40px rgba(244,143,177,0.25)" },
     mint:  { bg:"rgba(10,35,32,0.75)", border:"rgba(52,211,153,0.55)", glow:"0 0 40px rgba(52,211,153,0.25)" },
   };
   const ov = overlayStyles[theme] || overlayStyles.light;
 
   const textColors = {
-    light:"#ffffff", dark:"#E0F7FA", sepia:"#FFF8E1", pink:"#Ffffff", mint:"#ffffff"
+    light:"#ffffff", dark:"#E0F7FA", sepia:"#ffffff", pink:"#ffffff", mint:"#ffffff"
   };
   const subTextColors = {
-    light:"#ffffff", dark:"#80DEEA", sepia:"#EFEBE9", pink:"#Ffffff", mint:"#ffffff"
+    light:"#ffffff", dark:"#80DEEA", sepia:"#ffffff", pink:"#ffffff", mint:"#ffffff"
   };
 
   return (
@@ -802,8 +994,6 @@ export function IllustrationCoverSlide() {
         borderRadius:"14px"
       }}/>
 
-
-
       {/* Content */}
       <div style={{
         position:"relative", zIndex:3,
@@ -811,6 +1001,8 @@ export function IllustrationCoverSlide() {
         display:"flex", flexDirection:"column", alignItems:"center",
         minHeight:"340px", justifyContent:"space-between"
       }}>
+
+        {/* ── TOP: Logos row ── */}
         {/* 1. Add the media query styles at the top of your component or CSS file */}
         <style>
           {`
@@ -821,8 +1013,6 @@ export function IllustrationCoverSlide() {
             }
           `}
         </style>
-
-        {/* ── TOP: Logos row ── */}
         <div
         className="logos-row-container"
         style={{
