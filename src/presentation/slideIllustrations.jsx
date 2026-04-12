@@ -2982,8 +2982,8 @@ export const SLIDE_ILLUSTRATIONS = {
   137: IllustrationAlamMoBa,
   138: IllustrationWaterFacts,
   139: IllustrationBodyWater,
-  140: IllustrationWaterFacts,
-  141: IllustrationBodyWater,
+  140: IllustrationWaterFactsMatter,
+  141: IllustrationWaterWorld,
   // Tipid Tubig
   142: IllustrationTipidTubig,
   143: IllustrationTipidTubig,
@@ -3007,3 +3007,5 @@ export const SLIDE_ILLUSTRATIONS = {
 
 import { IllustrationCoverSlide, IllustrationClosingSlide }
   from "./CoverAndClosingIllustrations.jsx";
+import { IllustrationWaterFactsMatter, IllustrationWaterWorld }
+  from "./slideIllustrations_140_141.jsx";
