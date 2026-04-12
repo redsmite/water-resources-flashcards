@@ -175,6 +175,12 @@ const ANIMATION_CSS = `
   0%   { transform:scale(0.92); opacity:0.65; }
   100% { transform:scale(1.18); opacity:0; }
 }
+
+/* ── Sepia-style bird soar (left-to-right) ── */
+@keyframes sep-bird-soar {
+  0%   { transform: translateX(820px); }
+  100% { transform: translateX(-80px); }
+}
 `;
 
 function injectStyles() {
@@ -239,75 +245,6 @@ function ENRAcademyLogo({ size = 64, opacity = 1 }) {
 //               → first bird appears after ~0 s, next flock after ~20 s = ~5s
 //               perceived gap because stragglers trail up to 3s behind leader.
 // ═══════════════════════════════════════════════════════════════════════════════
-function BirdFlock({ color = "#4a4a4a", yBase = 55, cycleTime = 20 }) {
-  // Each bird: [xStart(0-based offset from right), yOffset, scale, delay, flapDur]
-  // xStart positions the bird relative to x=820 in the SVG.
-  // Since the g-group starts at x=820 and translates −880, we space birds with
-  // additional x offsets so they appear staggered across the flock width.
-  const birds = [
-    { xOff:  0,  yOff:  0,   s: 1.00, delay: 0.0,  flapDur: 0.55 }, // lead
-    { xOff: 34,  yOff: -9,   s: 0.78, delay: 0.4,  flapDur: 0.50 }, // upper-right
-    { xOff: 22,  yOff: 12,   s: 0.82, delay: 0.7,  flapDur: 0.60 }, // lower-right
-    { xOff: 58,  yOff: -4,   s: 0.68, delay: 1.1,  flapDur: 0.48 }, // far upper
-    { xOff: 48,  yOff: 18,   s: 0.72, delay: 1.5,  flapDur: 0.58 }, // far lower
-  ];
-
-  return (
-    <g>
-      {birds.map((b, i) => (
-        <g
-          key={i}
-          style={{
-            // Position each bird: translate to right-edge start + individual x offset
-            transform: `translate(${820 + b.xOff}px, ${yBase + b.yOff}px)`,
-          }}
-        >
-          {/* Fly-across wrapper — moves the whole bird left */}
-          <g
-            style={{
-              animation: `bird-fly ${cycleTime}s ease-in-out infinite`,
-              animationDelay: `${b.delay}s`,
-            }}
-          >
-            {/* Vertical bob on lead bird only */}
-            <g style={i === 0 ? { animation: `bird-bob 1.8s ease-in-out infinite` } : {}}>
-              {/* Wing-flap group — scales the M-glyph vertically */}
-              <g
-                style={{
-                  transformOrigin: "0px 0px",
-                  animation: `wing-flap ${b.flapDur}s ease-in-out infinite`,
-                  animationDelay: `${b.delay * 0.3}s`,
-                }}
-              >
-                {/*
-                  Classic distant-bird glyph:
-                    Left wing  — arc from (-W, 0) up to (0, -H) 
-                    Right wing — arc from (0, -H) down to (+W, 0)
-                  Rendered as a single open cubic path scaled by bird size.
-                */}
-                <path
-                  d={`M ${-11 * b.s} 0
-                      C ${-8 * b.s} ${-7 * b.s},
-                        ${-3 * b.s} ${-9 * b.s},
-                        0            ${-6 * b.s}
-                      C ${3  * b.s} ${-9 * b.s},
-                        ${8  * b.s} ${-7 * b.s},
-                        ${11 * b.s} 0`}
-                  fill="none"
-                  stroke={color}
-                  strokeWidth={1.4 * b.s}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  opacity="0.85"
-                />
-              </g>
-            </g>
-          </g>
-        </g>
-      ))}
-    </g>
-  );
-}
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // THEME LANDSCAPES
@@ -414,9 +351,16 @@ function OceanLandscape() {
             fill="#4FC3F7" opacity="0.18"
             style={{animation:"shimmer-h 2s ease-in-out infinite"}}/>
 
-      {/* Distant birds — cross the sky every ~20s cycle (~5s perceived gap) */}
-      <BirdFlock color="#1565C0" yBase={48} cycleTime={20}/>
-      <BirdFlock color="#0d47a1" yBase={72} cycleTime={28} />
+      {/* Replace the two BirdFlock lines at the bottom */}
+      <g style={{ animation: "sep-bird-soar 28s linear infinite" }} opacity="0.50">
+        <path d="M0,48 Q4,45 8,48 Q12,51 16,48"   fill="none" stroke="#1565C0" strokeWidth="1"   strokeLinecap="round" />
+        <path d="M24,55 Q27,53 30,55 Q33,57 36,55" fill="none" stroke="#1565C0" strokeWidth="0.9" strokeLinecap="round" />
+        <path d="M44,42 Q48,39 52,42 Q56,45 60,42" fill="none" stroke="#1565C0" strokeWidth="1"   strokeLinecap="round" />
+      </g>
+      <g style={{ animation: "sep-bird-soar 36s linear infinite", animationDelay: "-14s" }} opacity="0.35">
+        <path d="M0,62 Q3,60 6,62 Q9,64 12,62"     fill="none" stroke="#0d47a1" strokeWidth="0.8" strokeLinecap="round" />
+        <path d="M20,57 Q24,54 28,57 Q32,60 36,57" fill="none" stroke="#0d47a1" strokeWidth="0.9" strokeLinecap="round" />
+      </g>
     </svg>
   );
 }
@@ -526,87 +470,239 @@ function GalaxyLandscape() {
   );
 }
 
-// ── 3. SEPIA / SAND DUNE THEME ────────────────────────────────────────────────
-function SepiаLandscape() {
-  const particles = Array.from({ length: 20 }, (_, i) => ({
-    cx: (i * 137) % 800,
-    cy: (i * 93) % 320,
-    r: 0.8 + (i % 2),
-    delay: (i * 0.5) % 5,
-    dur: 4 + (i % 4) * 2,
-  }));
+function SepiaLandscape() {
+  const motes = [
+    { cx: 160, cy: 115, r: 1.2, dx: "-30px", dy: "-40px", dur: 6,   delay: 0   },
+    { cx: 340, cy: 95,  r: 0.9, dx: "20px",  dy: "-30px", dur: 8,   delay: 1   },
+    { cx: 520, cy: 130, r: 1.4, dx: "-40px", dy: "-50px", dur: 7,   delay: 2.5 },
+    { cx: 680, cy: 100, r: 1.0, dx: "25px",  dy: "-35px", dur: 9,   delay: 0.8 },
+    { cx: 240, cy: 145, r: 1.5, dx: "-50px", dy: "-25px", dur: 5,   delay: 3.5 },
+    { cx: 600, cy: 155, r: 1.1, dx: "35px",  dy: "-40px", dur: 7.5, delay: 1.5 },
+    { cx: 420, cy: 190, r: 1.6, dx: "-20px", dy: "-60px", dur: 6.5, delay: 4   },
+    { cx: 100, cy: 200, r: 1.3, dx: "45px",  dy: "-45px", dur: 8.5, delay: 2   },
+    { cx: 720, cy: 175, r: 1.0, dx: "-30px", dy: "-55px", dur: 9.5, delay: 0.5 },
+    { cx: 490, cy: 78,  r: 0.8, dx: "15px",  dy: "-20px", dur: 5.5, delay: 3   },
+  ];
 
   return (
-    <svg width="100%" viewBox="0 0 800 320" preserveAspectRatio="xMidYMid slice"
-         style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none" }}>
-      <defs>
-        {/* Softer Sky Gradient */}
-        <linearGradient id="desert-sky" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#DBC1AD" />
-          <stop offset="100%" stopColor="#F5E6BE" />
-        </linearGradient>
+    <>
+      <style>{`
+        /* ── Sun pulse: animate scale+opacity, NOT r ── */
+        @keyframes sun-pulse-1 {
+          0%,100% { transform: scale(1);    opacity: 0.22; }
+          50%      { transform: scale(1.35); opacity: 0.06; }
+        }
+        @keyframes sun-pulse-2 {
+          0%,100% { transform: scale(1);    opacity: 0.16; }
+          50%      { transform: scale(1.40); opacity: 0.04; }
+        }
+        @keyframes sun-pulse-3 {
+          0%,100% { transform: scale(1);    opacity: 0.10; }
+          50%      { transform: scale(1.45); opacity: 0.02; }
+        }
+        @keyframes sun-breathe {
+          0%,100% { opacity: 0.82; }
+          50%      { opacity: 1;   }
+        }
 
-        {/* Soft Sun Aura Gradient */}
-        <radialGradient id="sun-aura" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#FFF9E1" stopOpacity="0.5" />
-          <stop offset="40%" stopColor="#F4D35E" stopOpacity="0.15" />
-          <stop offset="100%" stopColor="#F4D35E" stopOpacity="0" />
-        </radialGradient>
+        /* ── Sandstorm: start visible, drift fully across ── */
+        @keyframes sand-drift-a {
+          0%   { transform: translateX(0);    opacity: 0;    }
+          8%   { opacity: 0.20; }
+          88%  { opacity: 0.16; }
+          100% { transform: translateX(850px); opacity: 0; }
+        }
+        @keyframes sand-drift-b {
+          0%   { transform: translateX(0);    opacity: 0;    }
+          10%  { opacity: 0.24; }
+          86%  { opacity: 0.12; }
+          100% { transform: translateX(850px); opacity: 0; }
+        }
+        @keyframes sand-drift-c {
+          0%   { transform: translateX(0);    opacity: 0;    }
+          12%  { opacity: 0.30; }
+          84%  { opacity: 0.18; }
+          100% { transform: translateX(850px); opacity: 0; }
+        }
 
-        {/* Dune Gradient */}
-        <linearGradient id="dune-grad" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#C2B280" />
-          <stop offset="50%" stopColor="#D2B48C" />
-          <stop offset="100%" stopColor="#B69B73" />
-        </linearGradient>
+        @keyframes haze-pulse {
+          0%,100% { opacity: 0.08; }
+          50%      { opacity: 0.20; }
+        }
+        @keyframes mote-float {
+          0%   { transform: translate(0, 0);                      opacity: 0;    }
+          15%  { opacity: 0.55; }
+          85%  { opacity: 0.35; }
+          100% { transform: translate(var(--dx), var(--dy));      opacity: 0;    }
+        }
+        @keyframes sep-bird-soar {
+          0%   { transform: translateX(820px); }
+          100% { transform: translateX(-80px); }
+        }
+      `}</style>
 
-        {/* Fine Sand Filter */}
-        <filter id="sand-grain">
-          <feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="2" seed="10"/>
-          <feColorMatrix type="matrix" values="0 0 0 0 0.6  0 0 0 0 0.5  0 0 0 0 0.4  0 0 0 0.08 0"/>
-        </filter>
-      </defs>
+      <svg
+        width="100%"
+        viewBox="0 0 800 320"
+        preserveAspectRatio="xMidYMid slice"
+        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none" }}
+      >
+        <defs>
+          <linearGradient id="sep-sky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stopColor="#C4A882" />
+            <stop offset="55%"  stopColor="#E2C99A" />
+            <stop offset="100%" stopColor="#F0DFB0" />
+          </linearGradient>
+          <radialGradient id="sep-sun-corona" cx="50%" cy="50%" r="50%">
+            <stop offset="0%"   stopColor="#FFF5D6" stopOpacity="1" />
+            <stop offset="18%"  stopColor="#F9E49A" stopOpacity="0.9" />
+            <stop offset="45%"  stopColor="#E8C46A" stopOpacity="0.35" />
+            <stop offset="70%"  stopColor="#D4A84B" stopOpacity="0.1" />
+            <stop offset="100%" stopColor="#C49840" stopOpacity="0" />
+          </radialGradient>
+          <linearGradient id="sep-dune-far"  x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%"   stopColor="#B8A074" />
+            <stop offset="50%"  stopColor="#C9AF82" />
+            <stop offset="100%" stopColor="#AA9468" />
+          </linearGradient>
+          <linearGradient id="sep-dune-mid"  x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%"   stopColor="#A8935E" />
+            <stop offset="40%"  stopColor="#C0A870" />
+            <stop offset="100%" stopColor="#9A8554" />
+          </linearGradient>
+          <linearGradient id="sep-dune-near" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%"   stopColor="#8C7A4A" />
+            <stop offset="50%"  stopColor="#A08D5C" />
+            <stop offset="100%" stopColor="#7E6C40" />
+          </linearGradient>
+          <linearGradient id="sep-dune-fg"   x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%"   stopColor="#7A6A38" />
+            <stop offset="45%"  stopColor="#907C48" />
+            <stop offset="100%" stopColor="#6E5E30" />
+          </linearGradient>
+          <linearGradient id="sep-haze" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stopColor="#C4A060" stopOpacity="0" />
+            <stop offset="40%"  stopColor="#B8943A" stopOpacity="0.12" />
+            <stop offset="100%" stopColor="#A8882A" stopOpacity="0.32" />
+          </linearGradient>
+          <filter id="sep-blur-sm"><feGaussianBlur stdDeviation="0.8" /></filter>
+          <filter id="sep-blur-xl"><feGaussianBlur stdDeviation="7" /></filter>
+        </defs>
 
-      {/* Background Sky */}
-      <rect width="800" height="320" fill="url(#desert-sky)" />
+        {/* Sky */}
+        <rect width="800" height="320" fill="url(#sep-sky)" />
 
-      {/* The Subtle Sun & Aura */}
-      <g opacity="0.8">
-        {/* Large outer aura */}
-        <circle cx="400" cy="110" r="180" fill="url(#sun-aura)" />
-        {/* Secondary soft glow */}
-        <circle cx="400" cy="110" r="80" fill="#FFF9E1" opacity="0.2" />
-        {/* Muted sun core (No pure white) */}
-        <circle cx="400" cy="110" r="25" fill="#FEF9E7" opacity="0.6" />
-      </g>
-      
-      {/* Distant Dunes */}
-      <path d="M0 190 Q200 160 400 195 T800 170 L800 320 L0 320 Z" fill="#CBB48E" opacity="0.5" />
-      
-      {/* Midground Dunes */}
-      <path d="M-100 230 Q150 180 400 230 Q650 280 900 210 L900 320 L-100 320 Z" fill="url(#dune-grad)" />
+        {/* Atmospheric haze */}
+        <rect width="800" height="320" fill="url(#sep-haze)"
+              style={{ animation: "haze-pulse 6s ease-in-out infinite" }} />
 
-      {/* Foreground Dune with subtle shadow curve */}
-      <path d="M0 270 Q300 240 600 290 Q750 315 900 260 L900 320 L0 320 Z" fill="#A89268" />
+        {/* ── Sun with scale-based pulse rings ── */}
+        <g transform="translate(400,108)">
+          {/* Ring 3 — outermost, slowest */}
+          <circle r="95" fill="none" stroke="#D4A84B" strokeWidth="1.5"
+                  style={{
+                    transformOrigin: "0px 0px",
+                    animation: "sun-pulse-3 5.5s ease-in-out infinite",
+                  }} />
+          {/* Ring 2 */}
+          <circle r="62" fill="none" stroke="#DFB85C" strokeWidth="2"
+                  style={{
+                    transformOrigin: "0px 0px",
+                    animation: "sun-pulse-2 4s ease-in-out infinite",
+                    animationDelay: "0.8s",
+                  }} />
+          {/* Ring 1 — innermost, fastest */}
+          <circle r="38" fill="none" stroke="#EBC96A" strokeWidth="2.5"
+                  style={{
+                    transformOrigin: "0px 0px",
+                    animation: "sun-pulse-1 3s ease-in-out infinite",
+                    animationDelay: "0.3s",
+                  }} />
+          {/* Corona glow */}
+          <circle r="140" fill="url(#sep-sun-corona)" opacity="0.7" />
+          {/* Soft halo */}
+          <circle r="70" fill="#F5E088" opacity="0.25" filter="url(#sep-blur-xl)" />
+          {/* Disc */}
+          <circle r="22" fill="#FEF4C8" opacity="0.9"
+                  style={{ animation: "sun-breathe 3.5s ease-in-out infinite" }} />
+          {/* Hot core */}
+          <circle r="13" fill="#FFFBE0" opacity="0.95"
+                  style={{ animation: "sun-breathe 3.5s ease-in-out infinite", animationDelay: "0.4s" }} />
+        </g>
 
-      {/* Atmospheric Sand Grain */}
-      <rect width="800" height="320" filter="url(#sand-grain)" pointerEvents="none" />
+        {/* Dunes */}
+        <path d="M0 198 Q120 172 260 190 Q380 205 500 178 Q640 158 800 182 L800 320 L0 320 Z"
+              fill="url(#sep-dune-far)" opacity="0.55" />
+        <path d="M-60 228 Q100 196 280 222 Q430 244 560 208 Q700 174 860 215 L860 320 L-60 320 Z"
+              fill="url(#sep-dune-mid)" />
+        <path d="M0 258 Q180 232 360 260 Q520 284 700 248 Q780 236 820 252 L820 320 L0 320 Z"
+              fill="url(#sep-dune-near)" />
+        <path d="M360 260 Q430 270 520 265 Q560 262 600 258 Q520 282 440 278 Q400 276 360 260 Z"
+              fill="#6E5E38" opacity="0.4" />
+        <path d="M-40 290 Q200 268 440 292 Q620 310 840 278 L840 320 L-40 320 Z"
+              fill="url(#sep-dune-fg)" />
 
-      {/* Drifting Heat/Dust Particles */}
-      {particles.map((p, i) => (
-        <circle key={i} cx={p.cx} cy={p.cy} r={p.r}
-                fill="#E9C46A" 
-                opacity="0"
-                style={{
-                  filter: "blur(1.5px)", // Softer edges
-                  animation: `mote-float ${p.dur}s ease-in-out infinite`,
-                  animationDelay: `${p.delay}s`
-                }} />
-      ))}
+        {/* ── Sandstorm — streaks start at x=0 and drift right ── */}
+        {/* Layer A — high, fast (7s), two offset copies */}
+        {[0, -3.5].map((delay, i) => (
+          <g key={`sa${i}`}
+             style={{ animation: `sand-drift-a 7s linear infinite`, animationDelay: `${delay}s` }}>
+            <line x1="-800" y1="88"  x2="-640" y2="90"  stroke="#D4A84B" strokeWidth="0.6" opacity="0.18" />
+            <line x1="-780" y1="96"  x2="-660" y2="97"  stroke="#C9A050" strokeWidth="0.4" opacity="0.13" />
+            <line x1="-800" y1="104" x2="-600" y2="106" stroke="#E0B860" strokeWidth="0.5" opacity="0.15" />
+            <line x1="-720" y1="92"  x2="-560" y2="93"  stroke="#D8B458" strokeWidth="0.4" opacity="0.12" />
+          </g>
+        ))}
 
-      {/* Distant soaring birds */}
-      <BirdFlock color="#7E685A" yBase={70} cycleTime={32}/>
-    </svg>
+        {/* Layer B — mid, medium (10s), two offset copies */}
+        {[0, -5].map((delay, i) => (
+          <g key={`sb${i}`}
+             style={{ animation: `sand-drift-b 10s linear infinite`, animationDelay: `${delay}s` }}>
+            <line x1="-800" y1="148" x2="-580" y2="150" stroke="#C4943C" strokeWidth="0.8" opacity="0.2"  />
+            <line x1="-800" y1="157" x2="-630" y2="158" stroke="#BA8C34" strokeWidth="0.5" opacity="0.16" />
+            <line x1="-770" y1="165" x2="-540" y2="167" stroke="#D09A44" strokeWidth="0.7" opacity="0.18" />
+            <line x1="-800" y1="173" x2="-610" y2="175" stroke="#C09038" strokeWidth="0.4" opacity="0.12" />
+            <line x1="-750" y1="160" x2="-580" y2="162" stroke="#CC9C40" strokeWidth="0.6" opacity="0.14" />
+          </g>
+        ))}
+
+        {/* Layer C — ground, slow (14s), three offset copies */}
+        {[0, -4.7, -9.3].map((delay, i) => (
+          <g key={`sc${i}`}
+             style={{ animation: `sand-drift-c 14s linear infinite`, animationDelay: `${delay}s` }}>
+            <line x1="-800" y1="218" x2="-500" y2="220" stroke="#AA8030" strokeWidth="1.2" opacity="0.28" />
+            <line x1="-800" y1="226" x2="-530" y2="228" stroke="#9E7828" strokeWidth="0.9" opacity="0.22" />
+            <line x1="-790" y1="234" x2="-470" y2="236" stroke="#B48C38" strokeWidth="1.1" opacity="0.25" />
+            <line x1="-800" y1="242" x2="-550" y2="244" stroke="#A07830" strokeWidth="0.8" opacity="0.2"  />
+            <line x1="-780" y1="250" x2="-510" y2="252" stroke="#B08840" strokeWidth="1.0" opacity="0.24" />
+          </g>
+        ))}
+
+        {/* Dust motes */}
+        {motes.map((p, i) => (
+          <circle key={i} cx={p.cx} cy={p.cy} r={p.r}
+                  fill="#D4A84B"
+                  filter="url(#sep-blur-sm)"
+                  style={{
+                    "--dx": p.dx,
+                    "--dy": p.dy,
+                    animation: `mote-float ${p.dur}s ease-in-out infinite`,
+                    animationDelay: `${p.delay}s`,
+                  }} />
+        ))}
+
+        {/* Birds — renamed keyframe to avoid collision with ANIMATION_CSS */}
+        <g style={{ animation: "sep-bird-soar 28s linear infinite" }} opacity="0.45">
+          <path d="M0,65 Q4,62 8,65 Q12,68 16,65"   fill="none" stroke="#7A6040" strokeWidth="1"   strokeLinecap="round" />
+          <path d="M24,72 Q27,70 30,72 Q33,74 36,72" fill="none" stroke="#7A6040" strokeWidth="0.9" strokeLinecap="round" />
+          <path d="M44,60 Q48,57 52,60 Q56,63 60,60" fill="none" stroke="#7A6040" strokeWidth="1"   strokeLinecap="round" />
+        </g>
+        <g style={{ animation: "sep-bird-soar 36s linear infinite", animationDelay: "-14s" }} opacity="0.3">
+          <path d="M0,80 Q3,78 6,80 Q9,82 12,80"     fill="none" stroke="#6E5838" strokeWidth="0.8" strokeLinecap="round" />
+          <path d="M20,75 Q24,72 28,75 Q32,78 36,75" fill="none" stroke="#6E5838" strokeWidth="0.9" strokeLinecap="round" />
+        </g>
+      </svg>
+    </>
   );
 }
 
@@ -803,9 +899,16 @@ function CherryBlossomLandscape() {
       {/* Soft mist at bottom */}
       <rect x="0" y="285" width="800" height="35" fill="white" opacity="0.20"/>
 
-      {/* Birds crossing the pink blossom sky */}
-      <BirdFlock color="#AD1457" yBase={30} cycleTime={21}/>
-      <BirdFlock color="#880E4F" yBase={14} cycleTime={26}/>
+      {/* Replace the two BirdFlock lines at the bottom */}
+      <g style={{ animation: "sep-bird-soar 21s linear infinite" }} opacity="0.45">
+        <path d="M0,30 Q4,27 8,30 Q12,33 16,30"   fill="none" stroke="#AD1457" strokeWidth="1"   strokeLinecap="round" />
+        <path d="M24,38 Q27,36 30,38 Q33,40 36,38" fill="none" stroke="#AD1457" strokeWidth="0.9" strokeLinecap="round" />
+        <path d="M44,24 Q48,21 52,24 Q56,27 60,24" fill="none" stroke="#AD1457" strokeWidth="1"   strokeLinecap="round" />
+      </g>
+      <g style={{ animation: "sep-bird-soar 26s linear infinite", animationDelay: "-10s" }} opacity="0.30">
+        <path d="M0,14 Q3,12 6,14 Q9,16 12,14"     fill="none" stroke="#880E4F" strokeWidth="0.8" strokeLinecap="round" />
+        <path d="M20,20 Q24,17 28,20 Q32,23 36,20" fill="none" stroke="#880E4F" strokeWidth="0.9" strokeLinecap="round" />
+      </g>
     </svg>
   );
 }
@@ -906,9 +1009,16 @@ function MintLandscape() {
       {/* Forest floor ray of light */}
       <path d="M380 0 L340 320 L460 320 L420 0 Z" fill="#E8F5E9" opacity="0.06"/>
 
-      {/* Birds gliding above the forest canopy */}
-      <BirdFlock color="#1B5E20" yBase={38} cycleTime={19}/>
-      <BirdFlock color="#2E7D32" yBase={58} cycleTime={25}/>
+      {/* Replace the two BirdFlock lines at the bottom */}
+      <g style={{ animation: "sep-bird-soar 19s linear infinite" }} opacity="0.50">
+        <path d="M0,38 Q4,35 8,38 Q12,41 16,38"   fill="none" stroke="#1B5E20" strokeWidth="1"   strokeLinecap="round" />
+        <path d="M24,45 Q27,43 30,45 Q33,47 36,45" fill="none" stroke="#1B5E20" strokeWidth="0.9" strokeLinecap="round" />
+        <path d="M44,32 Q48,29 52,32 Q56,35 60,32" fill="none" stroke="#1B5E20" strokeWidth="1"   strokeLinecap="round" />
+      </g>
+      <g style={{ animation: "sep-bird-soar 25s linear infinite", animationDelay: "-11s" }} opacity="0.35">
+        <path d="M0,58 Q3,56 6,58 Q9,60 12,58"     fill="none" stroke="#2E7D32" strokeWidth="0.8" strokeLinecap="round" />
+        <path d="M20,52 Q24,49 28,52 Q32,55 36,52" fill="none" stroke="#2E7D32" strokeWidth="0.9" strokeLinecap="round" />
+      </g>
     </svg>
   );
 }
@@ -923,7 +1033,7 @@ export function IllustrationCoverSlide() {
   const landscapes = {
     light:   <OceanLandscape/>,
     dark:    <GalaxyLandscape/>,
-    sepia:   <SepiаLandscape/>,
+    sepia:   <SepiaLandscape/>,
     pink:    <CherryBlossomLandscape/>,
     mint:    <MintLandscape/>,
   };
@@ -1084,7 +1194,7 @@ export function IllustrationClosingSlide() {
   const landscapes = {
     light:   <OceanLandscape/>,
     dark:    <GalaxyLandscape/>,
-    sepia:   <SepiаLandscape/>,
+    sepia:   <SepiaLandscape/>,
     pink:    <CherryBlossomLandscape/>,
     mint:    <MintLandscape/>,
   };
