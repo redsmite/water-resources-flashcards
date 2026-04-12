@@ -490,7 +490,39 @@ export const SLIDES = [
   { id: 156, section: "Tipid Tubig", title: "Tip 6", content: "Take shorter shower. Shortening your shower time by a minute or two will save up to 568 liters per month", type: "trivia-intro" },
   { id: 157, section: "Tipid Tubig", title: "Tip 7", content: "Dispose of tissue paper in the trash and not in the toilet bowl. Flushing it consumes 6 Liters of water.", type: "trivia-intro" },
   { id: 158, section: "Tipid Tubig", title: "Tip 8", content: "Share your water conservation hacks, practices, and tips to others.", type: "trivia-intro" },
-  { id: 159, section: "Tipid Tubig", title: "Play your part, be water smart!", content: "Wise Water Use.", type: "trivia-intro" },
+  {
+    id: 159, section: "Tipid Tubig",
+    title: "Play your part, be water smart!",
+    subtitle: "Wise Water Use — conservation tips for home, garden & daily life.",
+    cards: [
+      {
+        label: "🌿 Outdoor & Garden",
+        text:
+          "• Water early or late in the day — less evaporation.\n" +
+          "• Choose low-water plants for your landscape.\n" +
+          "• Apply mulch to retain soil moisture.\n" +
+          "• Sweep driveways instead of hosing them down.\n" +
+          "• Use a shut-off nozzle on your garden hose.",
+      },
+      {
+        label: "🚿 Bathroom & Personal",
+        text:
+          "• Limit showers to 5 minutes or less.\n" +
+          "• Install low-flow showerheads and faucet aerators.\n" +
+          "• Replace old toilets with models using < 1.6 gal/flush.\n" +
+          "• Turn off the tap while soaping hands or brushing teeth.",
+      },
+      {
+        label: "🍳 Kitchen & Laundry",
+        text:
+          "• Turn off the tap while scrubbing dishes and pots.\n" +
+          "• Use Energy Star-labeled washing machines.\n" +
+          "• Wash only full loads to maximize efficiency.",
+      },
+    ],
+    highlight: '"Save it, or do without it!"',
+    type: "cards",
+  },
   { id: 160, section: "Closing", title: "Water Management is a Shared Responsibility", content: "Water management is a shared responsibility that requires everyone to be \"water smart\" to ensure sustainable water for a healthy nation.", type: "closing" },
   { id: 161, section: "Closing", title: "Thank You!", content: "DENR – National Capital Region\nWater Resources Utilization Section, LPDD", type: "cover" },
 ];

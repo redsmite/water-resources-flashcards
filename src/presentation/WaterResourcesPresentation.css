@@ -1532,3 +1532,231 @@
 /* ── Nav panel and arrows: keep above the slide decorations ── */
 .pres-nav-panel { z-index: 200; }
 .pres-arrows    { z-index: 90;  }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DARK THEME CONTRAST FIX
+   Append this block to WaterResourcesPresentation.css (or paste it at the
+   very bottom, after all existing rules).
+
+   Root cause: --pr-text-2 is #60a5fa (bright blue) and is used as the
+   default color for body text, bullets, card text, table cells, etc.
+   On blue/navy slide backgrounds and inside blue SVG shapes this is
+   invisible or near-invisible.
+
+   Fix strategy:
+     • --pr-text-2 → near-white (#e2f0ff) — readable everywhere
+     • --pr-text-1 → pure white (#ffffff) — titles
+     • --pr-text-3 → light muted (#94b8d0) — hints/sub-labels
+     • --pr-accent  stays #38bdf8 — used only for decorative borders,
+       badges, stat values, progress bar (always isolated, never body text)
+     • Explicit color overrides on the components that were showing blue-on-blue
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 1. Re-declare dark theme custom properties ── */
+[data-theme="dark"] .pres-root {
+  /* Body text: was #60a5fa (blue) → now near-white */
+  --pr-text-2: #d6eaff;
+
+  /* Headings: was #e2f0ff → keep but bump to pure white for max contrast */
+  --pr-text-1: #ffffff;
+
+  /* Muted/hint text: was #4a6a8a (too dark) → lighter muted blue-gray */
+  --pr-text-3: #8aafc8;
+
+  /* Slide backgrounds: keep existing dark navy */
+  /* --pr-accent stays #38bdf8 — only used for decorative highlights */
+}
+
+/* ── 2. Slide title — was inheriting text-1 which is fine, but force white ── */
+[data-theme="dark"] .slide-title {
+  color: #ffffff;
+}
+
+/* ── 3. Slide body text — was var(--pr-text-2) which was blue ── */
+[data-theme="dark"] .slide-body {
+  color: #d6eaff;
+}
+
+/* ── 4. Bullet items — was var(--pr-text-2) ── */
+[data-theme="dark"] .slide-bullet-item {
+  color: #d6eaff;
+  border-bottom-color: rgba(56, 189, 248, 0.10);
+}
+
+[data-theme="dark"] .slide-bullet-item:hover {
+  color: #ffffff;
+}
+
+/* ── 5. Flip card back text — was var(--pr-text-2) ── */
+[data-theme="dark"] .flip-card-back-text {
+  color: #d6eaff;
+}
+
+/* ── 6. Table cells — was var(--pr-text-2) ── */
+[data-theme="dark"] .slide-table td {
+  color: #d6eaff;
+}
+
+/* ── 7. Timeline text ── */
+[data-theme="dark"] .timeline-law {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .timeline-desc {
+  color: #8aafc8;
+}
+
+/* ── 8. Nav panel items ── */
+[data-theme="dark"] .nav-item-title {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .nav-item-section {
+  color: #8aafc8;
+}
+
+/* ── 9. Counter / jump text ── */
+[data-theme="dark"] .pres-counter {
+  color: #d6eaff;
+}
+
+[data-theme="dark"] .pres-jump {
+  color: #8aafc8;
+}
+
+[data-theme="dark"] .pres-jump input {
+  color: #ffffff;
+}
+
+/* ── 10. Slide subtitle ── */
+[data-theme="dark"] .slide-subtitle {
+  color: #8aafc8;
+}
+
+/* ── 11. Stat label (under the big number) ── */
+[data-theme="dark"] .stat-label {
+  color: #8aafc8;
+}
+
+/* ── 12. Card label on front of flip card (was --pr-accent = blue on blue bg) ── */
+[data-theme="dark"] .flip-card-front-label {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .flip-card-hint {
+  color: #8aafc8;
+}
+
+/* ── 13. Section badge text — was --pr-accent (blue) on accent-dim (also blue) ── */
+[data-theme="dark"] .slide-section-badge {
+  /* keep accent for border; use white for the text */
+  color: #e2f0ff;
+}
+
+/* ── 14. Article badge — white text on accent bg (fine as-is but reinforce) ── */
+[data-theme="dark"] .article-badge {
+  color: #ffffff;
+}
+
+/* ── 15. Note text ── */
+[data-theme="dark"] .slide-note {
+  color: #fbbf24;    /* amber — readable on the dark amber-tinted note bg */
+  background: rgba(217, 119, 6, 0.10);
+}
+
+/* ── 16. Header text ── */
+[data-theme="dark"] .pres-agency {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .pres-event {
+  color: #8aafc8;
+}
+
+/* ── 17. Back button / theme button text ── */
+[data-theme="dark"] .pres-back-btn {
+  color: #d6eaff;
+}
+
+[data-theme="dark"] .pres-theme-btn {
+  color: #d6eaff;
+}
+
+[data-theme="dark"] .pres-arrow--prev {
+  color: #d6eaff;
+}
+
+/* ── 18. ENRA badge text in dark mode ── */
+[data-theme="dark"] .slide-enra-badge__text {
+  color: #8aafc8;
+}
+
+/* ── 19. SVG illustrations — LabelBg rects already provide white backing,
+         but the T_BLUE / T_TEAL / T_GREEN constants in slideIllustrations.jsx
+         are hardcoded dark values (#0d47a1, #004d40, #1b5e20) which are
+         INVISIBLE on dark backgrounds. We cannot change SVG fill via CSS
+         alone (fill is an SVG presentation attribute), but we CAN use a
+         CSS filter on the illustration wrapper in dark mode to invert the
+         label text while preserving the shapes.
+
+         Better approach: add a brightness+contrast filter on the white
+         label backing rects — in dark mode we want those white pills to
+         become semi-dark so the dark text on them remains readable.
+
+         The safest CSS-only fix: wrap the whole SVG in a class and apply
+         a selective invert only on <rect> elements that have white fill.
+         This isn't possible via CSS alone for SVG fill attributes.
+
+         Practical fix applied here: add a subtle background overlay on the
+         illustration wrapper in dark mode so the SVG sits on a near-white
+         card, preserving all label legibility. ── */
+[data-theme="dark"] .slide-illustration {
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 12px;
+  padding: 4px;
+}
+
+[data-theme="dark"] .slide-illustration--hero {
+  background: transparent;   /* hero/cover illustrations have their own bg */
+  padding: 0;
+}
+
+/* ── 20. Flip card backgrounds in dark — make them actually dark ── */
+[data-theme="dark"] .flip-card-front {
+  background: rgba(15, 31, 53, 0.95);
+}
+
+[data-theme="dark"] .flip-card-back {
+  background: rgba(10, 22, 40, 0.95);
+}
+
+/* ── 21. Stat cards in dark ── */
+[data-theme="dark"] .stat-item--animated {
+  background: rgba(15, 31, 53, 0.85);
+}
+
+/* ── 22. Table header stays accent-colored with white text ── */
+[data-theme="dark"] .slide-table th {
+  color: #ffffff;
+}
+
+/* ── 23. Table alt rows — make sure text stays readable ── */
+[data-theme="dark"] .slide-table tr:nth-child(even) td {
+  background: rgba(56, 189, 248, 0.05);
+  color: #d6eaff;
+}
+
+/* ── 24. Highlight block ── */
+[data-theme="dark"] .slide-highlight {
+  color: #ffffff;
+}
+
+/* ── 25. Card front background (non-flip) ── */
+[data-theme="dark"] .slide-card {
+  background: rgba(15, 31, 53, 0.85);
+  color: #d6eaff;
+}
+
+[data-theme="dark"] .card-label {
+  color: #38bdf8;   /* accent only on the tiny label, not body */
+}

@@ -3002,10 +3002,11 @@ export const SLIDE_ILLUSTRATIONS = {
   156: IllustrationWaterSmart,
   157: IllustrationWaterSmart,
   158: IllustrationWaterSmart,
-  159: IllustrationWaterSmart,
+  159: IllustrationWaterSmart159,
 };
 
 import { IllustrationCoverSlide, IllustrationClosingSlide }
   from "./CoverAndClosingIllustrations.jsx";
 import { IllustrationWaterFactsMatter, IllustrationWaterWorld }
   from "./slideIllustrations_140_141.jsx";
+import { IllustrationWaterSmart159 } from "./slideIllustrations_159.jsx";
