@@ -2985,23 +2985,12 @@ export const SLIDE_ILLUSTRATIONS = {
   140: IllustrationWaterFactsMatter,
   141: IllustrationWaterWorld,
   // Tipid Tubig
-  142: IllustrationTipidTubig,
-  143: IllustrationTipidTubig,
-  144: IllustrationTipidTubig,
-  145: IllustrationTipidTubig,
-  146: IllustrationTipidTubig,
-  147: IllustrationTipidTubig,
-  148: IllustrationTipidTubig,
-  149: IllustrationTipidTubig,
-  150: IllustrationTipidTubig,
-  151: IllustrationWaterSmart,
-  152: IllustrationWaterSmart,
-  153: IllustrationWaterSmart,
-  154: IllustrationWaterSmart,
-  155: IllustrationWaterSmart,
-  156: IllustrationWaterSmart,
-  157: IllustrationWaterSmart,
-  158: IllustrationWaterSmart,
+  142: Illus142,   143: Illus143,   144: Illus144,
+  145: Illus145,   146: Illus146,   147: Illus147,
+  148: Illus148,   149: Illus149,   150: Illus150,
+  151: Illus151,   152: Illus152,   153: Illus153,
+  154: Illus154,   155: Illus155,   156: Illus156,
+  157: Illus157,   158: Illus158,
   159: IllustrationWaterSmart159,
 };
 
@@ -3010,3 +2999,8 @@ import { IllustrationCoverSlide, IllustrationClosingSlide }
 import { IllustrationWaterFactsMatter, IllustrationWaterWorld }
   from "./slideIllustrations_140_141.jsx";
 import { IllustrationWaterSmart159 } from "./slideIllustrations_159.jsx";
+import {
+  Illus142, Illus143, Illus144, Illus145, Illus146, Illus147,
+  Illus148, Illus149, Illus150, Illus151, Illus152, Illus153,
+  Illus154, Illus155, Illus156, Illus157, Illus158
+} from "./slideIllustrations_142_158.jsx";
